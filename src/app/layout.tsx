@@ -42,7 +42,7 @@ export default function RootLayout({
       className={`${pretendard.variable} ${ySpotlight.variable} ${yPairing.variable} antialiased`}
     >
       {/* 모바일: 풀스크린 / 데스크탑(md:): 회색 배경 위 정중앙에 iPhone 12 Pro(390×844) 기기 프레임 */}
-      <body className="bg-white text-neutral-900 md:flex md:min-h-dvh md:items-center md:justify-center md:bg-neutral-200">
+      <body className="bg-white text-gray-900 md:flex md:min-h-dvh md:items-center md:justify-center md:bg-gray-100">
         <div className="mx-auto h-dvh w-full overflow-y-auto bg-white md:h-[844px] md:w-[390px] md:rounded-[40px] md:shadow-2xl">
           <Providers>{children}</Providers>
         </div>
