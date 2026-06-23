@@ -68,6 +68,7 @@ export function ShareCards() {
   const [index, setIndex] = useState(FIRST_REAL);
   const [animate, setAnimate] = useState(true);
   const [paused, setPaused] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
   const [drag, setDrag] = useState(0); // 스와이프 중 손가락 따라가는 px 오프셋
 
   const dragging = useRef(false);
@@ -76,24 +77,30 @@ export function ShareCards() {
   // 인디케이터용 실제 카드 번호(0..2). 클론 위치도 올바른 실 카드로 환산.
   const activeReal = (index - FIRST_REAL + CARDS.length) % CARDS.length;
 
-  // 자동재생 — 드래그 중이거나 reduced-motion이면 멈춤
+  // prefers-reduced-motion — 세션 중 토글도 반영
   useEffect(() => {
-    if (paused) return;
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      return;
-    }
-    const id = window.setInterval(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReducedMotion(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  // 자동재생 — index가 바뀔 때마다 타이머를 재무장해 카드당 노출 1초를 보장.
+  // 드래그 중(paused)이거나 reduced-motion이면 멈춤.
+  useEffect(() => {
+    if (paused || reducedMotion) return;
+    const id = window.setTimeout(() => {
       setAnimate(true);
       setIndex((i) => i + 1);
     }, AUTOPLAY_MS);
-    return () => window.clearInterval(id);
-  }, [paused]);
+    return () => window.clearTimeout(id);
+  }, [paused, reducedMotion, index]);
 
-  // 클론에 도달하면(트랜지션 종료 후) 트랜지션 없이 반대쪽 실 카드로 점프 → 무한 루프
-  const handleTransitionEnd = () => {
+  // 클론에 도달하면(트랜지션 종료 후) 트랜지션 없이 반대쪽 실 카드로 점프 → 무한 루프.
+  // 트랙 자신의 transform 트랜지션만 처리(자식 transition 버블링 오발화 방지).
+  const handleTransitionEnd = (e: React.TransitionEvent) => {
+    if (e.target !== e.currentTarget || e.propertyName !== "transform") return;
     if (index > LAST_REAL) {
       setAnimate(false);
       setIndex(FIRST_REAL);
@@ -101,6 +108,12 @@ export function ShareCards() {
       setAnimate(false);
       setIndex(LAST_REAL);
     }
+  };
+
+  // 인디케이터 클릭 → 해당 실 카드로 이동(키보드·스크린리더·reduced-motion 사용자용 대체 내비)
+  const goTo = (real: number) => {
+    setAnimate(true);
+    setIndex(FIRST_REAL + real);
   };
 
   // 점프 직후(animate=false) 다음 페인트에서 트랜지션 복구
@@ -165,16 +178,25 @@ export function ShareCards() {
         </div>
       </div>
 
-      {/* 인디케이터 — 자동/수동 전환 모두 activeReal에 동기화 */}
-      <div className="flex items-center gap-1.5" aria-hidden>
+      {/* 인디케이터 — 자동/수동 전환 모두 activeReal에 동기화. 탭하면 해당 카드로 이동.
+          버튼 hit area는 p-2 -m-2로 확장(점 시각 간격은 유지) */}
+      <div className="flex items-center gap-1.5">
         {CARDS.map((_, i) => (
-          <span
+          <button
             key={i}
-            className={cn(
-              "h-1.5 rounded-full transition-all duration-300",
-              i === activeReal ? "w-4 bg-gray-900" : "w-1.5 bg-gray-200",
-            )}
-          />
+            type="button"
+            onClick={() => goTo(i)}
+            aria-label={`${i + 1}번째 안내 카드 보기`}
+            aria-current={i === activeReal}
+            className="-m-2 flex p-2"
+          >
+            <span
+              className={cn(
+                "h-1.5 rounded-full transition-all duration-300",
+                i === activeReal ? "w-4 bg-gray-900" : "w-1.5 bg-gray-200",
+              )}
+            />
+          </button>
         ))}
       </div>
     </div>
@@ -187,8 +209,10 @@ function CardFrame({ card }: { card: ShareCard }) {
       {/* figma-loose: 카드 radius 20px·backdrop-blur 10px 는 토큰 부재 → arbitrary(디자이너 검증 요망) */}
       <div className="flex h-76 w-full flex-col items-center justify-center gap-4 rounded-[20px] border border-white bg-white/40 backdrop-blur-[10px]">
         <div className="flex flex-col items-center gap-4">
-          {/* figma-loose: 배지 = YPairingFont Bold 14px → font-display2 + 14px 토큰 부재로 body-14-medium 차용 */}
-          <span className="rounded-md bg-blue-100 px-3 py-1 font-display2 text-body-14-medium text-blue-500">
+          {/* figma-loose: 배지 = YPairingFont Bold 14px. 14px 디스플레이 토큰 부재 →
+              size는 body-14-medium 차용 + font-bold로 weight 700 복원(Figma Bold 일치).
+              tracking은 body(-0.03em) vs Figma(-0.02em) 미세차. → head2-14 토큰 신설은 디자이너 결정 대기. */}
+          <span className="rounded-md bg-blue-100 px-3 py-1 font-display2 text-body-14-medium font-bold text-blue-500">
             결과를 확인하려면?
           </span>
           <Image
