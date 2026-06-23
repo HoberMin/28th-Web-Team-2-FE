@@ -1,5 +1,5 @@
 // 공유 유틸 — 핵심 유입 루프 (domain.md §1).
-// 인스타 스토리는 링크 첨부 제약이 있어 → 스토리 이미지(story-share)는 공유 시트로, 링크는 클립보드 복사.
+// 인스타 스토리: 링크 클립보드 복사 + 이미지 다운로드 + 인스타그램 스토리 카메라 열기 (iOS/Android 공통).
 // 카카오톡은 Kakao JS SDK feed 템플릿. JS 키 없으면 링크 복사 fallback.
 
 export type ShareResult =
@@ -48,7 +48,7 @@ async function copyLink(link: string): Promise<boolean> {
   }
 }
 
-/** 인스타 스토리: 스토리 공유 이미지(imageUrl, 보통 story-share.png)를 공유 시트로 + 링크는 클립보드 복사 */
+/** 인스타 스토리: 링크 클립보드 복사 + 이미지 저장 + 인스타그램 스토리 카메라 열기 (iOS/Android) */
 export async function shareInstagramStory({
   link,
   imageUrl,
@@ -56,24 +56,34 @@ export async function shareInstagramStory({
   link: string;
   imageUrl: string;
 }): Promise<ShareResult> {
-  // 링크는 항상 먼저 클립보드로 (스토리에 붙여넣기 유도)
+  // 1. 링크 클립보드 복사
   const copied = await copyLink(link);
 
+  // 2. 스토리 이미지 다운로드
   try {
     const res = await fetch(imageUrl);
     const blob = await res.blob();
-    const file = new File([blob], "looky.png", {
-      type: blob.type || "image/png",
-    });
-    if (navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ files: [file], text: link });
-      return "shared";
-    }
+    const objectUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = objectUrl;
+    a.download = "looky-story.png";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(objectUrl);
   } catch {
-    // 공유 취소(AbortError)·미지원 등 → 아래 복사 결과로 폴백
+    // 다운로드 실패해도 앱 열기는 계속 시도
   }
 
-  return copied ? "copied" : "unsupported";
+  // 3. 인스타그램 스토리 카메라 열기
+  //    Android: intent scheme (패키지명으로 앱 지정) / iOS: URL scheme
+  const isAndroid = /android/i.test(navigator.userAgent);
+  window.location.href = isAndroid
+    ? "intent://story-camera#Intent;scheme=instagram;package=com.instagram.android;end"
+    : "instagram://story-camera";
+
+  return copied ? "shared" : "unsupported";
 }
 
 function loadKakao(): Promise<KakaoSDK | null> {
