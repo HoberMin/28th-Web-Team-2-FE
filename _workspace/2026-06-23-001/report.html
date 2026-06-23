@@ -1,0 +1,229 @@
+<title>looky 디자인 정합 리포트 — F05·F06</title>
+<style>
+  :root {
+    --ground: #f7f9fd;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #626670;
+    --line: #e5e7ef;
+    --accent: #4e8cff;       /* looky blue-500 */
+    --accent-soft: #d2e2ff;
+    --warn: #d98324;         /* 실수 의심 — amber */
+    --warn-soft: #fff4c1;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+      "Pretendard", "Malgun Gothic", system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px 96px; }
+
+  /* ── header ── */
+  header {
+    background: linear-gradient(180deg, #ffffff 18%, #d2e2ff 100%);
+    border-bottom: 1px solid var(--line);
+  }
+  .head-inner { max-width: 760px; margin: 0 auto; padding: 56px 20px 44px; }
+  .eyebrow {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.04em;
+    color: var(--accent); margin: 0 0 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .eyebrow::before {
+    content: ""; width: 22px; height: 2px; background: var(--accent); border-radius: 2px;
+  }
+  h1 {
+    font-size: clamp(28px, 6vw, 40px); font-weight: 800; line-height: 1.18;
+    margin: 0 0 18px; letter-spacing: -0.03em;
+  }
+  h1 .frame { color: var(--accent); }
+  .purpose {
+    font-size: 16px; color: #40444d; margin: 0; max-width: 60ch;
+  }
+  .purpose .q { color: var(--text); font-weight: 600; }
+
+  /* ── section ── */
+  section { margin-top: 52px; }
+  .sec-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .sec-head h2 {
+    font-size: 21px; font-weight: 700; margin: 0; letter-spacing: -0.02em;
+  }
+  .chip {
+    font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px;
+    white-space: nowrap;
+  }
+  .chip.warn { background: var(--warn-soft); color: #7b5b1e; }
+  .chip.info { background: var(--accent-soft); color: #2c5bb8; }
+  .chip.idea { background: #e7f0e9; color: #3f7a52; }
+
+  /* ── issue cards (section 1) ── */
+  .cards { display: flex; flex-direction: column; gap: 12px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 18px 20px; border-left: 4px solid var(--warn);
+  }
+  .card h3 {
+    font-size: 16px; font-weight: 700; margin: 0 0 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card p { margin: 0; font-size: 15px; color: #40444d; }
+  .card .fix {
+    margin-top: 10px; font-size: 13px; color: var(--muted);
+    border-top: 1px dashed var(--line); padding-top: 9px;
+  }
+  .card .fix b { color: var(--accent); font-weight: 600; }
+  code, .val {
+    font-family: var(--mono); font-size: 0.88em;
+    background: #eef2fb; color: #2c5bb8; padding: 1px 6px; border-radius: 5px;
+  }
+
+  /* ── page groups (section 2) ── */
+  .pages { display: flex; flex-direction: column; gap: 14px; }
+  .page {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px 20px;
+  }
+  .page .pname {
+    font-size: 14px; font-weight: 700; margin: 0 0 10px; color: var(--text);
+  }
+  .page .pname span { color: var(--muted); font-weight: 500; }
+  .vals { display: flex; flex-wrap: wrap; gap: 7px; }
+  .vals .val {
+    background: #fff6e9; color: #9a6a1a; border: 1px solid #f3e3c4;
+    font-size: 13px; padding: 3px 9px;
+  }
+  .note {
+    font-size: 14px; color: var(--muted); margin: 16px 0 0; padding-left: 14px;
+    border-left: 2px solid var(--line);
+  }
+
+  /* ── idea list (section 3) ── */
+  .ideas { display: flex; flex-direction: column; gap: 10px; list-style: none; padding: 0; margin: 0; }
+  .ideas li {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 18px 14px 16px; font-size: 15px; color: #40444d;
+    border-left: 4px solid var(--accent);
+  }
+  .ideas li b { color: var(--text); font-weight: 700; }
+
+  footer {
+    margin-top: 48px; padding: 18px 20px; border-radius: 12px;
+    background: #eef2fb; color: var(--muted); font-size: 14px;
+  }
+  footer b { color: var(--text); }
+
+  @media (max-width: 520px) {
+    .head-inner { padding: 44px 20px 36px; }
+  }
+</style>
+
+<header>
+  <div class="head-inner">
+    <p class="eyebrow">looky · 디자인 핸드오프</p>
+    <h1>디자인 정합 리포트<br><span class="frame">F05 · F06</span></h1>
+    <p class="purpose">
+      Figma대로 <span class="q">1px까지</span> 맞추다 보니 "어? 싶은" 지점들이 보였어요.
+      본인 작업 검토하시라고 모았습니다. 책임 묻자는 게 아니라 같이 정리하자는 거예요.
+    </p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section>
+    <div class="sec-head">
+      <h2>1. 화면마다 어긋난 것</h2>
+      <span class="chip warn">먼저 봐주세요 · 실수 가능성 높음</span>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <h3>④칸 이름이 한 흐름 안에서 바뀌어요</h3>
+        <p>네컷에선 <code>아무도 모르는 나</code>, 상세 배지에선 <code>아무도 모르는</code>, 공식 이름은 <code>아직 모르는 나</code>. 셋이 다 달라요.</p>
+        <p class="fix"><b>처리</b> · 코드는 일단 공식 이름(<code>아직 모르는 나</code>)으로 통일해뒀어요.</p>
+      </div>
+
+      <div class="card">
+        <h3>'복사' 버튼이 화면마다 달라요</h3>
+        <p>공유 페이지는 링크 아이콘 + 진한 회색 테두리(<span class="val">gray-200</span>), 결과 페이지는 복사 아이콘 + 연한 회색(<span class="val">gray-100</span>). 같은 기능인데 모양이 안 맞아요.</p>
+      </div>
+
+      <div class="card">
+        <h3>네컷 4칸 테두리 투명도가 첫 칸만 달라요</h3>
+        <p>첫 칸만 <span class="val">28%</span>, 나머지는 <span class="val">15%</span>. 첫 칸이 튀어 보입니다.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>2. 4px 그리드를 벗어난 값</h2>
+      <span class="chip info">페이지별 위치</span>
+    </div>
+    <div class="pages">
+
+      <div class="page">
+        <p class="pname">F05 결과 <span>· 인생네컷</span></p>
+        <div class="vals">
+          <span class="val">네컷 카드 폭 358</span>
+          <span class="val">radius 18</span>
+          <span class="val">안쪽 여백 14</span>
+          <span class="val">칸 간격 10</span>
+          <span class="val">칸 라벨 위치 7·7</span>
+          <span class="val">라벨 상하 여백 3</span>
+          <span class="val">종합·팁 카드 radius 14</span>
+          <span class="val">형용사 태그 radius 25</span>
+          <span class="val">태그 간격 7</span>
+          <span class="val">태그 상하 여백 2</span>
+          <span class="val">하단 그림자 6</span>
+        </div>
+      </div>
+
+      <div class="page">
+        <p class="pname">F05 생성 실패</p>
+        <div class="vals">
+          <span class="val">캐릭터 204 × 259.5 (소수점)</span>
+        </div>
+      </div>
+
+      <div class="page">
+        <p class="pname">F06 완료 <span>· 결과 진입</span></p>
+        <div class="vals">
+          <span class="val">일러스트 자리 350 × 332</span>
+        </div>
+      </div>
+
+    </div>
+    <p class="note">나머지 간격은 대부분 4의 배수라 괜찮았어요.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>3. 시스템으로 묶으면 좋을 것</h2>
+      <span class="chip idea">제안</span>
+    </div>
+    <ul class="ideas">
+      <li><b>radius 토큰화</b> · 값이 <span class="val">4·14·16·18·25</span>로 흩어져 있어요. 단계를 정해 토큰으로 묶으면 좋겠어요.</li>
+      <li><b>Figma Variable 정의</b> · 형용사 태그 노랑, 카카오 노랑, radius가 변수에 없어서 코드에서 임시로 만들었어요. 정의해주시면 코드랑 맞출게요.</li>
+      <li><b>캡션 회색 확인</b> · <span class="val">#626670</span>이 이 화면에서 처음 나왔어요. 회색 단계에 있는 색인지 봐주세요.</li>
+      <li><b>아이콘 자리</b> · 종합분석·팁 카드 앞에 <span class="val">20px</span> 아이콘 자리가 있는데 아이콘이 없어요.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <b>참고</b> · 완료·결과 진입 화면의 일러스트는 Figma에도 빈 자리라 비슷하게만 채워뒀어요. 디자인 나오면 교체하면 됩니다.
+  </footer>
+
+</div>
