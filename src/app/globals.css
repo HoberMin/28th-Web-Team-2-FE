@@ -136,6 +136,7 @@
      토큰명·값은 Figma 토큰 정의 후 갱신 요망. */
   --color-kakao: #fee500;    /* 카카오 브랜드 옐로우 — 화이트리스트 밖 신설 */
   --radius-field: 0.75rem;   /* 12px — textfield, btn_survey */
+  --shadow-bar: 0px -2px 6px rgba(0, 0, 0, 0.03); /* 하단 공유바 상단 그림자 (Figma blur 6) */
   --radius-cta: 1rem;        /* 16px — CTA, CTA_small */
 
   /* head-point1 (Y SpotlightOTF · Regular) — font-display1 과 함께 */

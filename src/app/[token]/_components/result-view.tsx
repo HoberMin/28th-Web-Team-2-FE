@@ -125,16 +125,15 @@ export function ResultView() {
       {/* ── B-2. 네컷 프레임 "4cuts_frame" (Figma w358 h552) ─────────────── */}
       {/* figma-loose: 디자이너 제공 결과 네컷 샘플 합성본(result.png)을 그대로 사용.
           다크 카드·2×2 그리드·라벨 오버레이·날짜/헤드라인 캡션이 한 장에 베이크됨.
-          정식 구현은 프레임은 프론트가 렌더하고 4컷 캐릭터만 서버 AI 생성물을 끼운다(domain.md §2).
-          figma-loose: rounded-[18px] = Figma 프레임 radius 18px(토큰 부재, arbitrary). */}
-      <div className="mx-5 mt-3">
+          정식 구현은 프레임은 프론트가 렌더하고 4컷 캐릭터만 서버 AI 생성물을 끼운다(domain.md §2). */}
+      <div className="mx-4 mt-3">
         <Image
           src="/assets/result.png"
           alt={`${r.nickname}님의 인생네컷 — ${r.headline}`}
           width={358}
           height={552}
           priority
-          className="h-auto w-full rounded-[18px]"
+          className="h-auto w-full rounded-2xl"
         />
       </div>
 
@@ -155,8 +154,8 @@ export function ResultView() {
           {/* Figma 타이틀 그룹 2번째 줄: "마음을 잘 여는 사람"(headlinePhrase). 카드 강조줄(summaryTitle)과 다른 문구. */}
           <p className="text-head1-20 font-display1 text-gray-900">{r.headlinePhrase}</p>
         </div>
-        {/* 종합분석 카드 — Figma rounded14 → rounded-2xl 근사, p12 → p-3 */}
-        <div className="flex flex-col gap-2 rounded-2xl bg-gray-50 p-3">
+        {/* 종합분석 카드 — Figma rounded14 → rounded-xl (--radius-xl = 14px), p12 → p-3 */}
+        <div className="flex flex-col gap-2 rounded-xl bg-gray-50 p-3">
           {/* Figma: 아이콘(20px) + "종합 분석" gray-400. 현재 아이콘 없음 → figma-loose: 아이콘 디자이너 합의 후 추가. */}
           <span className="flex items-center gap-1 text-body-14-regular text-gray-400">
             종합 분석
@@ -194,8 +193,7 @@ export function ResultView() {
                 <>
                   {/* 이미지 자리 — figma-loose: h-[124px](arbitrary, Figma 124px 그대로). 실제 AI 생성 이미지. */}
                   <div className="h-[124px] w-full overflow-hidden rounded-lg bg-gray-50" />
-                  {/* 형용사 태그 — figma-loose: rounded-[25px] → rounded-full 근사. gap-[7px] arbitrary. */}
-                  <div className="flex flex-wrap gap-[7px]">
+                  <div className="flex flex-wrap gap-2">
                     {q.adjectives.map((adj) => (
                       <span
                         key={adj}
@@ -214,7 +212,7 @@ export function ResultView() {
       </div>
 
       {/* ── B-6. 팁 블록 (Figma top2555) ────────────────────────────────── */}
-      <div className="mx-5 mt-16 flex flex-col gap-2 rounded-2xl bg-gray-50 p-3">
+      <div className="mx-5 mt-16 flex flex-col gap-2 rounded-xl bg-gray-50 p-3">
         {/* Figma: 아이콘(20px) + "이렇게 해봐요!". 아이콘 없음 → figma-loose: 이모지 유지(디자이너 합의 전). */}
         <p className="flex items-center gap-1 text-body-16-semibold text-gray-900">
           {/* figma-loose: 아이콘 없어 이모지로 근사. 디자이너 합의 후 아이콘 컴포넌트 교체. */}
@@ -224,10 +222,9 @@ export function ResultView() {
       </div>
 
       {/* ── B-7. 하단 고정 공유바 "btm_CTA_area" (Figma bottom0 fixed) ────── */}
-      {/* figma-loose: drop-shadow Figma 0px -2px 6px rgba(0,0,0,0.03) → arbitrary drop-shadow(토큰 부재). md:absolute는 토스트 관습 참고. */}
-      <div className="fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-[390px] gap-1 border-t border-gray-50 bg-white px-5 pb-6 pt-3 drop-shadow-[0px_-2px_6px_rgba(0,0,0,0.03)] md:absolute">
-        {/* figma-loose: Figma 아이콘은 copy(Edit/Copy)인데 stroke_icn은 link 아이콘 내장 + border gray-200(Figma gray-100). 컴포넌트 포크 대신 figma-loose 표기. */}
-        <CtaSmall variant="stroke_icn" onClick={handleCopy} className="flex-1">
+      <div className="fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-[390px] gap-1 border-t border-gray-50 bg-white px-5 pb-6 pt-3 shadow-bar md:absolute">
+        {/* figma-loose: Figma 아이콘은 copy(Edit/Copy)인데 stroke_icn은 link 아이콘 내장. 아이콘은 디자이너 SVG 확인 후 copy_icn 변형으로 교체 예정(2단계). */}
+        <CtaSmall variant="stroke_icn" onClick={handleCopy} className="flex-1 border-gray-100">
           링크 복사하기
         </CtaSmall>
         <CtaSmall variant="fill" onClick={handleKakao} className="flex-1">
