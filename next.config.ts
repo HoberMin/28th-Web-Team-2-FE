@@ -2,7 +2,7 @@ import withSerwistInit from "@serwist/next";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  turbopack: {},
 };
 
 // PWA: Serwist (서비스워커 + 오프라인 캐싱 + Web Push 확장 여지). 개발 모드에선 비활성화.
