@@ -1,0 +1,8 @@
+# 빌드 스크립트 실행 정책 (pnpm 11) — supply-chain 보호.
+# false = postinstall 빌드 스크립트 실행 안 함(명시적 거부). pnpm이 이 결정을 읽어
+# ERR_PNPM_IGNORED_BUILDS 프롬프트 없이 install 한다.
+# 셋 다 prebuilt 바이너리(optional deps)로 동작하므로 빌드 스크립트가 불필요.
+allowBuilds:
+  esbuild: false
+  sharp: false
+  unrs-resolver: false
