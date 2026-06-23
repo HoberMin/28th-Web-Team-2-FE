@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { pretendard, ySpotlight, yPairing } from "./fonts";
 import { Providers } from "./providers";
 import "./globals.css";
@@ -35,6 +35,13 @@ export const metadata: Metadata = {
     description: "친구들의 설문으로 나를 찍은 인생네컷을 만들어요.",
     images: ["/assets/og-image.png"],
   },
+};
+
+// 브라우저(특히 삼성 인터넷)의 강제 다크 모드 차단 — 항상 라이트 고정.
+// CSS `:root { color-scheme: light }` 만으로 부족한 케이스 대비해 <meta name="color-scheme" content="light"> 명시.
+export const viewport: Viewport = {
+  colorScheme: "light",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({
