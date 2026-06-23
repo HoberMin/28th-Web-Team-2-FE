@@ -1,10 +1,12 @@
 import type { SVGProps } from "react"
 
-// Figma: icn_star_blue / icn_star_pink — 같은 모양, 색만 다름. 단일 컴포넌트로 통합.
-// 색은 currentColor 상속 → 아이콘 색상표 토큰으로 지정(bi-color라 기본색 없음, 항상 명시).
-//   파랑: <StarIcon className="text-icon-star-blue" /> · 핑크: <StarIcon className="text-icon-star-pink" />
+import { cn } from "@/lib/utils"
+
+// Figma: icn_star 단일 아이콘. 기본색 = icon-star(blue/400).
+// 화면에서 색이 달라지면 색 className 만 override(currentColor 상속).
+//   기본(파랑): <StarIcon /> · 핑크 활용: <StarIcon className="text-pink-300" />
 // 원본의 미세 inner-shadow(0.3α·0.57px)는 아이콘 크기에서 보이지 않아 생략.
-function StarIcon(props: SVGProps<SVGSVGElement>) {
+function StarIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
       width={20}
@@ -13,6 +15,7 @@ function StarIcon(props: SVGProps<SVGSVGElement>) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
+      className={cn("text-icon-star", className)}
       {...props}
     >
       <path
