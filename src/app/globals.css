@@ -117,6 +117,22 @@
   --color-blue-500: #4e8cff;
   --color-red-300: #ff5858;
 
+  /* ── 아이콘 전용 색상표 (서비스 색상표와 분리한 의미 레이어) ──
+     Figma node 395:9882 "아이콘" 섹션 기준. 아이콘 컴포넌트 기본색 + consumer override 용.
+     서비스 토큰과 값이 같은 건 var() 로 묶어 단일 소스 유지(중복·drift 방지),
+     서비스에 대응색이 없는 것만 raw 값으로 둔다. */
+  --color-icon-default: #3f454a;                  /* icn_arrow_left, icn_download — Figma "cool gray/gray800". 서비스 gray-800(#272e3f)과 값이 달라 raw */
+  --color-icon-muted: var(--color-gray-400);      /* icn_link */
+  --color-icon-star-blue: var(--color-blue-400);  /* icn_star_blue */
+  --color-icon-star-pink: #ff63b3;                /* icn_star_pink — Figma Variable 미연결 raw값 → 디자이너 검증 대기 */
+
+  /* ── 디자이너 검증 필요 ── Figma에 radius·kakao 토큰 미정의 → 코드에서 신설
+     Figma Variables에 radius 토큰 없음(raw px). kakao 브랜드색 화이트리스트 부재.
+     토큰명·값은 Figma 토큰 정의 후 갱신 요망. */
+  --color-kakao: #fee500;    /* 카카오 브랜드 옐로우 — 화이트리스트 밖 신설 */
+  --radius-field: 0.75rem;   /* 12px — textfield, btn_survey */
+  --radius-cta: 1rem;        /* 16px — CTA, CTA_small */
+
   /* head-point1 (Y SpotlightOTF · Regular) — font-display1 과 함께 */
   --text-head1-26: 1.625rem;
   --text-head1-26--line-height: 1.4;
