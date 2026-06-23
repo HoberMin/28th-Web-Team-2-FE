@@ -59,9 +59,9 @@ export function ShareView({ nickname, token }: ShareViewProps) {
   };
 
   const instaMessage: Record<ShareResult, string> = {
-    shared: "이미지 저장 + 링크 복사 완료! 인스타 스토리에서 이미지 선택 후 링크를 붙여넣어 주세요",
-    copied: "링크가 복사됐어요! 인스타 스토리에 붙여넣어 주세요",
-    unsupported: "공유에 실패했어요. 링크 복사를 이용해주세요",
+    shared: "공유 시트를 열었어요! 링크는 복사됐으니 스토리에 붙여넣어 주세요",
+    copied: "링크가 복사됐어요! 인스타에 붙여넣어 주세요",
+    unsupported: "이 기기에선 공유가 어려워요. 링크 복사를 이용해주세요",
     error: "공유에 실패했어요. 다시 시도해주세요",
   };
 
