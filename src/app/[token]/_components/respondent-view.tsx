@@ -27,6 +27,8 @@ export function RespondentView({ nickname }: { nickname: string }) {
   if (step === "intro") {
     return (
       <CenteredScreen
+        // figma-loose: F06 진입 하단 안내문 = Figma 블록 414:13468 pb-32. 기본 pb-6(24) → pb-8(32) override.
+        className="pb-8"
         footer={
           // Figma: body/16-medium gray-700, 하단 고정
           <p className="text-body-16-medium text-gray-700">

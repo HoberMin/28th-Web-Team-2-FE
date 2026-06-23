@@ -22,8 +22,8 @@ export function RetryView({
     <CenteredScreen
       background="gray"
       footer={
-        // 하단 블록 — 안내문 ↔ CTA gap 36(gap-9)
-        <div className="flex w-full flex-col items-center gap-9">
+        // 하단 블록 — 안내문 ↔ CTA: Figma gap 32 + CTA컨테이너 pt 8 = 40(gap-10)
+        <div className="flex w-full flex-col items-center gap-10">
           <p className="text-body-16-medium text-gray-300">
             24시간 안에 친구 3명이 참여해야
             <br />

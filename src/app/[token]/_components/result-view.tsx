@@ -137,9 +137,9 @@ export function ResultView() {
       </div>
 
       {/* ── B-3. 디스클레이머 (Figma top677) — 네컷 카드와 gap 9 → mt-2 ── */}
-      <div className="mx-5 mt-2 rounded-lg border border-gray-100 bg-white px-3 py-2 text-center">
+      <div className="mx-4 mt-2 rounded-lg border border-gray-100 bg-white px-3 py-2 text-center">
         <p className="text-body-14-medium text-gray-300">
-          친구들의 답변을 바탕으로 AI가 그린 이미지로,
+          친구들의 답변을 바탕으로 AI가 그린 이미지예요.
           <br />
           실제와 다를 수 있어요.
         </p>
@@ -160,13 +160,16 @@ export function ResultView() {
             <StarIcon className="size-5 shrink-0" />
             종합 분석
           </span>
-          <p className="text-body-16-semibold text-gray-900">{r.summaryTitle}</p>
-          <p className="text-body-16-regular text-gray-700">{r.summary}</p>
+          {/* Figma: 카드 gap 8(row↔본문) / summaryTitle↔summary gap 4(gap-1) */}
+          <div className="flex flex-col gap-1">
+            <p className="text-body-16-semibold text-gray-900">{r.summaryTitle}</p>
+            <p className="text-body-16-regular text-gray-700">{r.summary}</p>
+          </div>
         </div>
       </div>
 
-      {/* ── B-5. 칸별 상세 섹션 (Figma top1143) — 종합분석과 gap 84 → mt-21, 칸 사이 gap64 → gap-16 ── */}
-      <div className="mt-21 flex flex-col gap-16 px-5">
+      {/* ── B-5. 칸별 상세 섹션 — 종합분석과 gap 80 → mt-20, 칸 사이 gap64 → gap-16 ── */}
+      <div className="mt-20 flex flex-col gap-16 px-5">
         {r.quadrants.map((q) => (
           <article key={q.key} className="flex flex-col gap-5">
             {/* 헤더 행 */}
@@ -185,13 +188,13 @@ export function ResultView() {
               {q.empty ? (
                 // figma-loose: 빈 ④칸 처리 — domain.md §2/product-spec #6 필수 상태. Figma F05 미도시.
                 <>
-                  <div className="h-[124px] w-full overflow-hidden rounded-lg bg-gray-50" />
+                  <div className="h-31 w-full overflow-hidden rounded-lg bg-gray-50" />
                   <p className="text-body-16-regular text-gray-700">{q.description}</p>
                 </>
               ) : (
                 <>
                   {/* 이미지 자리 — figma-loose: h-[124px](arbitrary, Figma 124px 그대로). 실제 AI 생성 이미지. */}
-                  <div className="h-[124px] w-full overflow-hidden rounded-lg bg-gray-50" />
+                  <div className="h-31 w-full overflow-hidden rounded-lg bg-gray-50" />
                   <div className="flex flex-wrap gap-2">
                     {q.adjectives.map((adj) => (
                       <span
@@ -210,12 +213,12 @@ export function ResultView() {
         ))}
       </div>
 
-      {/* ── B-6. 팁 블록 (Figma top2555) — 칸별 상세와 gap 48 → mt-12 ── */}
-      <div className="mx-5 mt-12 flex flex-col gap-2 rounded-xl bg-gray-50 p-3">
-        {/* Figma: icn_star_blue(20px) + "이렇게 해봐요!". gap 4px → gap-1 */}
+      {/* ── B-6. 팁 블록 — 칸별 상세와 gap 80 → mt-20 ── */}
+      <div className="mx-5 mt-20 flex flex-col gap-2 rounded-xl bg-gray-50 p-3">
+        {/* Figma: icn_star_blue(20px) + "Tip! 이렇게 해보는 거 어때요?". gap 4px → gap-1 */}
         <p className="flex items-center gap-1 text-body-16-semibold text-gray-900">
           <StarIcon className="size-5 shrink-0" />
-          이렇게 해봐요!
+          Tip! 이렇게 해보는 거 어때요?
         </p>
         <p className="text-body-16-regular text-gray-700">{r.tip}</p>
       </div>
