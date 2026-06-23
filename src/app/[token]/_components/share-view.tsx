@@ -5,32 +5,28 @@ import { useEffect, useRef, useState } from "react";
 import { Cta } from "@/components/ui/cta";
 import { CtaSmall } from "@/components/ui/cta-small";
 import { Logo } from "@/components/ui/logo";
-import { ProgressBar } from "@/components/ui/progress-bar";
 import {
   shareInstagramStory,
   shareKakao,
   type ShareResult,
 } from "@/lib/share";
 
-// 공유 관리 뷰 (product-spec #4) — 주인공·수집중. 핵심 루프: 링크를 퍼뜨려 참여자 모으기.
-// 인스타 스토리는 세로형 스토리 이미지(story-share, 1080×1920) 공유 + 링크는 클립보드 복사(스토리 링크 제약 회피, domain.md §1).
-// 카카오 피드는 가로형 OG 이미지(og-image, 1200×630) 사용.
+// 공유 관리 뷰 (product-spec #4 · Figma F04 node 414:13419) — GUI 1차 전경 정합.
+// 핵심 루프: 링크를 퍼뜨려 참여자 모으기. 인스타 스토리는 세로형(story-share) 공유 + 링크 클립보드 복사,
+// 카카오 피드는 가로형 OG(og-image) 사용 (domain.md §1).
+// 배경(하늘 그라데이션·Union)·중앙 일러스트는 디자이너 별도 프레임 대기 → placeholder만.
+// 룰/Figma에서 느슨하게 처리한 지점은 `figma-loose:` 주석으로 표기(디자이너 합의용).
 // TODO(✍️): 24h 만료·전환 책임 위치(클라/서버).
 interface ShareViewProps {
   nickname: string;
   token: string;
+  // ⚠ figma-loose(충돌): respondentCount·hoursLeft 는 product-spec #4의 '수집 게이지·카운트다운'용이나
+  //   Figma GUI 1차 F04엔 해당 UI가 없음 → 현재 미렌더. props는 게이지 복원 합의 대비 유지. (task #8 리포트)
   respondentCount: number;
   hoursLeft: number;
 }
 
-const TARGET = 3;
-
-export function ShareView({
-  nickname,
-  token,
-  respondentCount,
-  hoursLeft,
-}: ShareViewProps) {
+export function ShareView({ nickname, token }: ShareViewProps) {
   const [toast, setToast] = useState<string | null>(null);
   const timer = useRef<number | null>(null);
 
@@ -90,60 +86,42 @@ export function ShareView({
     showToast(kakaoMessage[result]);
   };
 
-  const ratio = Math.min(respondentCount / TARGET, 1);
-
   return (
-    <main className="relative flex min-h-full flex-col px-5 pb-8 pt-16">
+    // figma-loose: 로고 top Figma 80px(프레임, status bar 44px 포함) → pt-9(36px) 근사
+    <main className="relative flex min-h-full flex-col px-5 pb-10 pt-9">
       <Logo size="sm" />
 
-      <h1 className="mt-6 text-head2-24 font-display2 text-gray-900">
-        잠깐! 지금 당장 링크를 복사해서
-        <br />
-        친구들에게 공유해요
-      </h1>
-      <p className="mt-3 text-body-14-regular text-gray-300">
-        24시간 뒤에 {nickname}님의 링크로 돌아오면,
-        <br />
-        친구들의 시선을.. 보여드릴게요
-        <br />단, 3명 이상 모아오세요~~
-      </p>
+      {/* figma-loose: 제목 블록 top Figma 137px → 로고 아래 mt-8(32px) 근사, 제목↔본문 gap-3(12px) Figma 일치 */}
+      <div className="mt-8 flex flex-col gap-3">
+        {/* Figma: head-point1/24 = display1(Y Spotlight) 24px */}
+        <h1 className="text-head1-24 font-display1 text-gray-900">
+          친구들에게 링크를 공유하고
+          <br />
+          네컷을 받아보세요!
+        </h1>
+        {/* Figma: body/16-medium 16px Medium gray-300 */}
+        <p className="text-body-16-medium text-gray-300">
+          친구들의 답이 모이면,
+          <br />
+          24시간 뒤 나를 담은 네컷 결과가 열려요
+        </p>
+      </div>
 
-      {/* 스토리 공유 안내 GIF (에셋 placeholder) */}
-      <div className="mt-6 flex aspect-square w-full flex-col items-center justify-center gap-2 rounded-2xl bg-gray-100 px-6 text-center">
-        <span className="text-body-14-medium text-gray-400">
-          [GIF] 인스타 스토리에 링크 붙여넣기
+      {/* 중앙 일러스트 = 디자이너 프레임 대기. Figma도 placeholder(350×305)로 자리만 잡아둠.
+          figma-loose: 배경 그라데이션 대기라 placeholder를 gray-50로 가시화(Figma는 흰 박스) */}
+      <div className="mt-7 flex aspect-[350/305] w-full flex-col items-center justify-center gap-1 rounded-2xl bg-gray-50 text-center">
+        <span className="text-body-18-semibold text-gray-200">
+          일러스트 이미지 삽입 예정
         </span>
-        <span className="text-caption-12-regular text-gray-300">
-          3명 모으고 24시간 뒤에 다시 와!
+        <span className="text-body-18-semibold text-gray-200">
+          *대략적인 위치만 참고해 주세요
         </span>
       </div>
 
-      {/* 수집 현황 */}
-      <div className="mt-6 flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <span className="text-body-14-medium text-gray-400">
-            모인 응답 {respondentCount} / {TARGET}
-          </span>
-          <span className="text-caption-12-medium text-blue-500">
-            {hoursLeft}시간 남음
-          </span>
-        </div>
-        <ProgressBar
-          value={ratio * 100}
-          className="h-2"
-          aria-label={`모인 응답 ${respondentCount} / ${TARGET}`}
-        />
-        {respondentCount === 0 && (
-          <p className="text-caption-12-regular text-gray-300">
-            첫 친구를 기다리는 중이에요
-          </p>
-        )}
-      </div>
-
-      {/* 공유 CTA */}
-      <div className="mt-auto flex flex-col gap-3 pt-8">
-        <Cta onClick={handleCopy}>{nickname}의 링크 복사</Cta>
-        <div className="flex gap-3">
+      {/* 공유 CTA — figma-loose: Figma CTA 영역 pb 40px·gap 8px → main pb-10(40px) Figma 일치, gap-2(8px) Figma 일치 */}
+      <div className="mt-auto flex flex-col gap-2 pt-7">
+        <Cta onClick={handleCopy}>내 링크 복사하기</Cta>
+        <div className="flex gap-2">
           <CtaSmall
             variant="stroke"
             onClick={handleInstagram}

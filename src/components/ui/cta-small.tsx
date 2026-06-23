@@ -3,7 +3,6 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
-import { KakaoIcon } from "@/components/ui/icons/kakao"
 import { LinkIcon } from "@/components/ui/icons/link"
 
 /**
@@ -19,9 +18,9 @@ import { LinkIcon } from "@/components/ui/icons/link"
  *   별도 컴포넌트 없이 <CtaSmall variant="stroke" /> 로 대체.
  *
  * 아이콘 처리 (브랜드 SVG 부재 → 레포 자체 아이콘 사용):
- *   stroke_icn → icons/link 의 LinkIcon (Figma icn_link 45° 링크 아이콘)
- *   fill       → icons/kakao 의 KakaoIcon (말풍선 — 공식 심볼 제공 시 교체 요망)
- *   둘 다 currentColor 상속 → 버튼 텍스트색(gray-900)을 따른다.
+ *   stroke_icn → icons/link 의 LinkIcon (Figma icn_link 45° 링크 아이콘), currentColor 상속
+ *   fill(카카오) → Figma F04 기준 텍스트만(심볼 없음). icons/kakao 의 KakaoIcon 에셋은 준비됐으나
+ *                 미사용 — 넣을지는 디자이너 합의(CTA_kakao 컴포넌트 확인 후). figma-loose 참조.
  *
  * 토큰 플래그:
  *   bg-kakao(--color-kakao: #fee500) — 화이트리스트 밖 신설. 디자이너 검증 요망.
@@ -90,7 +89,8 @@ function CtaSmall({
       {variant === "stroke_icn" && (
         <LinkIcon className="shrink-0 text-gray-900" />
       )}
-      {variant === "fill" && <KakaoIcon className="shrink-0" />}
+      {/* figma-loose: fill(카카오) 버튼은 Figma F04 기준 텍스트만(심볼 없음).
+          icons/kakao 의 KakaoIcon 에셋은 준비됨 — 넣을지는 디자이너 합의(CTA_kakao 컴포넌트 확인 후) */}
       {children}
     </Comp>
   )
