@@ -58,8 +58,8 @@ export default function NicknamePage() {
         </p>
       </div>
 
-      {/* figma-loose: 입력칸 top Figma 268px(디자이너 교정) → 제목 블록 아래 mt-8(32px) 근사 */}
-      <div className="mt-8">
+      {/* figma-loose: 입력칸 top Figma 268px(디자이너 교정) → 제목 블록 아래 mt-9(36px) 근사 */}
+      <div className="mt-9">
         <TextfieldSet
           isError={tooLong}
           description={tooLong ? `${MAX_LEN}자 이하로 입력해주세요` : undefined}
