@@ -1,5 +1,5 @@
 // 공유 유틸 — 핵심 유입 루프 (domain.md §1).
-// 인스타 스토리는 링크 첨부 제약이 있어 → 이미지(mascot)는 공유 시트로, 링크는 클립보드 복사.
+// 인스타 스토리는 링크 첨부 제약이 있어 → 스토리 이미지(story-share)는 공유 시트로, 링크는 클립보드 복사.
 // 카카오톡은 Kakao JS SDK feed 템플릿. JS 키 없으면 링크 복사 fallback.
 
 export type ShareResult =

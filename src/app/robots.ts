@@ -13,6 +13,6 @@ export default function robots(): MetadataRoute.Robots {
       disallow: "/", // 나머지 전부 차단 (토큰 기반 개인 페이지 보호)
     },
     host: SITE_URL,
-    // sitemap은 색인 대상이 랜딩 1개뿐이라 실익이 없어 생략 (domain.md §3)
+    sitemap: `${SITE_URL}/sitemap.xml`, // 색인 대상은 랜딩 1개 (sitemap.ts)
   };
 }

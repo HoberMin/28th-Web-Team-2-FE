@@ -20,14 +20,20 @@ export const metadata: Metadata = {
     title: "looky — 친구들이 본 나",
     description: "친구들의 설문으로 나를 찍은 인생네컷을 만들어요.",
     locale: "ko_KR",
-    // TODO(✍️): 1200×630 공유 전용 OG 이미지로 교체 (현재 마스코트 임시)
-    images: [{ url: "/mascot.png", width: 252, height: 334, alt: "looky" }],
+    images: [
+      {
+        url: "/assets/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "looky — 친구들이 본 나를 인생네컷으로",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "looky — 친구들이 본 나",
     description: "친구들의 설문으로 나를 찍은 인생네컷을 만들어요.",
-    images: ["/mascot.png"],
+    images: ["/assets/og-image.png"],
   },
 };
 
