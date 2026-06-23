@@ -12,6 +12,8 @@ import {
   type ShareResult,
 } from "@/lib/share";
 
+import { ShareCards } from "./share-cards";
+
 // 공유 관리 뷰 (product-spec #4 · Figma F04 node 414:13419) — GUI 1차 전경 정합.
 // 핵심 루프: 링크를 퍼뜨려 참여자 모으기. 인스타 스토리는 세로형(story-share) 공유 + 링크 클립보드 복사,
 // 카카오 피드는 가로형 OG(og-image) 사용 (domain.md §1).
@@ -111,14 +113,9 @@ export function ShareView({ nickname, token }: ShareViewProps) {
         </p>
       </div>
 
-      {/* 중앙 일러스트 = 디자이너 프레임 대기. Figma placeholder 350×300, 제목블록과 gap 43→mt-11(44) 근사. */}
-      <div className="mt-11 flex aspect-[350/300] w-full flex-col items-center justify-center gap-1 rounded-2xl bg-white text-center">
-        <span className="text-body-18-semibold text-gray-200">
-          일러스트 이미지 삽입 예정
-        </span>
-        <span className="text-body-18-semibold text-gray-200">
-          *대략적인 위치만 참고해 주세요
-        </span>
+      {/* 공유 안내 카드 캐러셀 (Figma F04 카드1~3 자동 슬라이드). 제목블록↔카드 gap 44px → mt-11. */}
+      <div className="mt-11">
+        <ShareCards />
       </div>
 
       {/* 공유 CTA — Figma 하단 여백 24px → main pb-6 일치, CTA↔공유버튼 gap 8px → gap-2 일치 */}
