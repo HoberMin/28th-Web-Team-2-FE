@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { BgCloud } from "@/components/ui/bg-cloud";
 import { Cta } from "@/components/ui/cta";
 import { Logo } from "@/components/ui/logo";
 
@@ -8,7 +9,10 @@ import { Logo } from "@/components/ui/logo";
 // 룰/Figma에서 느슨하게 처리한 지점은 `figma-loose:` 주석으로 표기(디자이너 합의용).
 export default function Home() {
   return (
-    <main className="relative flex min-h-full flex-col items-center px-5 pb-8 pt-16 text-center">
+    <main className="relative flex min-h-full flex-col items-center overflow-hidden bg-sky-gradient px-5 pb-8 pt-16 text-center">
+      {/* 배경: 하늘 그라데이션(bg-sky-gradient, Figma 그대로) + 구름(BgCloud, 디자이너 번들 이미지) */}
+      <BgCloud />
+
       {/* figma-loose: 로고 top Figma 106px(프레임 기준, status bar 44px 포함) → pt-16(64px) 근사. 디자이너 합의 필요 */}
       <Logo />
 

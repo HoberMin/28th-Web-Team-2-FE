@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { BgCloud } from "@/components/ui/bg-cloud";
 import { Cta } from "@/components/ui/cta";
 import { CtaSmall } from "@/components/ui/cta-small";
 import { Logo } from "@/components/ui/logo";
@@ -88,7 +89,10 @@ export function ShareView({ nickname, token }: ShareViewProps) {
 
   return (
     // figma-loose: 로고 top Figma 80px(프레임, status bar 44px 포함) → pt-9(36px) 근사
-    <main className="relative flex min-h-full flex-col px-5 pb-10 pt-9">
+    <main className="relative flex min-h-full flex-col overflow-hidden bg-sky-gradient px-5 pb-10 pt-9">
+      {/* 배경: 하늘 그라데이션(Figma 그대로) + 구름(BgCloud) */}
+      <BgCloud />
+
       <Logo size="sm" />
 
       {/* figma-loose: 제목 블록 top Figma 137px → 로고 아래 mt-8(32px) 근사, 제목↔본문 gap-3(12px) Figma 일치 */}
@@ -107,9 +111,8 @@ export function ShareView({ nickname, token }: ShareViewProps) {
         </p>
       </div>
 
-      {/* 중앙 일러스트 = 디자이너 프레임 대기. Figma도 placeholder(350×305)로 자리만 잡아둠.
-          figma-loose: 배경 그라데이션 대기라 placeholder를 gray-50로 가시화(Figma는 흰 박스) */}
-      <div className="mt-7 flex aspect-[350/305] w-full flex-col items-center justify-center gap-1 rounded-2xl bg-gray-50 text-center">
+      {/* 중앙 일러스트 = 디자이너 프레임 대기. Figma도 placeholder(350×305 흰 박스)로 자리만 잡아둠. */}
+      <div className="mt-7 flex aspect-[350/305] w-full flex-col items-center justify-center gap-1 rounded-2xl bg-white text-center">
         <span className="text-body-18-semibold text-gray-200">
           일러스트 이미지 삽입 예정
         </span>
