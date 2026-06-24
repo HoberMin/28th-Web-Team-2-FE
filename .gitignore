@@ -17,8 +17,8 @@
 /.next/
 /out/
 
-# serwist (생성되는 서비스워커)
-/public/sw.js
+# serwist 생성물 (Serwist 비활성화 후엔 더는 생성 안 됨)
+# public/sw.js 는 손으로 유지하는 자폭 SW 라 커밋한다 — 무시하지 않음.
 /public/sw.js.map
 /public/swe-worker-*.js
 
