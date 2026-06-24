@@ -5,16 +5,14 @@ import { useState } from "react";
 import { BtnSurvey } from "@/components/ui/btn-survey";
 import { ArrowLeftIcon } from "@/components/ui/icons/arrow-left";
 import { ProgressBar } from "@/components/ui/progress-bar";
-import type { SurveyQuestion } from "@/apis/survey/types";
-
-export type { SurveyQuestion };
+import type { AnswerEntry, SurveyQuestion } from "@/apis/survey/types";
 
 interface SurveyRunnerProps {
   questions: SurveyQuestion[];
   /** 상단 서브젝트 라벨. figma-loose: GUI 1차 설문 화면엔 미표시 → 현재 미렌더(prop은 유지). */
   subjectLabel?: string;
   /** 마지막 문항 완료 시. answers = questionId → 선택된 answerOptionId */
-  onComplete: (answers: { questionId: number; answerOptionId: number }[]) => void;
+  onComplete: (answers: AnswerEntry[]) => void;
   /** 첫 문항에서 뒤로 (없으면 ← 숨김) */
   onBack?: () => void;
 }

@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { useCreateSurveyAPI } from "@/apis/survey/mutations";
 import { isApiError } from "@/apis/error";
+import { useKeyboardInset } from "@/hooks/use-keyboard-inset";
 import { saveSession } from "@/lib/local-session";
 import { Cta } from "@/components/ui/cta";
 import { Logo } from "@/components/ui/logo";
@@ -13,7 +14,7 @@ import { TextfieldSet } from "@/components/ui/textfield-set";
 // 닉네임 설정 (product-spec #2 · Figma F02 node 414:13283) — GUI 1차 전경 정합.
 // 확인 클릭 시 survey 생성 API 호출 → surveyCode를 로컬에 저장 → 자기 설문으로.
 // TODO(✍️): 닉네임 길이·금칙어 규칙 (계정 없어 중복검사 불필요).
-const MAX_LEN = 12;
+const MAX_LEN = 10;
 
 export default function NicknamePage() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function NicknamePage() {
   const [serverError, setServerError] = useState<string | null>(null);
 
   const { mutate, isPending } = useCreateSurveyAPI();
+  const keyboardInset = useKeyboardInset();
 
   const trimmed = nickname.trim();
   const tooLong = trimmed.length > MAX_LEN;
@@ -94,12 +96,19 @@ export default function NicknamePage() {
             "aria-label": "닉네임",
             maxLength: MAX_LEN + 4,
             disabled: isPending,
+            // 화면 진입 시 키보드 활성화 (F02 요청). iOS Safari는 사용자 제스처 없는
+            // 프로그램적 포커스로 키보드를 안 띄울 수 있음 — 플랫폼 한계.
+            autoFocus: true,
           }}
         />
       </div>
 
       {/* figma-loose: CTA 영역 Figma pb 34px → main pb-8(32px, -2px) 근사 */}
-      <div className="mt-auto">
+      {/* 키보드 따라 버튼 올라오게 (F02 요청): visualViewport로 잰 키보드 높이만큼 위로 */}
+      <div
+        className="mt-auto transition-transform duration-200 ease-out"
+        style={{ transform: `translateY(-${keyboardInset}px)` }}
+      >
         <Cta onClick={handleSubmit} disabled={!canSubmit}>
           {isPending ? "만드는 중..." : "확인"}
         </Cta>

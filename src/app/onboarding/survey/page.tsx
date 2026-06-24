@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useStartSubmissionAPI, useSubmitAnswersAPI } from "@/apis/survey/mutations";
 import { isApiError } from "@/apis/error";
@@ -23,42 +23,54 @@ export default function SelfSurveyPage() {
   const [questions, setQuestions] = useState<SurveyQuestion[]>([]);
   const [submissionId, setSubmissionId] = useState<number | null>(null);
   const [startError, setStartError] = useState<string | null>(null);
+  const [startSettled, setStartSettled] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmittingDone, setIsSubmittingDone] = useState(false);
 
   // 마운트 시 1회만 호출 (StrictMode double-invoke 방지)
   const startCalledRef = useRef(false);
 
-  useEffect(() => {
-    if (startCalledRef.current) return;
-    startCalledRef.current = true;
-
+  // 본인 설문 시작(문항 배정). 마운트·재시도가 공유.
+  const runStart = useCallback(() => {
     const session = readSession();
     if (!session?.surveyCode) {
       router.replace("/onboarding/nickname");
       return;
     }
-
+    setStartError(null);
     startSubmission(
       { surveyCode: session.surveyCode },
       {
         onSuccess: (data: SubmissionStartedResponse) => {
+          setStartSettled(true);
+          // 성공했는데 문항이 비면 진행 불가 — 무한 로딩 대신 에러로 (재시도 가능)
+          if (data.questions.length === 0) {
+            setStartError("문항을 불러오지 못했어요. 다시 시도해주세요.");
+            return;
+          }
           setSubmissionId(data.submissionId);
           setQuestions(data.questions);
         },
         onError: (error) => {
-          if (isApiError(error)) {
-            setStartError(error.message);
-          } else {
-            setStartError("문항을 불러오지 못했어요. 다시 시도해주세요.");
-          }
+          setStartSettled(true);
+          setStartError(
+            isApiError(error)
+              ? error.message
+              : "문항을 불러오지 못했어요. 다시 시도해주세요.",
+          );
         },
       },
     );
   }, [router, startSubmission]);
 
+  useEffect(() => {
+    if (startCalledRef.current) return;
+    startCalledRef.current = true;
+    runStart();
+  }, [runStart]);
+
   // ── 로딩 — 문항 불러오는 중 ────────────────────────────────────────────────
-  if (isStarting || (questions.length === 0 && !startError)) {
+  if (isStarting || (!startSettled && !startError)) {
     return (
       <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
         <div className="size-10 animate-spin rounded-full border-2 border-gray-100 border-t-blue-500" />
@@ -72,35 +84,7 @@ export default function SelfSurveyPage() {
     return (
       <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
         <p className="text-body-16-medium text-gray-900">{startError}</p>
-        <Cta
-          onClick={() => {
-            startCalledRef.current = false;
-            setStartError(null);
-            const session = readSession();
-            if (!session?.surveyCode) {
-              router.replace("/onboarding/nickname");
-              return;
-            }
-            startSubmission(
-              { surveyCode: session.surveyCode },
-              {
-                onSuccess: (data: SubmissionStartedResponse) => {
-                  setSubmissionId(data.submissionId);
-                  setQuestions(data.questions);
-                },
-                onError: (error) => {
-                  if (isApiError(error)) {
-                    setStartError(error.message);
-                  } else {
-                    setStartError("문항을 불러오지 못했어요. 다시 시도해주세요.");
-                  }
-                },
-              },
-            );
-          }}
-        >
-          다시 시도
-        </Cta>
+        <Cta onClick={runStart}>다시 시도</Cta>
       </div>
     );
   }

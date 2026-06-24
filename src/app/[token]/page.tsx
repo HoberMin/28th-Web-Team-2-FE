@@ -144,13 +144,7 @@ export default function TokenPage() {
   // 주인공이면 공유 뷰, 참여자면 설문 뷰
   if (owner) {
     return (
-      <ShareView
-        nickname={status.userNickname}
-        surveyCode={token}
-        respondentCount={status.peerSubmissionCount}
-        requiredCount={status.requiredPeerSubmissionCount}
-        remainingSeconds={status.remainingSecondsToResultOpen}
-      />
+      <ShareView nickname={status.userNickname} surveyCode={token} />
     );
   }
 

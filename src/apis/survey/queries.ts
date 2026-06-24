@@ -27,10 +27,11 @@ interface PollOptions<T> {
 // ─── 결과 정규화 헬퍼 ───────────────────────────────────────────────────────
 
 function normalizeSurveyResult(raw: SurveyResultRawResponse): SurveyResultResponse {
+  // READY가 아니거나 맵이 null/undefined(미포함)면 아직 결과 없음 — 빈 결과로 정규화
   if (
     raw.resultStatus !== "READY" ||
-    raw.quadrantImageUrls === null ||
-    raw.quadrantInterpretations === null
+    !raw.quadrantImageUrls ||
+    !raw.quadrantInterpretations
   ) {
     return {
       surveyCode: raw.surveyCode,

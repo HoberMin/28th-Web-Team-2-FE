@@ -18,14 +18,11 @@ import {
 // 배경(하늘 그라데이션·Union)·중앙 일러스트는 디자이너 별도 프레임 대기 → placeholder만.
 // 룰/Figma에서 느슨하게 처리한 지점은 `figma-loose:` 주석으로 표기(디자이너 합의용).
 // TODO(✍️): 24h 만료·전환 책임 위치(클라/서버).
+// TODO(✍️): product-spec #4의 수집 게이지·카운트다운(응답수/남은시간)은 Figma GUI 1차 F04에 UI가 없어 미구현.
+// 디자인 합의되면 status의 peerSubmissionCount/requiredPeerSubmissionCount/remainingSecondsToResultOpen로 추가.
 interface ShareViewProps {
   nickname: string;
   surveyCode: string;
-  // product-spec #4 수집 게이지·카운트다운용. Figma GUI 1차 F04엔 해당 UI가 없음 → 미렌더.
-  // props만 받고 현재 미사용. 게이지 복원 합의 시 활성화.
-  respondentCount: number;
-  requiredCount: number;
-  remainingSeconds: number;
 }
 
 export function ShareView({ nickname, surveyCode }: ShareViewProps) {
