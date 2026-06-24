@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
+import { usePreloadImages } from "@/lib/preload-images";
 
 // 공유 안내 카드 캐러셀 (Figma F04 · node 602:6556 / 602:6570 / 602:6584)
 // 동작 스펙(Figma dev 주석 그대로):
@@ -59,6 +60,9 @@ const CARDS: ShareCard[] = [
   },
 ];
 
+// 2·3번 카드는 슬라이드되어 들어올 때 마운트되므로, 진입 즉시 세 장 모두 미리 받아둔다.
+const PRELOAD_CARDS = CARDS.map(({ src, width, height }) => ({ src, width, height }));
+
 // 양끝 클론을 더한 슬라이드 배열: [카드3, 카드1, 카드2, 카드3, 카드1]
 const SLIDES: ShareCard[] = [CARDS[CARDS.length - 1], ...CARDS, CARDS[0]];
 const FIRST_REAL = 1; // 카드1의 슬라이드 인덱스
@@ -74,6 +78,9 @@ export function ShareCards() {
 
   const dragging = useRef(false);
   const startX = useRef(0);
+
+  // 캐러셀 카드 3장 선로딩 — 자동 슬라이드로 들어올 때 늦게 뜨지 않게
+  usePreloadImages(PRELOAD_CARDS);
 
   // 인디케이터용 실제 카드 번호(0..2). 클론 위치도 올바른 실 카드로 환산.
   const activeReal = (index - FIRST_REAL + CARDS.length) % CARDS.length;

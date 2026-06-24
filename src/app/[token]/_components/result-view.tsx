@@ -142,6 +142,7 @@ export function ResultView({ surveyCode, nickname, respondentCount }: ResultView
             aria-hidden
             width={270}
             height={334}
+            priority
             className="w-[270px] max-w-full select-none"
           />
         </div>

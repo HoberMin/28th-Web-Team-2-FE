@@ -11,6 +11,12 @@ import { CenteredScreen } from "@/components/layout/centered-screen";
 import { SurveyRunner } from "@/components/survey/survey-runner";
 import { Cta } from "@/components/ui/cta";
 import { Logo } from "@/components/ui/logo";
+import { usePreloadImages } from "@/lib/preload-images";
+
+// 완료 일러스트는 설문이 끝나야 마운트되므로, 인트로/설문 동안 미리 받아둬 전환 시 즉시 표시한다.
+const PRELOAD_DONE_ILLUST = [
+  { src: "/assets/img_character_hamster_letter.png", width: 350, height: 280 },
+];
 
 // 참여자 플로우 (product-spec #5 · Figma F06 intro node 414:13450) — GUI 1차 전경 정합.
 // intro(자동 전환 splash) → 설문(8) → 완료 + "나도 만들기"(바이럴 루프). 신원·로그인 없음.
@@ -34,6 +40,9 @@ export function RespondentView({ surveyCode, nickname }: RespondentViewProps) {
 
   // intro 2초 자동 전환
   const introTimerRef = useRef<number | null>(null);
+
+  // 완료 일러스트 선로딩 — 설문 진행 중 미리 받아둬 완료 전환 시 늦게 뜨지 않게
+  usePreloadImages(PRELOAD_DONE_ILLUST);
 
   useEffect(() => {
     if (step !== "intro") return;
