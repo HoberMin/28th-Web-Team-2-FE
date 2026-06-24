@@ -2,7 +2,6 @@ import type { SVGProps } from "react"
 
 import { cn } from "@/lib/utils"
 
-// Figma: icn_link (24×24, fill). 기본색 icon-muted(currentColor 상속), className 으로 override.
 function LinkIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg

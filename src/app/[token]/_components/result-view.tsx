@@ -230,7 +230,6 @@ export function ResultView({ surveyCode, nickname, respondentCount }: ResultView
 
       {/* ── 하단 고정 공유바 "btm_CTA_area" (Figma bottom0 fixed) ────────── */}
       <div className="fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-[390px] gap-1 border-t border-gray-50 bg-white px-5 pb-6 pt-3 shadow-bar md:absolute">
-        {/* figma-loose: Figma 아이콘은 copy(Edit/Copy)인데 stroke_icn은 link 아이콘 내장. 아이콘은 디자이너 SVG 확인 후 copy_icn 변형으로 교체 예정(2단계). */}
         <CtaSmall variant="stroke_icn" onClick={handleCopy} className="flex-1 border-gray-100">
           링크 복사하기
         </CtaSmall>
