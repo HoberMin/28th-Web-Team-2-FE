@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -90,17 +91,16 @@ export function RespondentView({ surveyCode, nickname }: RespondentViewProps) {
             </h1>
           </div>
 
-          {/* 인트로 일러스트 = Figma img_character_hamster_star(350×300) 실 에셋 대기.
-              Figma 규격대로 350/300 비율 박스로 자리만. 🙋 에셋은 사용자 진행(3x/4x). */}
-          <div className="flex aspect-[350/300] w-full flex-col items-center justify-center gap-1 rounded-2xl bg-white text-center">
-            <span className="text-body-18-semibold text-gray-200">[GIF]</span>
-            <span className="text-body-18-semibold text-gray-200">
-              3, 2, 1 카운터하는 캐릭터 삽입 예정
-            </span>
-            <span className="text-body-18-semibold text-gray-200">
-              *대략적인 위치만 참고해 주세요
-            </span>
-          </div>
+          {/* 인트로 일러스트 = Figma img_character_hamster_star(350×300). 에셋 4x 1400×1200. 장식이라 alt="". */}
+          <Image
+            src="/assets/img_character_hamster_star.png"
+            alt=""
+            aria-hidden
+            width={350}
+            height={300}
+            priority
+            className="h-auto w-full max-w-full select-none"
+          />
         </div>
       </CenteredScreen>
     );
@@ -213,15 +213,15 @@ export function RespondentView({ surveyCode, nickname }: RespondentViewProps) {
           </div>
         </div>
 
-        {/* 완료 일러스트 placeholder — Figma 627:9735 350×280 박스. 실제 일러스트는 디자이너 프레임 대기. */}
-        <div className="flex aspect-[350/280] w-full flex-col items-center justify-center gap-1 rounded-2xl bg-white text-center">
-          <span className="text-body-18-semibold text-gray-200">
-            일러스트 이미지 삽입 예정
-          </span>
-          <span className="text-body-18-semibold text-gray-200">
-            *대략적인 위치만 참고해 주세요
-          </span>
-        </div>
+        {/* 완료 일러스트 — Figma 627:9735 img_character_hamster_letter(350×280). 에셋 4x 1400×1120. 장식이라 alt="". */}
+        <Image
+          src="/assets/img_character_hamster_letter.png"
+          alt=""
+          aria-hidden
+          width={350}
+          height={280}
+          className="h-auto w-full max-w-full select-none"
+        />
       </div>
     </CenteredScreen>
   );

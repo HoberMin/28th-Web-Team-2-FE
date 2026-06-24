@@ -48,9 +48,9 @@ export function RetryView({
           </div>
         </div>
 
-        {/* 캐릭터 일러스트 — Figma w204 h260. 장식 이미지라 alt="". */}
+        {/* 캐릭터 일러스트 — Figma w204 h260. 장식 이미지라 alt="". 에셋 img_character_hamster_sad(4x 870×1070). */}
         <Image
-          src="/assets/character-sad.png"
+          src="/assets/img_character_hamster_sad.png"
           alt=""
           width={204}
           height={260}

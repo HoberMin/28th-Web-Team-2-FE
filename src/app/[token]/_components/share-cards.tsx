@@ -29,9 +29,9 @@ type ShareCard = {
 // 일러스트 표시 높이는 h-37(148px)로 통일(디자이너 에셋 높이 통일 작업 진행 중 — 확정 시 재확인).
 const CARDS: ShareCard[] = [
   {
-    src: "/assets/f04-1.png",
-    width: 320,
-    height: 308,
+    src: "/assets/img_character_hamster_under.png",
+    width: 952,
+    height: 615,
     text: (
       <>
         1. 아래 버튼으로 <strong className="font-bold">내 링크</strong>를{" "}
@@ -40,15 +40,15 @@ const CARDS: ShareCard[] = [
     ),
   },
   {
-    src: "/assets/f04-2.png",
-    width: 440,
-    height: 309,
+    src: "/assets/img_character_hamster_three.png",
+    width: 952,
+    height: 615,
     text: <>2. 친구들이 참여할 수 있게 링크를 보내줘!</>,
   },
   {
-    src: "/assets/f04-3.png",
-    width: 376,
-    height: 317,
+    src: "/assets/img_character_hamster_clock.png",
+    width: 952,
+    height: 638,
     text: (
       <>
         3. <strong className="font-bold text-blue-500">3명 이상</strong> 모이면,{" "}

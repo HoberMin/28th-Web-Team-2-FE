@@ -135,16 +135,15 @@ export function ResultView({ surveyCode, nickname, respondentCount }: ResultView
             </div>
           </div>
 
-          {/* 일러스트 placeholder — Figma img_character_hamster_insight_noword(270×334, 중앙) 대기.
-              Figma 규격대로 270폭·270/334 비율 박스로 자리만(실 에셋 적용 시 동일 규격). */}
-          <div className="flex aspect-[270/334] w-[270px] flex-col items-center justify-center gap-1 rounded-2xl bg-white text-center">
-            <span className="text-body-18-semibold text-gray-200">
-              일러스트 이미지 삽입 예정
-            </span>
-            <span className="text-body-18-semibold text-gray-200">
-              *대략적인 위치만 참고해 주세요
-            </span>
-          </div>
+          {/* 일러스트 — Figma img_character_hamster_insight_noword(270×334, 중앙). 에셋 4x 1085×1336. 장식이라 alt="". */}
+          <Image
+            src="/assets/img_character_hamster_insight_noword.png"
+            alt=""
+            aria-hidden
+            width={270}
+            height={334}
+            className="w-[270px] max-w-full select-none"
+          />
         </div>
       </CenteredScreen>
     );
