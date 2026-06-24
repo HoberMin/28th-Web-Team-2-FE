@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils"
  * BtnSurvey — 설문 보기 버튼 (350×64, radius 12px, 텍스트 좌측 정렬)
  *
  * Figma 소스: fileKey TRXXVUvIwh8vh7FbBusXCO
- *   default   395:9851 — bg white, text gray-400, Figma pl-[16px] pr-[20px] → pl-4 pr-5
- *   activated 395:9852 — bg gray-800, text white, Figma px-[20px] → px-5
+ *   default   395:9851 — bg white, text gray-400, Figma px-[16px] → px-4
+ *   activated 395:9852 — bg gray-800, text white, Figma px-[16px] → px-4
  *
  * 상태 매핑
  *   activated → isActive prop 단일 소스. isActive=true이면
@@ -36,15 +36,15 @@ const btnSurveyVariants = cva(
       state: {
         /**
          * default — 미선택 상태
-         * bg white, text gray-400, Figma pl-[16px] pr-[20px] → pl-4 pr-5
+         * bg white, text gray-400, Figma px-[16px] → px-4
          */
-        default: "bg-white text-gray-400 pl-4 pr-5",
+        default: "bg-white text-gray-400 px-4",
 
         /**
          * activated — 선택된 상태 (aria-pressed="true")
-         * bg gray-800, text white, Figma px-[20px] → px-5
+         * bg gray-800, text white, Figma px-[16px] → px-4
          */
-        activated: "bg-gray-800 text-white px-5",
+        activated: "bg-gray-800 text-white px-4",
       },
     },
     defaultVariants: {
