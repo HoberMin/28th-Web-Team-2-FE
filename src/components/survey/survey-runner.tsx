@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { BtnSurvey } from "@/components/ui/btn-survey";
 import { ArrowLeftIcon } from "@/components/ui/icons/arrow-left";
@@ -28,6 +28,14 @@ export function SurveyRunner({
   const [index, setIndex] = useState(0);
   // questionId → 선택된 answerOptionId
   const [selected, setSelected] = useState<Record<number, number>>({});
+  const [isPending, setIsPending] = useState(false);
+  const timer = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timer.current !== null) window.clearTimeout(timer.current);
+    };
+  }, []);
 
   const total = questions.length;
   // 빈 문항 가드 — 공용 컴포넌트라 호출처가 늘어도 크래시 방지 (3종 상태: 빈).
@@ -44,19 +52,23 @@ export function SurveyRunner({
   const question = questions[index];
 
   const handleSelect = (answerOptionId: number) => {
+    if (isPending) return;
     const next = { ...selected, [question.questionId]: answerOptionId };
     setSelected(next);
-
-    if (index + 1 < total) {
-      setIndex(index + 1);
-    } else {
-      // Record<number, number> → {questionId, answerOptionId}[] 변환
-      const answers = Object.entries(next).map(([qId, optId]) => ({
-        questionId: Number(qId),
-        answerOptionId: optId,
-      }));
-      onComplete(answers);
-    }
+    setIsPending(true);
+    timer.current = window.setTimeout(() => {
+      setIsPending(false);
+      if (index + 1 < total) {
+        setIndex(index + 1);
+      } else {
+        // Record<number, number> → {questionId, answerOptionId}[] 변환
+        const answers = Object.entries(next).map(([qId, optId]) => ({
+          questionId: Number(qId),
+          answerOptionId: optId,
+        }));
+        onComplete(answers);
+      }
+    }, 500);
   };
 
   const handleBack = () => {
@@ -109,7 +121,7 @@ export function SurveyRunner({
 
       {/* 보기 — Figma top329, btn_survey 간 gap 16(gap-4) */}
       {/* Figma: 지문 블록 → 보기 gap 48px → mt-12 일치 */}
-      <ul className="mt-12 flex flex-col gap-4 px-5">
+      <ul className={`mt-12 flex flex-col gap-4 px-5${isPending ? " pointer-events-none" : ""}`}>
         {question.options.map((option) => {
           const isActive = selected[question.questionId] === option.answerOptionId;
           return (
