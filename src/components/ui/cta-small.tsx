@@ -6,12 +6,15 @@ import { cn } from "@/lib/utils"
 import { LinkIcon } from "@/components/ui/icons/link"
 
 /**
- * CTA_small — 공유 버튼 (171×56, radius 16px)
+ * CTA_small — 공유/액션 버튼 (radius 16px)
+ *   stroke / stroke_icn / fill : 텍스트 버튼 (가변폭 ~171×56)
+ *   icon                       : 아이콘 전용 정사각 (64×56, w-16)
  *
  * Figma 소스: fileKey TRXXVUvIwh8vh7FbBusXCO
  *   stroke     414:13236 — 인스타 스토리 공유 (border gray-200, bg white)
  *   stroke_icn 414:13238 — 아이콘 + 텍스트 (border gray-200, bg white, lucide Link)
  *   fill       414:13237 — 카카오톡 공유 (bg kakao, text gray-900)
+ *   icon       832:11782 — 아이콘 전용 (64×56px, border gray-200, bg white, 아이콘만 중앙)
  *
  * CTA_insta 통합 안내:
  *   Figma 인스턴스 395:9844 확인 결과 CTA_small stroke variant와 완전 동일.
@@ -59,6 +62,14 @@ const ctaSmallVariants = cva(
          * Figma px-[20px] → px-5(20px), bg-kakao(#fee500), text gray-900
          */
         fill: "bg-kakao text-gray-900 px-5",
+
+        /**
+         * icon — 아이콘 전용 (다운로드 버튼)
+         * Figma CTA_small node 832:11782: 64×56px, bg white, border gray-200, 아이콘 28×28 중앙.
+         * ⚠️ w-16 = 64px (w-64는 256px — 혼동 주의). h-14(56px)은 base에서 상속.
+         * figma-loose: px-0으로 텍스트 패딩 제거, 아이콘만 중앙정렬.
+         */
+        icon: "bg-white border border-gray-200 w-16 px-0",
       },
     },
     defaultVariants: {
