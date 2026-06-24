@@ -47,18 +47,23 @@ export function ShareView({ nickname, surveyCode }: ShareViewProps) {
     timer.current = window.setTimeout(() => setToast(null), 2200);
   };
 
+  // Figma F04(627:9624): 내 링크 복사·인스타 스토리 공유 모두 성공 시 동일 토스트.
+  // 인스타 스토리는 링크를 클립보드로 넘기므로 "링크 복사 완료!" 문구가 두 버튼에 공통.
+  const copyDoneToast = "링크 복사 완료!";
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(link);
-      showToast("링크가 복사됐어요!");
+      showToast(copyDoneToast);
     } catch {
       showToast("복사에 실패했어요. 링크를 길게 눌러 복사해주세요");
     }
   };
 
+  // 성공(shared·copied) 시 복사 버튼과 동일 토스트, 실패만 안내 분기.
   const instaMessage: Record<ShareResult, string> = {
-    shared: "공유 시트를 열었어요! 링크는 복사됐으니 스토리에 붙여넣어 주세요",
-    copied: "링크가 복사됐어요! 인스타에 붙여넣어 주세요",
+    shared: copyDoneToast,
+    copied: copyDoneToast,
     unsupported: "이 기기에선 공유가 어려워요. 링크 복사를 이용해주세요",
     error: "공유에 실패했어요. 다시 시도해주세요",
   };
@@ -120,7 +125,17 @@ export function ShareView({ nickname, surveyCode }: ShareViewProps) {
       </div>
 
       {/* 공유 CTA — figma-loose: Figma CTA 영역 pb 40px·gap 8px → main pb-10(40px) Figma 일치, gap-2(8px) Figma 일치 */}
-      <div className="mt-auto flex flex-col gap-2 pt-7">
+      <div className="relative mt-auto flex flex-col gap-2 pt-7">
+        {/* 토스트 — Figma F04(627:9624): CTA 위 중앙, 버튼과 8px 간격(mb-2) */}
+        {toast && (
+          <div
+            role="status"
+            className="pointer-events-none absolute bottom-full left-1/2 mb-2 w-fit max-w-[90%] -translate-x-1/2 rounded-full bg-gray-900/70 px-7 py-2 text-center text-body-14-medium text-white"
+          >
+            {toast}
+          </div>
+        )}
+
         <Cta onClick={handleCopy}>내 링크 복사하기</Cta>
         <div className="flex gap-2">
           <CtaSmall
@@ -135,16 +150,6 @@ export function ShareView({ nickname, surveyCode }: ShareViewProps) {
           </CtaSmall>
         </div>
       </div>
-
-      {/* 토스트 */}
-      {toast && (
-        <div
-          role="status"
-          className="pointer-events-none fixed inset-x-0 bottom-6 mx-auto w-fit max-w-[90%] rounded-full bg-gray-900 px-4 py-2 text-center text-caption-12-medium text-white shadow-lg md:absolute"
-        >
-          {toast}
-        </div>
-      )}
     </main>
   );
 }
