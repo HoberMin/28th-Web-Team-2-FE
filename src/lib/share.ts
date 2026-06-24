@@ -1,6 +1,6 @@
 // 공유 유틸 — 핵심 유입 루프 (domain.md §1).
-// 인스타 스토리는 링크 첨부 제약이 있어 → 스토리 이미지(story-share)는 공유 시트로, 링크는 클립보드 복사.
-// 카카오톡은 Kakao JS SDK feed 템플릿. JS 키 없으면 링크 복사 fallback.
+// shareInstagramStory·loadKakao·toJpegFile·KakaoSDK 는 F04 버튼 재구성으로 제거됨.
+// shareKakao 는 result-view.tsx(F05 결과 재공유)에서 사용 중이라 유지.
 
 export type ShareResult =
   | "shared" // 네이티브 공유 시트 열림
@@ -38,62 +38,6 @@ declare global {
 
 const KAKAO_JS_KEY = process.env.NEXT_PUBLIC_KAKAO_JS_KEY;
 const KAKAO_SDK_SRC = "https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js";
-
-async function copyLink(link: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(link);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-// 인스타 스토리는 PNG 파일을 공유하면 검정화면으로 깨지는 경우가 있어(특히 삼성 인터넷)
-// canvas로 image/jpeg 로 재인코딩해서 넘긴다. (react-native-share#1137 동일 원인)
-async function toJpegFile(blob: Blob, fileName: string): Promise<File> {
-  const bitmap = await createImageBitmap(blob);
-  const canvas = document.createElement("canvas");
-  canvas.width = bitmap.width;
-  canvas.height = bitmap.height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("canvas 2d context를 얻지 못함");
-  ctx.drawImage(bitmap, 0, 0);
-  bitmap.close?.();
-
-  const jpeg = await new Promise<Blob | null>((resolve) =>
-    canvas.toBlob(resolve, "image/jpeg", 0.92),
-  );
-  if (!jpeg) throw new Error("JPEG 변환 실패");
-  return new File([jpeg], fileName, { type: "image/jpeg" });
-}
-
-/** 인스타 스토리: 스토리 공유 이미지(imageUrl, 보통 story-share.png)를 공유 시트로 + 링크는 클립보드 복사 */
-export async function shareInstagramStory({
-  link,
-  imageUrl,
-}: {
-  link: string;
-  imageUrl: string;
-}): Promise<ShareResult> {
-  // 링크는 항상 먼저 클립보드로 (스토리에 붙여넣기 유도)
-  const copied = await copyLink(link);
-
-  try {
-    const res = await fetch(imageUrl);
-    const blob = await res.blob();
-    const file = await toJpegFile(blob, "looky.jpg");
-    // files + text 동시 전달은 일부 안드로이드/iOS 앱이 미디어를 무시(검정 캔버스)하므로
-    // 링크는 위에서 이미 복사했고 여기선 이미지 파일만 공유한다.
-    if (navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ files: [file] });
-      return "shared";
-    }
-  } catch {
-    // 변환 실패·공유 취소(AbortError)·미지원 등 → 아래 복사 결과로 폴백
-  }
-
-  return copied ? "copied" : "unsupported";
-}
 
 function loadKakao(): Promise<KakaoSDK | null> {
   if (typeof window === "undefined") return Promise.resolve(null);
@@ -142,7 +86,12 @@ export async function shareKakao({
 }): Promise<ShareResult> {
   const kakao = await loadKakao();
   if (!kakao?.Share) {
-    return (await copyLink(link)) ? "copied" : "unsupported";
+    try {
+      await navigator.clipboard.writeText(link);
+      return "copied";
+    } catch {
+      return "unsupported";
+    }
   }
 
   try {
@@ -154,6 +103,11 @@ export async function shareKakao({
     });
     return "shared";
   } catch {
-    return (await copyLink(link)) ? "copied" : "error";
+    try {
+      await navigator.clipboard.writeText(link);
+      return "copied";
+    } catch {
+      return "error";
+    }
   }
 }

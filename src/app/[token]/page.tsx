@@ -143,9 +143,7 @@ export default function TokenPage() {
   // 그 외 (WAITING_SELF_RESPONSE / COLLECTING_PEER_RESPONSES / WAITING_RESULT_OPEN_TIME):
   // 주인공이면 공유 뷰, 참여자면 설문 뷰
   if (owner) {
-    return (
-      <ShareView nickname={status.userNickname} surveyCode={token} />
-    );
+    return <ShareView surveyCode={token} />;
   }
 
   return (

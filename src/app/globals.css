@@ -117,6 +117,8 @@
   --color-blue-300: #8ab3ff;
   --color-blue-400: #659bff;
   --color-blue-500: #4e8cff;
+  /* blue/900 — Figma 스타일 가이드 node 369:3928, 칩 832:14647 신설. 600~800 건너뜀은 Figma 스케일 그대로. */
+  --color-blue-900: #2e3b55;
   --color-red-300: #ff5858;
   --color-pink-300: #ff63b3;
   /* yellow — F05 형용사 태그(yellow/200 배경 + yellow/800 텍스트). Figma Variable 동기화. */
