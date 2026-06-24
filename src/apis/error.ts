@@ -1,13 +1,34 @@
 // 프론트 API 레이어 공통 에러 (api-patterns: `new Error` 대신 ApiError throw)
+
+export interface FieldError {
+  field: string;
+  reason: string;
+}
+
 export class ApiError extends Error {
   readonly status: number;
-  readonly payload: unknown;
+  readonly errorCode?: string;
+  readonly fieldErrors?: FieldError[];
 
-  constructor(status: number, statusText: string, payload?: unknown) {
-    super(`API ${status} ${statusText}`);
+  constructor(
+    status: number,
+    message: string,
+    errorCode?: string,
+    fieldErrors?: FieldError[],
+  ) {
+    super(message);
     this.name = "ApiError";
     this.status = status;
-    this.payload = payload;
+    this.errorCode = errorCode;
+    this.fieldErrors = fieldErrors;
+  }
+
+  get isUnauthorized(): boolean {
+    return this.status === 401;
+  }
+
+  get isNotFound(): boolean {
+    return this.status === 404;
   }
 }
 

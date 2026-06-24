@@ -1,13 +1,36 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { NEUTRAL_CHOICE, type SurveyQuestion } from "@data/questions";
+import type { SurveyQuestion } from "@/apis/survey/types";
 
 import { SurveyRunner } from "./survey-runner";
 
+// API 응답 모양의 로컬 fixture
 const QS: SurveyQuestion[] = [
-  { id: "a", scenario: "질문 A", choices: ["a1", "a2", "a3", "a4", "a5"] },
-  { id: "b", scenario: "질문 B", choices: ["b1", "b2", "b3", "b4", "b5"] },
+  {
+    questionId: 1,
+    sequence: 1,
+    content: "질문 A",
+    options: [
+      { answerOptionId: 11, sequence: 1, content: "a1" },
+      { answerOptionId: 12, sequence: 2, content: "a2" },
+      { answerOptionId: 13, sequence: 3, content: "a3" },
+      { answerOptionId: 14, sequence: 4, content: "a4" },
+      { answerOptionId: 15, sequence: 5, content: "a5" },
+    ],
+  },
+  {
+    questionId: 2,
+    sequence: 2,
+    content: "질문 B",
+    options: [
+      { answerOptionId: 21, sequence: 1, content: "b1" },
+      { answerOptionId: 22, sequence: 2, content: "b2" },
+      { answerOptionId: 23, sequence: 3, content: "b3" },
+      { answerOptionId: 24, sequence: 4, content: "b4" },
+      { answerOptionId: 25, sequence: 5, content: "b5" },
+    ],
+  },
 ];
 
 describe("SurveyRunner", () => {
@@ -30,40 +53,17 @@ describe("SurveyRunner", () => {
     expect(progress("2 / 2")).toBeInTheDocument();
   });
 
-  it("마지막 문항 완료 시 onComplete에 답안 맵을 넘긴다", () => {
+  it("마지막 문항 완료 시 onComplete에 {questionId, answerOptionId}[] 를 넘긴다", () => {
     const onComplete = vi.fn();
     render(<SurveyRunner questions={QS} onComplete={onComplete} />);
-    fireEvent.click(screen.getByText("a1")); // a → 0
-    fireEvent.click(screen.getByText("b3")); // b → 2
-    expect(onComplete).toHaveBeenCalledWith({ a: 0, b: 2 });
-  });
-
-  it("includeNeutral이면 '잘 모르겠어요' 중립 선택지가 붙는다", () => {
-    render(
-      <SurveyRunner questions={QS} includeNeutral onComplete={vi.fn()} />,
+    fireEvent.click(screen.getByText("a1")); // questionId=1, answerOptionId=11
+    fireEvent.click(screen.getByText("b3")); // questionId=2, answerOptionId=23
+    expect(onComplete).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        { questionId: 1, answerOptionId: 11 },
+        { questionId: 2, answerOptionId: 23 },
+      ]),
     );
-    expect(screen.getByText(NEUTRAL_CHOICE)).toBeInTheDocument();
-  });
-
-  it("중립 선택지가 기본(본인 설문 아님)에선 없다", () => {
-    render(<SurveyRunner questions={QS} onComplete={vi.fn()} />);
-    expect(screen.queryByText(NEUTRAL_CHOICE)).not.toBeInTheDocument();
-  });
-
-  it("subjectName이 지문의 {name}을 게시자 이름으로 치환한다 (참여자 설문)", () => {
-    const qs: SurveyQuestion[] = [
-      { id: "x", scenario: "{name}는 어떤 사람?", choices: ["1", "2", "3", "4", "5"] },
-    ];
-    render(<SurveyRunner questions={qs} subjectName="김루키" onComplete={vi.fn()} />);
-    expect(screen.getByText("김루키는 어떤 사람?")).toBeInTheDocument();
-  });
-
-  it("subjectName 미전달 시 {name}은 '나'로 치환된다 (본인 설문)", () => {
-    const qs: SurveyQuestion[] = [
-      { id: "x", scenario: "{name}는 어떤 사람?", choices: ["1", "2", "3", "4", "5"] },
-    ];
-    render(<SurveyRunner questions={qs} onComplete={vi.fn()} />);
-    expect(screen.getByText("나는 어떤 사람?")).toBeInTheDocument();
   });
 
   it("문항이 비면 빈 상태를 보여준다", () => {

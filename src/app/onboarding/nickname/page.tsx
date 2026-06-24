@@ -3,13 +3,16 @@
 import { useRouter } from "next/navigation";
 import { type MouseEvent, useState } from "react";
 
+import { isApiError } from "@/apis/error";
+import { useCreateSurveyAPI } from "@/apis/survey/mutations";
+import { useKeyboardInset } from "@/hooks/use-keyboard-inset";
+import { saveSession } from "@/lib/local-session";
 import { Cta } from "@/components/ui/cta";
 import { Logo } from "@/components/ui/logo";
 import { TextfieldSet } from "@/components/ui/textfield-set";
 
 // 닉네임 설정 (product-spec #2 · Figma F02 node 414:13283) — GUI 1차 전경 정합.
-// 로컬에 임시 보관 후 자기 설문으로. 토큰 발급은 자기 설문 완료 시점(#3).
-// 룰/Figma에서 느슨하게 처리한 지점은 `figma-loose:` 주석으로 표기(디자이너 합의용).
+// 확인 클릭 시 survey 생성 API 호출 → surveyCode를 로컬에 저장 → 자기 설문으로.
 // TODO(✍️): 닉네임 금칙어 규칙 (계정 없어 중복검사 불필요).
 // 길이 제한 = 8자 (디자이너 확정): 8자 초과 시 확인 버튼 비활성화.
 const MAX_LEN = 8;
@@ -17,16 +20,47 @@ const MAX_LEN = 8;
 export default function NicknamePage() {
   const router = useRouter();
   const [nickname, setNickname] = useState("");
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const { mutate, isPending } = useCreateSurveyAPI();
+  const keyboardInset = useKeyboardInset();
 
   const trimmed = nickname.trim();
   const tooLong = trimmed.length > MAX_LEN;
-  const canSubmit = trimmed.length > 0 && !tooLong;
+  const canSubmit = trimmed.length > 0 && !tooLong && !isPending;
 
   const handleSubmit = () => {
     if (!canSubmit) return;
-    // 자기 설문으로 넘기며 닉네임 전달 (완료 시 토큰과 함께 로컬 저장)
-    router.push(`/onboarding/survey?nickname=${encodeURIComponent(trimmed)}`);
+    setServerError(null);
+
+    mutate(
+      { userNickname: trimmed },
+      {
+        onSuccess: (payload) => {
+          saveSession({
+            nickname: payload.userNickname,
+            surveyCode: payload.surveyCode,
+            createdAt: Date.now(),
+          });
+          router.push("/onboarding/survey");
+        },
+        onError: (error) => {
+          if (isApiError(error)) {
+            const msg =
+              error.fieldErrors?.[0]?.reason ?? error.message;
+            setServerError(msg);
+          } else {
+            setServerError("오류가 발생했어요. 다시 시도해주세요.");
+          }
+        },
+      },
+    );
   };
+
+  const hasError = tooLong || !!serverError;
+  const errorMessage = tooLong
+    ? `${MAX_LEN}자 이하로 입력해주세요`
+    : (serverError ?? undefined);
 
   // 여백(입력칸·버튼 외) 탭 시 키보드 내리기 — 입력/버튼 클릭은 각자 핸들러로 흘려보냄.
   const handleBackgroundClick = (e: MouseEvent<HTMLElement>) => {
@@ -61,25 +95,34 @@ export default function NicknamePage() {
       {/* figma-loose: 입력칸 top Figma 268px(디자이너 교정) → 제목 블록 아래 mt-9(36px) 근사 */}
       <div className="mt-9">
         <TextfieldSet
-          isError={tooLong}
-          description={tooLong ? `${MAX_LEN}자 이하로 입력해주세요` : undefined}
+          isError={hasError}
+          description={errorMessage}
           inputProps={{
             value: nickname,
-            onChange: (e) => setNickname(e.target.value),
+            onChange: (e) => {
+              setNickname(e.target.value);
+              if (serverError) setServerError(null);
+            },
             onKeyDown: (e) => e.key === "Enter" && handleSubmit(),
             placeholder: "이름 또는 별명",
             "aria-label": "닉네임",
             maxLength: MAX_LEN + 4,
-            // 화면 진입 시 키보드 활성화 (모바일은 브라우저 정책상 제스처 필요할 수 있음)
+            disabled: isPending,
+            // 화면 진입 시 키보드 활성화 (F02 요청). iOS Safari는 사용자 제스처 없는
+            // 프로그램적 포커스로 키보드를 안 띄울 수 있음 — 플랫폼 한계.
             autoFocus: true,
           }}
         />
       </div>
 
       {/* Figma: CTA 하단 여백 24px(디자이너 교정) → main pb-6(24px) 일치 */}
-      <div className="mt-auto">
+      {/* 키보드 따라 버튼 올라오게 (F02 요청): visualViewport로 잰 키보드 높이만큼 위로 */}
+      <div
+        className="mt-auto transition-transform duration-200 ease-out"
+        style={{ transform: `translateY(-${keyboardInset}px)` }}
+      >
         <Cta onClick={handleSubmit} disabled={!canSubmit}>
-          확인
+          {isPending ? "만드는 중..." : "확인"}
         </Cta>
       </div>
     </main>

@@ -20,12 +20,14 @@ import { ShareCards } from "./share-cards";
 // 배경(하늘 그라데이션·Union)·중앙 일러스트는 디자이너 별도 프레임 대기 → placeholder만.
 // 룰/Figma에서 느슨하게 처리한 지점은 `figma-loose:` 주석으로 표기(디자이너 합의용).
 // TODO(✍️): 24h 만료·전환 책임 위치(클라/서버).
+// TODO(✍️): product-spec #4의 수집 게이지·카운트다운(응답수/남은시간)은 Figma GUI 1차 F04에 UI가 없어 미구현.
+// 디자인 합의되면 status의 peerSubmissionCount/requiredPeerSubmissionCount/remainingSecondsToResultOpen로 추가.
 interface ShareViewProps {
   nickname: string;
-  token: string;
+  surveyCode: string;
 }
 
-export function ShareView({ nickname, token }: ShareViewProps) {
+export function ShareView({ nickname, surveyCode }: ShareViewProps) {
   const [toast, setToast] = useState<string | null>(null);
   const timer = useRef<number | null>(null);
 
@@ -36,7 +38,7 @@ export function ShareView({ nickname, token }: ShareViewProps) {
   }, []);
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
-  const link = `${origin}/${token}`;
+  const link = `${origin}/${surveyCode}`;
   // 인스타 스토리: 세로형(1080×1920) / 카카오 피드: 가로형 OG(1200×630)
   const storyImageUrl = `${origin}/assets/story-share.png`;
   const ogImageUrl = `${origin}/assets/og-image.png`;
@@ -47,18 +49,23 @@ export function ShareView({ nickname, token }: ShareViewProps) {
     timer.current = window.setTimeout(() => setToast(null), 2200);
   };
 
+  // Figma F04(627:9624): 내 링크 복사·인스타 스토리 공유 모두 성공 시 동일 토스트.
+  // 인스타 스토리는 링크를 클립보드로 넘기므로 "링크 복사 완료!" 문구가 두 버튼에 공통.
+  const copyDoneToast = "링크 복사 완료!";
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(link);
-      showToast("링크가 복사됐어요!");
+      showToast(copyDoneToast);
     } catch {
       showToast("복사에 실패했어요. 링크를 길게 눌러 복사해주세요");
     }
   };
 
+  // 성공(shared·copied) 시 복사 버튼과 동일 토스트, 실패만 안내 분기.
   const instaMessage: Record<ShareResult, string> = {
-    shared: "공유 시트를 열었어요! 링크는 복사됐으니 스토리에 붙여넣어 주세요",
-    copied: "링크가 복사됐어요! 인스타에 붙여넣어 주세요",
+    shared: copyDoneToast,
+    copied: copyDoneToast,
     unsupported: "이 기기에선 공유가 어려워요. 링크 복사를 이용해주세요",
     error: "공유에 실패했어요. 다시 시도해주세요",
   };
@@ -114,8 +121,18 @@ export function ShareView({ nickname, token }: ShareViewProps) {
         <ShareCards />
       </div>
 
-      {/* 공유 CTA — Figma 하단 여백 24px → main pb-6 일치, CTA↔공유버튼 gap 8px → gap-2 일치 */}
-      <div className="mt-auto flex flex-col gap-2 pt-7">
+      {/* 공유 CTA — figma-loose: Figma CTA 영역 pb·gap 8px → gap-2(8px) Figma 일치 */}
+      <div className="relative mt-auto flex flex-col gap-2 pt-7">
+        {/* 토스트 — Figma F04(627:9624): CTA 위 중앙, 버튼과 8px 간격(mb-2) */}
+        {toast && (
+          <div
+            role="status"
+            className="pointer-events-none absolute bottom-full left-1/2 mb-2 w-fit max-w-[90%] -translate-x-1/2 rounded-full bg-gray-900/70 px-7 py-2 text-center text-body-14-medium text-white"
+          >
+            {toast}
+          </div>
+        )}
+
         <Cta onClick={handleCopy}>내 링크 복사하기</Cta>
         <div className="flex gap-2">
           <CtaSmall
@@ -130,16 +147,6 @@ export function ShareView({ nickname, token }: ShareViewProps) {
           </CtaSmall>
         </div>
       </div>
-
-      {/* 토스트 */}
-      {toast && (
-        <div
-          role="status"
-          className="pointer-events-none fixed inset-x-0 bottom-6 mx-auto w-fit max-w-[90%] rounded-full bg-gray-900 px-4 py-2 text-center text-caption-12-medium text-white shadow-lg md:absolute"
-        >
-          {toast}
-        </div>
-      )}
     </main>
   );
 }

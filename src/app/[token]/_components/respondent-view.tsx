@@ -1,29 +1,69 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { useStartSubmissionAPI, useSubmitAnswersAPI } from "@/apis/survey/mutations";
+import { isApiError } from "@/apis/error";
+import type { SurveyQuestion, SubmissionStartedResponse } from "@/apis/survey/types";
 import { CenteredScreen } from "@/components/layout/centered-screen";
 import { SurveyRunner } from "@/components/survey/survey-runner";
 import { Cta } from "@/components/ui/cta";
 import { Logo } from "@/components/ui/logo";
-import { pickQuestions } from "@data/questions";
 
 // 참여자 플로우 (product-spec #5 · Figma F06 intro node 414:13450) — GUI 1차 전경 정합.
 // intro(자동 전환 splash) → 설문(8) → 완료 + "나도 만들기"(바이럴 루프). 신원·로그인 없음.
 // 룰/Figma에서 느슨하게 처리한 지점은 `figma-loose:` 주석으로 표기(디자이너 합의용).
-type Step = "intro" | "survey" | "done";
+type Step = "intro" | "loading" | "survey" | "submitting" | "done" | "error";
 
-export function RespondentView({ nickname }: { nickname: string }) {
+interface RespondentViewProps {
+  surveyCode: string;
+  nickname: string;
+}
+
+export function RespondentView({ surveyCode, nickname }: RespondentViewProps) {
+  // ── hooks (early return 앞) ───────────────────────────────────────────────
+  const { mutate: startSubmission } = useStartSubmissionAPI();
+  const { mutate: submitAnswers } = useSubmitAnswersAPI();
+
   const [step, setStep] = useState<Step>("intro");
+  const [questions, setQuestions] = useState<SurveyQuestion[]>([]);
+  const [submissionId, setSubmissionId] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Figma 주석: intro 화면 2초 지속 후 설문으로 자동 전환(버튼 없음).
+  // intro 2초 자동 전환
+  const introTimerRef = useRef<number | null>(null);
+
   useEffect(() => {
     if (step !== "intro") return;
-    const t = window.setTimeout(() => setStep("survey"), 2000);
-    return () => window.clearTimeout(t);
-  }, [step]);
+    introTimerRef.current = window.setTimeout(() => {
+      setStep("loading");
+      startSubmission(
+        { surveyCode },
+        {
+          onSuccess: (data: SubmissionStartedResponse) => {
+            setSubmissionId(data.submissionId);
+            setQuestions(data.questions);
+            setStep("survey");
+          },
+          onError: (error) => {
+            if (isApiError(error)) {
+              setErrorMessage(error.message);
+            } else {
+              setErrorMessage("문항을 불러오지 못했어요. 다시 시도해주세요.");
+            }
+            setStep("error");
+          },
+        },
+      );
+    }, 2000);
+    return () => {
+      if (introTimerRef.current !== null)
+        window.clearTimeout(introTimerRef.current);
+    };
+  }, [step, surveyCode, startSubmission]);
 
+  // ── intro 화면 ────────────────────────────────────────────────────────────
   if (step === "intro") {
     return (
       <CenteredScreen
@@ -65,14 +105,72 @@ export function RespondentView({ nickname }: { nickname: string }) {
     );
   }
 
-  if (step === "survey") {
-    // 참여자 설문: 첫 문항 뒤로(onBack) 없음 — 자동 전환 splash로 되돌아갈 필요 없음.
-    // subjectName=닉네임 → 지문 `{name}` 가 게시자 이름으로 치환 (product-spec #5).
+  // ── 로딩 — 문항 불러오는 중 ──────────────────────────────────────────────
+  if (step === "loading") {
     return (
+      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <div className="size-10 animate-spin rounded-full border-2 border-gray-100 border-t-blue-500" />
+        <p className="text-body-16-medium text-gray-900">문항을 불러오고 있어요</p>
+      </div>
+    );
+  }
+
+  // ── 에러 ─────────────────────────────────────────────────────────────────
+  if (step === "error") {
+    return (
+      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-body-16-medium text-gray-900">
+          {errorMessage ?? "오류가 발생했어요."}
+        </p>
+        <Cta
+          onClick={() => {
+            setErrorMessage(null);
+            setStep("intro");
+          }}
+        >
+          다시 시도
+        </Cta>
+      </div>
+    );
+  }
+
+  // ── 제출 로딩 ─────────────────────────────────────────────────────────────
+  if (step === "submitting") {
+    return (
+      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <div className="size-10 animate-spin rounded-full border-2 border-gray-100 border-t-blue-500" />
+        <p className="text-body-16-medium text-gray-900">답변을 전달하고 있어요</p>
+      </div>
+    );
+  }
+
+  // ── 설문 화면 ─────────────────────────────────────────────────────────────
+  if (step === "survey") {
+    const handleComplete = (answers: { questionId: number; answerOptionId: number }[]) => {
+      if (submissionId === null) return;
+      setStep("submitting");
+
+      submitAnswers(
+        { submissionId, answers },
+        {
+          onSuccess: () => setStep("done"),
+          onError: (error) => {
+            if (isApiError(error)) {
+              setErrorMessage(error.message);
+            } else {
+              setErrorMessage("제출에 실패했어요. 다시 시도해주세요.");
+            }
+            setStep("error");
+          },
+        },
+      );
+    };
+
+    return (
+      // 참여자 설문: 첫 문항 뒤로(onBack) 없음 — 자동 전환 splash로 되돌아갈 필요 없음
       <SurveyRunner
-        questions={pickQuestions(8)}
-        subjectName={nickname}
-        onComplete={() => setStep("done")}
+        questions={questions}
+        onComplete={handleComplete}
       />
     );
   }

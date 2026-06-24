@@ -1,53 +1,50 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
-import { isOwner, readSession } from "@/lib/local-session";
+import { useGetSurveyStatusAPI } from "@/apis/survey/queries";
+import { isApiError } from "@/apis/error";
+import { isOwner } from "@/lib/local-session";
+import { Cta } from "@/components/ui/cta";
 
+import { ExpiredView } from "./_components/expired-view";
 import { ResultView } from "./_components/result-view";
 import { RespondentView } from "./_components/respondent-view";
 import { RetryView } from "./_components/retry-view";
 import { ShareView } from "./_components/share-view";
 
-// 단일 URL 상태머신 (domain.md §3 · wireframe-spec §1).
-// 분기 = (1) localStorage 닉네임 매칭 → 주인공/참여자  (2) 서버 상태 → 수집중/결과/미달.
-// 와이어프레임은 서버 상태가 없으므로 ?view= 로 데모. 정식은 TanStack Query로 상태 조회.
-type View = "share" | "respondent" | "result" | "retry";
-
-const VIEWS: { key: View; label: string }[] = [
-  { key: "share", label: "공유(주인공)" },
-  { key: "respondent", label: "참여자" },
-  { key: "result", label: "결과" },
-  { key: "retry", label: "미달" },
-];
+// 단일 URL 상태머신 (domain.md §3 · product-spec §1).
+// TanStack Query로 상태 조회 → resultStatus / surveyStatus 기준 분기.
+// 와이어프레임 데모 스위처·?view= 오버라이드 제거.
 
 export default function TokenPage() {
   const params = useParams<{ token: string }>();
   const router = useRouter();
   const token = params.token;
-  const [view, setView] = useState<View | null>(null);
-  const [nickname, setNickname] = useState("민규");
 
-  useEffect(() => {
-    // 데모 오버라이드 우선
-    const override = new URLSearchParams(window.location.search).get(
-      "view",
-    ) as View | null;
-    const owner = isOwner(token);
-    if (owner) setNickname(readSession()?.nickname ?? "나");
+  // ── hooks (early return 앞) ───────────────────────────────────────────────
+  const owner = isOwner(token);
 
-    if (override && VIEWS.some((v) => v.key === override)) {
-      setView(override);
-    } else {
-      // 기본 분기: 주인공이면 공유, 아니면 참여자.
-      // TODO(✍️): 정식은 TanStack Query로 토큰 상태 조회 →
-      //           24h 경과+3건↑이면 "result", 미달이면 "retry"로 분기.
-      setView(owner ? "share" : "respondent");
-    }
-  }, [token]);
+  const {
+    data: status,
+    isLoading,
+    error,
+    refetch,
+  } = useGetSurveyStatusAPI(token, {
+    // 터미널 상태면 폴링 중지, 아니면 15초마다 갱신
+    refetchInterval: (query) => {
+      const result = query.state.data;
+      if (!result) return 15000;
+      const terminal =
+        result.resultStatus === "READY" ||
+        result.resultStatus === "FAILED" ||
+        result.resultStatus === "EXPIRED";
+      return terminal ? false : 15000;
+    },
+  });
 
-  if (view === null) {
+  // ── 1. 로딩 ──────────────────────────────────────────────────────────────
+  if (isLoading) {
     return (
       <div className="flex min-h-full items-center justify-center">
         <div className="size-8 animate-spin rounded-full border-2 border-gray-100 border-t-blue-500" />
@@ -55,41 +52,106 @@ export default function TokenPage() {
     );
   }
 
-  return (
-    // 높이 체인: 컨테이너(h-dvh) → 이 래퍼(h-full flex-col) → 스위처(고정) + 뷰 영역(flex-1).
-    // 뷰의 min-h-full 이 뷰 영역(definite height)을 기준으로 풀려서 그라데이션이 끝까지 채워진다.
-    <div className="flex h-full flex-col">
-      {/* ⚠️ 와이어프레임 리뷰용 상태 스위처 — 정식 구현 시 제거 */}
-      <div className="flex shrink-0 flex-wrap gap-1 border-b border-gray-100 bg-gray-50 px-3 py-2">
-        {VIEWS.map((v) => (
-          <button
-            key={v.key}
-            type="button"
-            onClick={() => setView(v.key)}
-            className={`rounded-md px-2 py-1 text-caption-12-medium transition-colors ${
-              view === v.key
-                ? "bg-blue-500 text-white"
-                : "bg-white text-gray-400"
-            }`}
-          >
-            {v.label}
-          </button>
-        ))}
+  // ── 2. 에러 ──────────────────────────────────────────────────────────────
+  if (error) {
+    // 404: 존재하지 않는 / 만료된 링크
+    if (isApiError(error) && error.isNotFound) {
+      return <ExpiredView />;
+    }
+    // 그 외 네트워크/서버 에러
+    return (
+      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-body-16-medium text-gray-900">
+          잠시 문제가 생겼어요
+        </p>
+        <p className="text-body-14-regular text-gray-300">{error.message}</p>
+        <Cta onClick={() => void refetch()}>다시 시도</Cta>
       </div>
+    );
+  }
 
-      {/* 뷰 영역 — 남은 높이를 채우고 넘치면 스크롤(결과 페이지). 스크롤바는 숨김. */}
-      <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
-        {view === "share" && <ShareView nickname={nickname} token={token} />}
-        {view === "respondent" && <RespondentView nickname={nickname} />}
-        {view === "result" && <ResultView />}
-        {view === "retry" && (
-          <RetryView
-            nickname={nickname}
-            respondentCount={2}
-            // Figma F05 실패(414:13591): [다시하기] → F01 온보딩("/") 이동.
-            onRetry={() => router.push("/")}
+  // ── 3. 상태 없음(방어) ────────────────────────────────────────────────────
+  if (!status) {
+    return <ExpiredView />;
+  }
+
+  // ── 4. resultStatus 기준 분기 ─────────────────────────────────────────────
+
+  // READY: 결과 완성
+  if (status.resultStatus === "READY") {
+    return (
+      <div className="flex h-full flex-col">
+        <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
+          <ResultView
+            surveyCode={token}
+            nickname={status.userNickname}
+            respondentCount={status.peerSubmissionCount}
           />
-        )}
+        </div>
+      </div>
+    );
+  }
+
+  // GENERATING: AI 처리 중 — 폴링 계속
+  if (status.resultStatus === "GENERATING") {
+    return (
+      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <div className="size-10 animate-spin rounded-full border-2 border-gray-100 border-t-blue-500" />
+        <p className="text-body-16-medium text-gray-900">결과를 만들고 있어요</p>
+        <p className="text-body-14-regular text-gray-300">
+          잠시 후 자동으로 열려요
+        </p>
+      </div>
+    );
+  }
+
+  // EXPIRED 또는 surveyStatus EXPIRED: 만료
+  if (
+    status.resultStatus === "EXPIRED" ||
+    status.surveyStatus === "EXPIRED"
+  ) {
+    return <ExpiredView />;
+  }
+
+  // FAILED: AI 생성 실패
+  if (status.resultStatus === "FAILED") {
+    return (
+      <RetryView
+        nickname={status.userNickname}
+        respondentCount={status.peerSubmissionCount}
+        onRetry={() => router.push("/")}
+      />
+    );
+  }
+
+  // 주인공 + 시간 만료 + 미달: 재시도 유도
+  // NOTE: resultStatus가 별도의 "미달" enum이 없으므로 remainingSeconds + peerCount로 판단
+  if (
+    owner &&
+    status.remainingSecondsToResultOpen <= 0 &&
+    status.peerSubmissionCount < status.requiredPeerSubmissionCount
+  ) {
+    return (
+      <RetryView
+        nickname={status.userNickname}
+        respondentCount={status.peerSubmissionCount}
+        onRetry={() => router.push("/")}
+      />
+    );
+  }
+
+  // 그 외 (WAITING_SELF_RESPONSE / COLLECTING_PEER_RESPONSES / WAITING_RESULT_OPEN_TIME):
+  // 주인공이면 공유 뷰, 참여자면 설문 뷰
+  if (owner) {
+    return (
+      <ShareView nickname={status.userNickname} surveyCode={token} />
+    );
+  }
+
+  return (
+    <div className="flex h-full flex-col">
+      <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
+        <RespondentView surveyCode={token} nickname={status.userNickname} />
       </div>
     </div>
   );

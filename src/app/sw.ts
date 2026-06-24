@@ -15,7 +15,9 @@ const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: true,
   clientsClaim: true,
-  navigationPreload: true,
+  // navigationPreload: Safari에서 preloadResponse가 깨지면 NetworkFirst가
+  // 응답을 못 받아 "no-response" 에러가 난다. CSR 앱이라 이득도 없어 끈다.
+  navigationPreload: false,
   runtimeCaching: defaultCache,
 });
 

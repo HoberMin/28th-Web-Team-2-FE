@@ -1,41 +1,96 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useStartSubmissionAPI, useSubmitAnswersAPI } from "@/apis/survey/mutations";
+import { isApiError } from "@/apis/error";
+import type { SurveyQuestion, SubmissionStartedResponse } from "@/apis/survey/types";
 import { SurveyRunner } from "@/components/survey/survey-runner";
-import { createToken, saveSession } from "@/lib/local-session";
-import { pickQuestions } from "@data/questions";
+import { readSession } from "@/lib/local-session";
+import { Cta } from "@/components/ui/cta";
 
 // 자기 설문 (product-spec #3) — 필수 선행. 조하리 "나 vs 친구"의 본인 쪽 데이터.
-// 본인 설문은 "잘 모르겠어요" 중립 선택지 포함 (domain.md §2).
-// 완료 → 링크 발급(로딩) → 토큰 생성·로컬 저장 → /[token] 공유 뷰.
+// 세션에서 surveyCode 읽기 → useStartSubmissionAPI로 문항 받기 → SurveyRunner → 제출 → /[surveyCode].
 
-function SelfSurvey() {
+export default function SelfSurveyPage() {
   const router = useRouter();
-  const params = useSearchParams();
-  const nickname = params.get("nickname")?.trim() || "나";
-  const [issuing, setIssuing] = useState(false);
-  const timer = useRef<number | null>(null);
+
+  // ── hooks (early return 앞) ──────────────────────────────────────────────────
+  const { mutate: startSubmission, isPending: isStarting } = useStartSubmissionAPI();
+  const { mutate: submitAnswers, isPending: isSubmitting } = useSubmitAnswersAPI();
+
+  const [questions, setQuestions] = useState<SurveyQuestion[]>([]);
+  const [submissionId, setSubmissionId] = useState<number | null>(null);
+  const [startError, setStartError] = useState<string | null>(null);
+  const [startSettled, setStartSettled] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmittingDone, setIsSubmittingDone] = useState(false);
+
+  // 마운트 시 1회만 호출 (StrictMode double-invoke 방지)
+  const startCalledRef = useRef(false);
+
+  // 본인 설문 시작(문항 배정). 마운트·재시도가 공유.
+  const runStart = useCallback(() => {
+    const session = readSession();
+    if (!session?.surveyCode) {
+      router.replace("/onboarding/nickname");
+      return;
+    }
+    setStartError(null);
+    startSubmission(
+      { surveyCode: session.surveyCode },
+      {
+        onSuccess: (data: SubmissionStartedResponse) => {
+          setStartSettled(true);
+          // 성공했는데 문항이 비면 진행 불가 — 무한 로딩 대신 에러로 (재시도 가능)
+          if (data.questions.length === 0) {
+            setStartError("문항을 불러오지 못했어요. 다시 시도해주세요.");
+            return;
+          }
+          setSubmissionId(data.submissionId);
+          setQuestions(data.questions);
+        },
+        onError: (error) => {
+          setStartSettled(true);
+          setStartError(
+            isApiError(error)
+              ? error.message
+              : "문항을 불러오지 못했어요. 다시 시도해주세요.",
+          );
+        },
+      },
+    );
+  }, [router, startSubmission]);
 
   useEffect(() => {
-    return () => {
-      if (timer.current !== null) window.clearTimeout(timer.current);
-    };
-  }, []);
+    if (startCalledRef.current) return;
+    startCalledRef.current = true;
+    runStart();
+  }, [runStart]);
 
-  const handleComplete = (_answers: Record<string, number>) => {
-    // TODO(✍️): 본인 설문 응답(_answers)을 서버 제출 — 조하리 "나" 쪽 데이터 (domain.md §2).
-    //           와이어프레임에선 더미라 미저장.
-    // 링크 발급 로딩 (Figma: 로딩_공유 링크 발급중)
-    setIssuing(true);
-    const token = createToken();
-    saveSession({ nickname, token, createdAt: Date.now() });
-    // 발급 대기 흉내 후 이동 (정식: mutation onSuccess로 대체)
-    timer.current = window.setTimeout(() => router.replace(`/${token}`), 900);
-  };
+  // ── 로딩 — 문항 불러오는 중 ────────────────────────────────────────────────
+  if (isStarting || (!startSettled && !startError)) {
+    return (
+      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <div className="size-10 animate-spin rounded-full border-2 border-gray-100 border-t-blue-500" />
+        <p className="text-body-16-medium text-gray-900">문항을 불러오고 있어요</p>
+      </div>
+    );
+  }
 
-  if (issuing) {
+  // ── 에러 — 문항 불러오기 실패 ──────────────────────────────────────────────
+  if (startError) {
+    return (
+      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-body-16-medium text-gray-900">{startError}</p>
+        <Cta onClick={runStart}>다시 시도</Cta>
+      </div>
+    );
+  }
+
+  // ── 제출 로딩 ────────────────────────────────────────────────────────────────
+  if (isSubmitting || isSubmittingDone) {
     return (
       <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
         <div className="size-10 animate-spin rounded-full border-2 border-gray-100 border-t-blue-500" />
@@ -47,21 +102,57 @@ function SelfSurvey() {
     );
   }
 
+  // ── 에러 — 제출 실패 ────────────────────────────────────────────────────────
+  if (submitError) {
+    return (
+      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-body-16-medium text-gray-900">{submitError}</p>
+        <p className="text-body-14-regular text-gray-300">
+          답변을 제출하지 못했어요.
+        </p>
+        <Cta onClick={() => setSubmitError(null)}>다시 시도</Cta>
+      </div>
+    );
+  }
+
+  const handleComplete = (answers: { questionId: number; answerOptionId: number }[]) => {
+    if (submissionId === null) return;
+    const session = readSession();
+    setIsSubmittingDone(true);
+
+    submitAnswers(
+      {
+        submissionId,
+        answers,
+        surveyCode: session?.surveyCode,
+      },
+      {
+        onSuccess: () => {
+          const code = session?.surveyCode;
+          if (code) {
+            router.replace(`/${code}`);
+          } else {
+            router.replace("/");
+          }
+        },
+        onError: (error) => {
+          setIsSubmittingDone(false);
+          if (isApiError(error)) {
+            setSubmitError(error.message);
+          } else {
+            setSubmitError("제출에 실패했어요. 다시 시도해주세요.");
+          }
+        },
+      },
+    );
+  };
+
   return (
     <SurveyRunner
-      questions={pickQuestions(8)}
+      questions={questions}
       subjectLabel="나에 대해"
-      includeNeutral
       onComplete={handleComplete}
       onBack={() => router.back()}
     />
-  );
-}
-
-export default function SelfSurveyPage() {
-  return (
-    <Suspense fallback={null}>
-      <SelfSurvey />
-    </Suspense>
   );
 }
