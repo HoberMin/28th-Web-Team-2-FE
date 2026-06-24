@@ -19,11 +19,12 @@ import { usePreloadImages } from "@/lib/preload-images";
 const AUTOPLAY_MS = 2000; // 카드당 노출 2초
 const SLIDE_MS = 300; // 슬라이드 전환 시간
 const SWIPE_THRESHOLD = 50; // 스와이프 인정 거리(px)
-const GAP_PX = 12; // 카드 사이 간격 — 슬라이드 한 칸 이동량에 함께 반영
+const GAP_PX = 8; // 카드 사이 간격 — 슬라이드 한 칸 이동량에 함께 반영
 const SIDE_SCALE = 0.8; // 좌우 비활성 카드 축소율 (Figma 832:13771)
-// figma-loose: 카드 폭 = 뷰포트의 84% → 좌우 peek 슬라이버 확보. Figma 아트보드는 데스크탑 폭이라
-// 모바일 정확한 peek 폭은 디자이너 확인 필요(좌우가 빼꼼 보이는 정도면 OK 합의).
-const CARD_W_PCT = 84;
+// figma-loose: 카드 폭 = 뷰포트의 80% → 좌우 약 25px peek 확보(모바일 기준).
+// 사이드 카드 scale은 "안쪽(활성 카드 쪽) 모서리"를 기준점으로 축소하므로(아래 CardFrame transformOrigin),
+// 카드를 넓게 둬도 peek이 사라지지 않는다. 정확한 peek 양은 디자이너 확인 대상.
+const CARD_W_PCT = 80;
 const SIDE_OFFSET_PCT = (100 - CARD_W_PCT) / 2; // 활성 카드를 가운데로 보내는 절반 여백(%)
 
 type ShareCard = {
@@ -40,21 +41,21 @@ const CARDS: ShareCard[] = [
   {
     n: 1,
     src: "/assets/img_character_hamster_under.png",
-    width: 952,
+    width: 1072,
     height: 615,
     text: "아래 버튼으로 내 링크를 꼭 복사해줘!",
   },
   {
     n: 2,
     src: "/assets/img_character_hamster_three.png",
-    width: 952,
+    width: 1072,
     height: 615,
     text: "친구가 참여할 수 있게 링크를 보내줘!",
   },
   {
     n: 3,
     src: "/assets/img_character_hamster_clock.png",
-    width: 952,
+    width: 1072,
     height: 638,
     text: "3명 이상 모이면, 24시간 뒤 내 링크로 와줘!",
   },
@@ -192,11 +193,15 @@ export function ShareCards() {
           {SLIDES.map((card, i) => {
             // 양끝(클론)은 스크린리더에서 항상 숨김 — 활성화돼도 즉시 실카드로 점프하므로 중복 낭독 방지
             const isClone = i === 0 || i === SLIDES.length - 1;
+            // 활성 기준 위치 — 사이드 카드는 활성 쪽(안쪽) 모서리를 기준으로 축소해야 peek이 안 사라짐
+            const side: CardSide =
+              i === index ? "center" : i < index ? "left" : "right";
             return (
               <CardFrame
                 key={i}
                 card={card}
                 active={i === index}
+                side={side}
                 announce={i === index && !isClone}
                 transitionDuration={transitionDuration}
               />
@@ -230,14 +235,25 @@ export function ShareCards() {
   );
 }
 
+type CardSide = "left" | "center" | "right";
+
+// 사이드 카드 축소 기준점: 활성 카드를 향한 안쪽 모서리를 고정 → 축소해도 peek(빼꼼)이 유지됨.
+const ORIGIN_BY_SIDE: Record<CardSide, string> = {
+  left: "right center", // 왼쪽 카드는 오른쪽(안쪽) 모서리 고정
+  right: "left center", // 오른쪽 카드는 왼쪽(안쪽) 모서리 고정
+  center: "center",
+};
+
 function CardFrame({
   card,
   active,
+  side,
   announce,
   transitionDuration,
 }: {
   card: ShareCard;
   active: boolean;
+  side: CardSide;
   announce: boolean;
   transitionDuration: string;
 }) {
@@ -248,6 +264,7 @@ function CardFrame({
       style={{
         width: `${CARD_W_PCT}%`,
         transform: active ? "scale(1)" : `scale(${SIDE_SCALE})`,
+        transformOrigin: ORIGIN_BY_SIDE[side],
         transitionDuration,
       }}
       aria-hidden={!announce}
