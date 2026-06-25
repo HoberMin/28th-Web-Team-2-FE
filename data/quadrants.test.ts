@@ -18,12 +18,12 @@ describe("조하리 4칸 단일 소스", () => {
       "모두가 아는 나",
       "친구만 아는 나",
       "나만 아는 나",
-      "아직 모르는 나",
+      "아무도 모르는 나",
     ]);
   });
 
-  it("④ unknown은 '아직 모르는 나' — 폐기된 표현을 쓰지 않는다", () => {
-    expect(QUADRANT_LABEL.unknown).toBe("아직 모르는 나");
+  it("④ unknown은 '아무도 모르는 나' — 폐기된 표현을 쓰지 않는다", () => {
+    expect(QUADRANT_LABEL.unknown).toBe("아무도 모르는 나");
     const labels = Object.values(QUADRANT_LABEL);
     expect(labels).not.toContain("나의 숨겨진 모습");
     expect(labels).not.toContain("새롭게 발견될 나");

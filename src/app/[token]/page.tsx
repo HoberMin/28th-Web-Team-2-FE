@@ -83,6 +83,7 @@ export default function TokenPage() {
             surveyCode={token}
             nickname={status.userNickname}
             respondentCount={status.peerSubmissionCount}
+            resultAvailableAt={status.resultAvailableAt}
           />
         </div>
       </div>

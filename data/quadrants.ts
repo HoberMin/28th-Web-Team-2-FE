@@ -13,12 +13,21 @@ export const QUADRANTS: QuadrantMeta[] = [
   { key: "open", label: "모두가 아는 나" },
   { key: "blind", label: "친구만 아는 나" },
   { key: "hidden", label: "나만 아는 나" },
-  { key: "unknown", label: "아직 모르는 나" },
+  { key: "unknown", label: "아무도 모르는 나" },
 ];
 
 export const QUADRANT_LABEL: Record<QuadrantKey, string> = {
   open: "모두가 아는 나",
   blind: "친구만 아는 나",
   hidden: "나만 아는 나",
-  unknown: "아직 모르는 나",
+  unknown: "아무도 모르는 나",
+};
+
+// 결과 상세(F05 result_detail) name 행의 라벨 칩용 — 전체 라벨에서 "나"를 뺀 축약형.
+// 예: "모두가 아는" + "{정의키워드} {닉네임}" → "모두가 아는 · 탐험가 송이".
+export const QUADRANT_SHORT_LABEL: Record<QuadrantKey, string> = {
+  open: "모두가 아는",
+  blind: "친구만 아는",
+  hidden: "나만 아는",
+  unknown: "아무도 모르는",
 };

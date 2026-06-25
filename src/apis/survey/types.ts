@@ -110,18 +110,38 @@ export interface SurveyStatusResponse {
 
 // ─── 결과 조회 (백엔드 raw) ──────────────────────────────────────────────────
 
+/** quadrants 맵의 칸별 상세 (READY일 때만). 내용 없는 칸은 키 자체가 생략될 수 있음 */
+export interface QuadrantResultRaw {
+  definitionKeyword: string;
+  adjectiveKeywords: string[];
+  interpretation: string;
+  imageUrl: string;
+}
+
 export interface SurveyResultRawResponse {
   surveyCode: string;
   resultStatus: ResultStatus;
-  /** resultStatus !== "READY"이면 null. 내용 없는 칸(주로 UNKNOWN)은 키가 생략될 수 있음 */
+  /** resultStatus !== "READY"이면 null. 내용 없는 칸(주로 UNKNOWN)은 키가 생략될 수 있음. quadrants의 imageUrl 요약본 */
   quadrantImageUrls: Partial<Record<BackendQuadrant, string>> | null;
-  /** resultStatus !== "READY"이면 null. 내용 없는 칸은 키가 생략될 수 있음 */
+  /** resultStatus !== "READY"이면 null. 내용 없는 칸은 키가 생략될 수 있음. quadrants의 interpretation 요약본 */
   quadrantInterpretations: Partial<Record<BackendQuadrant, string>> | null;
+  /** 종합 키워드 — "송이님은" 아래 타이틀. READY 아닐 때 null */
+  overallKeyword: string | null;
+  /** 종합 분석 본문. READY 아닐 때 null */
+  overallAnalysis: string | null;
+  /** Tip 카드 본문. READY 아닐 때 null */
+  actionTip: string | null;
+  /** 칸별 상세(정의키워드·형용사·해설·이미지). READY 아닐 때 null, 내용 없는 칸은 키 생략 */
+  quadrants: Partial<Record<BackendQuadrant, QuadrantResultRaw>> | null;
 }
 
 // ─── 결과 조회 (정규화 후) ───────────────────────────────────────────────────
 
 export interface QuadrantData {
+  /** 칸 정의 키워드(예: "탐험가"). 내용 없는 칸이면 null */
+  definitionKeyword: string | null;
+  /** 형용사 칩. 내용 없는 칸이면 [] */
+  adjectiveKeywords: string[];
   imageUrl: string | null;
   interpretation: string | null;
 }
@@ -130,5 +150,11 @@ export interface SurveyResultResponse {
   surveyCode: string;
   resultStatus: ResultStatus;
   /** READY 아닐 때 null */
+  overallKeyword: string | null;
+  /** READY 아닐 때 null */
+  overallAnalysis: string | null;
+  /** READY 아닐 때 null */
+  actionTip: string | null;
+  /** READY 아닐 때 null. 4칸 모두 키 존재(내용 없는 칸은 필드가 null/빈배열) */
   quadrants: Record<QuadrantKey, QuadrantData> | null;
 }

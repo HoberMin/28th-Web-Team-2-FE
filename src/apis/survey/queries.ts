@@ -27,15 +27,14 @@ interface PollOptions<T> {
 // ─── 결과 정규화 헬퍼 ───────────────────────────────────────────────────────
 
 function normalizeSurveyResult(raw: SurveyResultRawResponse): SurveyResultResponse {
-  // READY가 아니거나 맵이 null/undefined(미포함)면 아직 결과 없음 — 빈 결과로 정규화
-  if (
-    raw.resultStatus !== "READY" ||
-    !raw.quadrantImageUrls ||
-    !raw.quadrantInterpretations
-  ) {
+  // READY가 아니거나 rich quadrants가 없으면 아직 결과 없음 — 빈 결과로 정규화(폴링 지속 신호)
+  if (raw.resultStatus !== "READY" || !raw.quadrants) {
     return {
       surveyCode: raw.surveyCode,
       resultStatus: raw.resultStatus,
+      overallKeyword: null,
+      overallAnalysis: null,
+      actionTip: null,
       quadrants: null,
     };
   }
@@ -45,15 +44,23 @@ function normalizeSurveyResult(raw: SurveyResultRawResponse): SurveyResultRespon
 
   for (const backendKey of backendKeys) {
     const frontKey = BACKEND_QUADRANT_MAP[backendKey];
+    // rich quadrants 우선, 없는 필드는 요약 맵(quadrantImageUrls/Interpretations)으로 fallback
+    const detail = raw.quadrants[backendKey];
     quadrants[frontKey] = {
-      imageUrl: raw.quadrantImageUrls[backendKey] ?? null,
-      interpretation: raw.quadrantInterpretations[backendKey] ?? null,
+      definitionKeyword: detail?.definitionKeyword ?? null,
+      adjectiveKeywords: detail?.adjectiveKeywords ?? [],
+      imageUrl: detail?.imageUrl ?? raw.quadrantImageUrls?.[backendKey] ?? null,
+      interpretation:
+        detail?.interpretation ?? raw.quadrantInterpretations?.[backendKey] ?? null,
     };
   }
 
   return {
     surveyCode: raw.surveyCode,
     resultStatus: raw.resultStatus,
+    overallKeyword: raw.overallKeyword,
+    overallAnalysis: raw.overallAnalysis,
+    actionTip: raw.actionTip,
     quadrants,
   };
 }
