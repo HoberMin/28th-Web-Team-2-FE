@@ -35,17 +35,14 @@ export function SurveyRunner({
   // 8문항이 한 페이지 안 index state라 history엔 문항 기록이 없다 → 그냥 두면 back 한 번에
   // 설문을 통째로 이탈(닉네임으로). 모바일 주 타겟이라 사용자는 이 back을 가장 많이 누른다.
   //
-  // 방식: 마운트 시 가짜 history entry("가드") 1개를 쌓아 둔다. back을 누르면 가드가 pop되며
-  // popstate가 뜨고 → 문항이 남았으면 가드를 다시 쌓고(머무름) index만 1 감소,
-  // 첫 문항이면 가드를 소진한 채 onBack으로 설문 밖(닉네임)으로 내보낸다.
-  // ※ 완료 시엔 가드를 남겨둔 채 결과로 replace → 결과에서 back 시 설문 재진입은
+  // 방식(per-step): 문항을 넘길 때마다 가짜 history entry를 1개씩 쌓는다(forward = pushState).
+  // back을 누르면 그 entry가 pop되며 popstate → index만 1 감소(앞 문항). 첫 문항(index 0)에선
+  // 쌓아둔 entry가 없으므로 back이 설문 진입 직전(닉네임)으로 자연히 빠져나간다.
+  // ※ 완료 시엔 결과로 replace → 결과에서 back 시 설문 재진입(재제출/409)은
   //    survey/page.tsx의 done-flag(isSelfSurveyDone)가 막는다.
   const completingRef = useRef(false);
-  const guardPushedRef = useRef(false);
   const indexRef = useRef(index);
   indexRef.current = index;
-  const onBackRef = useRef(onBack);
-  onBackRef.current = onBack;
 
   useEffect(() => {
     return () => {
@@ -54,25 +51,16 @@ export function SurveyRunner({
   }, []);
 
   useEffect(() => {
-    if (questions.length === 0) return;
-    // StrictMode 재마운트로 effect가 두 번 돌아도 가드는 1개만 (ref 가드)
-    if (!guardPushedRef.current) {
-      window.history.pushState({ lookySurveyGuard: true }, "");
-      guardPushedRef.current = true;
-    }
     const onPop = () => {
-      if (completingRef.current) return; // 완료 후 전환 중이면 무시
+      if (completingRef.current) return; // 완료 후 결과로 전환 중이면 무시
+      // 문항이 남았으면 앞 문항으로. index 0이면 아무것도 안 함 →
+      // 브라우저가 이미 설문 밖(닉네임)으로 pop한 상태라 그대로 나가게 둔다.
       if (indexRef.current > 0) {
-        window.history.pushState({ lookySurveyGuard: true }, ""); // 재장전 → 페이지에 머무름
         setIndex((i) => Math.max(0, i - 1));
-      } else {
-        // 첫 문항에서의 back → 설문 밖(닉네임)으로 이어서 나간다
-        onBackRef.current?.();
       }
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const total = questions.length;
@@ -97,7 +85,8 @@ export function SurveyRunner({
     timer.current = window.setTimeout(() => {
       setIsPending(false);
       if (index + 1 < total) {
-        // 가드는 항상 history 맨 위에 유지(forward는 history 안 건드림) → back 시 가드 pop
+        // 문항 넘길 때마다 history entry 1개 push → back이 이 entry를 pop해 앞 문항으로
+        window.history.pushState({ lookySurveyStep: index + 1 }, "");
         setIndex(index + 1);
       } else {
         // Record<number, number> → {questionId, answerOptionId}[] 변환
@@ -106,7 +95,19 @@ export function SurveyRunner({
           answerOptionId: optId,
         }));
         completingRef.current = true; // 결과로의 replace 중 popstate 무시
-        onComplete(answers);
+        // 문항마다 쌓은 step entry(개수 === index)를 되감은 뒤 결과로 replace한다.
+        // 이렇게 해야 결과가 닉네임 바로 위에 와서, 결과/공유 페이지에서 back이
+        // 잔여 설문 entry로 튕기지 않는다(공유 "나가기"도 정상 동작).
+        if (index > 0) {
+          const onUnwound = () => {
+            window.removeEventListener("popstate", onUnwound);
+            onComplete(answers);
+          };
+          window.addEventListener("popstate", onUnwound);
+          window.history.go(-index);
+        } else {
+          onComplete(answers);
+        }
       }
     }, 500);
   };
@@ -116,7 +117,7 @@ export function SurveyRunner({
       onBack?.();
       return;
     }
-    // 화면 ← 버튼도 브라우저 back과 같은 경로로 통일(가드 pop → popstate → 재장전 + index-1)
+    // 화면 ← 버튼도 브라우저 back과 같은 경로로 통일(push한 entry pop → popstate → index-1)
     // → history 싱크를 한 곳(popstate)에서만 관리.
     window.history.back();
   };

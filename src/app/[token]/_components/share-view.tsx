@@ -32,7 +32,10 @@ export function ShareView({ surveyCode }: ShareViewProps) {
   // ── 이탈 가드 ────────────────────────────────────────────────────────────────
   // 주인공이 back을 누르면 닉네임(온보딩)으로 돌아가 버린다 → 수집 중인데 실수 이탈 방지.
   // beforeunload는 SPA back을 못 잡고 커스텀 문구도 불가 → popstate 가로채기 + 확인 모달.
-  // 마운트 시 가드 entry 1개 push → back으로 가드가 pop되면 다시 push(머무름)하고 모달 노출.
+  //
+  // 마운트 시 가드 entry 1개 push. back을 누르면 가드가 pop되며(현재=공유 페이지) 모달만 띄운다.
+  // ※ 재장전(pushState)은 popstate 핸들러 안에서 하면 일부 브라우저가 무시한다 → 신뢰성 위해
+  //   "머무르기/닫힘"(이벤트 핸들러)에서 다시 쌓는다. "나가기"는 history.back 한 번으로 이탈.
   const [leaveConfirmOpen, setLeaveConfirmOpen] = useState(false);
   const guardPushedRef = useRef(false);
   const leavingRef = useRef(false);
@@ -50,18 +53,23 @@ export function ShareView({ surveyCode }: ShareViewProps) {
     }
     const onPop = () => {
       if (leavingRef.current) return;
-      window.history.pushState({ lookyShareGuard: true }, ""); // 재장전 → 머무름
-      setLeaveConfirmOpen(true);
+      setLeaveConfirmOpen(true); // 가드 pop됨 → 확인 모달 (재장전은 닫힐 때)
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
   }, []);
 
-  // "나가기": 가드 + 공유 entry를 건너뛰어 설문 진입 직전(닉네임)으로
+  // 모달 닫힘(머무르기·Esc·바깥 클릭) → 가드를 다시 쌓아 다음 back도 잡는다
+  const handleConfirmOpenChange = (open: boolean) => {
+    setLeaveConfirmOpen(open);
+    if (!open) window.history.pushState({ lookyShareGuard: true }, "");
+  };
+
+  // "나가기": 현재(공유 페이지)에서 한 번 back → 설문 진입 직전(닉네임)으로
   const handleLeave = () => {
     leavingRef.current = true;
     setLeaveConfirmOpen(false);
-    window.history.go(-2);
+    window.history.back();
   };
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
@@ -110,7 +118,7 @@ export function ShareView({ surveyCode }: ShareViewProps) {
       {/* 이탈 확인 모달 — back 가로채기로 노출 */}
       <ConfirmDialog
         open={leaveConfirmOpen}
-        onOpenChange={setLeaveConfirmOpen}
+        onOpenChange={handleConfirmOpenChange}
         title="친구들 답변을 모으는 중이에요"
         description="지금 나가도 링크는 그대로 살아있어요. 정말 나갈까요?"
         cancelLabel="머무르기"

@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { SurveyQuestion } from "@/apis/survey/types";
@@ -48,7 +48,6 @@ describe("SurveyRunner", () => {
     vi.useFakeTimers();
   });
   afterEach(() => {
-    vi.runOnlyPendingTimers();
     vi.useRealTimers();
   });
 
@@ -71,16 +70,22 @@ describe("SurveyRunner", () => {
     expect(progress("2 / 2")).toBeInTheDocument();
   });
 
-  it("마지막 문항 완료 시 onComplete에 {questionId, answerOptionId}[] 를 넘긴다", () => {
+  it("마지막 문항 완료 시 onComplete에 {questionId, answerOptionId}[] 를 넘긴다", async () => {
+    // 완료 시 history.go(-index)로 step entry를 되감은 뒤(popstate) onComplete → 비동기.
+    // 실제 타이머 + 폴링으로 검증.
+    vi.useRealTimers();
     const onComplete = vi.fn();
     render(<SurveyRunner questions={QS} onComplete={onComplete} />);
-    choose("a1"); // questionId=1, answerOptionId=11
-    choose("b3"); // questionId=2, answerOptionId=23
-    expect(onComplete).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        { questionId: 1, answerOptionId: 11 },
-        { questionId: 2, answerOptionId: 23 },
-      ]),
+    fireEvent.click(screen.getByText("a1")); // questionId=1, answerOptionId=11
+    await screen.findByText("질문 B"); // 500ms 전환 대기
+    fireEvent.click(screen.getByText("b3")); // questionId=2, answerOptionId=23
+    await waitFor(() =>
+      expect(onComplete).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          { questionId: 1, answerOptionId: 11 },
+          { questionId: 2, answerOptionId: 23 },
+        ]),
+      ),
     );
   });
 
