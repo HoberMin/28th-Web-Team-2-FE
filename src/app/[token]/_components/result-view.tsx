@@ -241,10 +241,9 @@ export function ResultView({
               {resultDate && (
                 <p className="text-body-14-regular text-gray-400">{resultDate}</p>
               )}
-              {/* figma-loose: Figma는 "마음을 잘 여는 송이"(닉네임형)지만 API는 overallKeyword 단일 → 그대로 표기 */}
               {data?.overallKeyword && (
                 <p className="font-display1 text-head1-20 text-white">
-                  {data.overallKeyword}
+                  {data.overallKeyword} {nickname}
                 </p>
               )}
             </div>
@@ -264,7 +263,7 @@ export function ResultView({
         <section className="flex flex-col gap-4">
           {data?.overallKeyword && (
             <p className="font-display1 text-head1-20 text-gray-900">
-              {data.overallKeyword} {nickname}님은
+              {data.overallKeyword} 사람
             </p>
           )}
           {data?.overallAnalysis && (
