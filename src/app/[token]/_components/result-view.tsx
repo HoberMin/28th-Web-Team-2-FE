@@ -276,7 +276,11 @@ export function ResultView({
                 <StarIcon className="size-5" />
                 <span className="text-body-14-regular text-gray-400">종합 분석</span>
               </div>
-              {/* TODO(✍️): 굵은 헤드라인은 API 필드 없어 생략. 본문(overallAnalysis)만 렌더 */}
+              {data.overallAnalysisTitle && (
+                <p className="text-body-16-semibold text-gray-900">
+                  {data.overallAnalysisTitle}
+                </p>
+              )}
               <p className="text-body-16-regular text-gray-700">
                 {data.overallAnalysis}
               </p>

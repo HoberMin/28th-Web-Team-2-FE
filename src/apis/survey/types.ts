@@ -125,8 +125,17 @@ export interface SurveyResultRawResponse {
   quadrantImageUrls: Partial<Record<BackendQuadrant, string>> | null;
   /** resultStatus !== "READY"이면 null. 내용 없는 칸은 키가 생략될 수 있음. quadrants의 interpretation 요약본 */
   quadrantInterpretations: Partial<Record<BackendQuadrant, string>> | null;
+  /** 종합 분석 중첩 객체. READY 아닐 때 null */
+  overall: {
+    keyword: string;
+    analysisTitle: string;
+    analysisBody: string;
+    tip: string;
+  } | null;
   /** 종합 키워드 — "송이님은" 아래 타이틀. READY 아닐 때 null */
   overallKeyword: string | null;
+  /** 종합 분석 한줄정리. READY 아닐 때 null */
+  overallAnalysisTitle: string | null;
   /** 종합 분석 본문. READY 아닐 때 null */
   overallAnalysis: string | null;
   /** Tip 카드 본문. READY 아닐 때 null */
@@ -151,6 +160,8 @@ export interface SurveyResultResponse {
   resultStatus: ResultStatus;
   /** READY 아닐 때 null */
   overallKeyword: string | null;
+  /** READY 아닐 때 null */
+  overallAnalysisTitle: string | null;
   /** READY 아닐 때 null */
   overallAnalysis: string | null;
   /** READY 아닐 때 null */
