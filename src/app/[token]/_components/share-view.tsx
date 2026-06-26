@@ -110,8 +110,9 @@ export function ShareView({ surveyCode }: ShareViewProps) {
   };
 
   return (
-    // figma-loose: 로고 top Figma 80px(프레임, status bar 44px 포함) → pt-9(36px) 근사
-    <main className="relative isolate flex min-h-full flex-col overflow-hidden bg-sky-gradient px-5 pb-6 pt-9">
+    // 디자이너 #10: 로고·타이틀·캐러셀을 F01(CenteredScreen)과 동일하게 세로 중앙 정렬.
+    // 위·아래 flex-1 스페이서로 콘텐츠를 가운데 두고 CTA는 바닥 고정(데스크탑에서 위로 붙던 문제 해소).
+    <main className="relative isolate flex min-h-full flex-col overflow-hidden bg-sky-gradient px-5 pb-6 pt-5">
       {/* 배경: 하늘 그라데이션(Figma 그대로) + 구름(BgCloud) */}
       <BgCloud />
 
@@ -126,6 +127,9 @@ export function ShareView({ surveyCode }: ShareViewProps) {
         onConfirm={handleLeave}
       />
 
+      {/* 위 여백 가변 → 콘텐츠(로고·타이틀·캐러셀) 세로 중앙 (F01 CenteredScreen과 동일) */}
+      <div className="flex-1" aria-hidden />
+
       {/* Figma 830:9448: 로고 가운데 정렬 */}
       <div className="flex justify-center">
         <Logo size="sm" />
@@ -133,8 +137,8 @@ export function ShareView({ surveyCode }: ShareViewProps) {
 
       {/* Figma 830:9449: 로고+제목+본문 가운데 정렬. 로고 아래 mt-8(32px), 제목↔본문 gap-3(12px). */}
       <div className="mt-8 flex flex-col gap-3 text-center">
-        {/* Figma 627:9619: head-point1/24 = display1(Y Spotlight) 24px, 색 순수 black(#000) — DSGN 검증 대상(F01은 gray-900) */}
-        <h1 className="text-head1-24 font-display1 text-black">
+        {/* Figma 627:9619: head-point1/24 = display1(Y Spotlight) 24px, 타이틀 컬러 gray-900 (디자이너 확정 — F01과 통일) */}
+        <h1 className="text-head1-24 font-display1 text-gray-900">
           친구에게 링크를 공유하고
           <br />
           네컷을 받아보세요!
@@ -151,10 +155,13 @@ export function ShareView({ surveyCode }: ShareViewProps) {
         <ShareCards />
       </div>
 
+      {/* 아래 여백 가변 → 콘텐츠 세로 중앙 + CTA 바닥 고정 (F01 CenteredScreen과 동일) */}
+      <div className="flex-1" aria-hidden />
+
       {/* 공유 CTA — 단일 행: [링크 복사 flex-1] gap-2 [다운로드 아이콘 w-16]
           Figma Frame 2085673268: row gap-8px, justify-center. CTA 278px + 다운로드 64px + gap 8px = 350.
           모바일: CTA flex-1, 다운로드 고정 w-16(64px). */}
-      <div className="relative mt-auto flex flex-col pt-7">
+      <div className="relative flex flex-col pt-7">
         {/* 토스트 — Figma F04(627:9624): CTA 위 중앙, 버튼과 8px 간격(mb-2) */}
         {toast && (
           <div

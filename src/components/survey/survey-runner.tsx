@@ -157,7 +157,9 @@ export function SurveyRunner({
         </p>
         {/* Figma: head-point1/24 = display1(Y Spotlight) 24px (기존 head1-20에서 교정) */}
         {/* 질문 최대 3줄(line-clamp-3) + 단어 단위 줄바꿈(break-keep: 한 단어가 잘리지 않게) */}
-        <h1 className="line-clamp-3 break-keep text-head1-24 font-display1 text-gray-900">
+        {/* btn_survey y 고정(디자이너 #2): 제목을 항상 3줄 높이(min-h-[3lh], lh=1.45)로 예약 →
+            제목이 1~3줄로 바뀌어도 아래 보기 버튼 묶음의 시작 y가 변하지 않는다. */}
+        <h1 className="line-clamp-3 min-h-[3lh] break-keep text-head1-24 font-display1 text-gray-900">
           {question.content}
         </h1>
       </div>

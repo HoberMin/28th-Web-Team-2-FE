@@ -59,7 +59,7 @@ const CARDS: ShareCard[] = [
     src: "/assets/img_character_hamster_clock.png",
     width: 1072,
     height: 638,
-    text: "3명 이상 모이면, 24시간 뒤 내 링크로 와",
+    text: "3명 이상 모이면 24시간 뒤 내 링크로 와!",
   },
 ];
 
