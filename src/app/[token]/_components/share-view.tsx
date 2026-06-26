@@ -86,9 +86,10 @@ export function ShareView({ surveyCode }: ShareViewProps) {
   };
 
   const handleCopy = async () => {
+    const isAndroid = /android/i.test(navigator.userAgent);
     try {
       await navigator.clipboard.writeText(link);
-      showToast("링크 복사 완료!");
+      if (!isAndroid) showToast("링크 복사 완료!");
     } catch {
       showToast("복사에 실패했어요. 링크를 길게 눌러 복사해주세요");
     }
