@@ -309,8 +309,8 @@ export function ResultView({
 
                 {/* img + contents (Figma 414:13682, gap 12) */}
                 <div className="flex flex-col gap-3">
-                  {/* 이미지 (Figma h124, object-cover 크롭) */}
-                  <div className="relative h-[124px] w-full overflow-hidden rounded-lg border border-gray-50 bg-gray-50">
+                  {/* 이미지 (h144) */}
+                  <div className="relative h-[144px] w-full overflow-hidden rounded-lg border border-gray-50 bg-gray-50">
                     {imageUrl ? (
                       <Image
                         src={imageUrl}
