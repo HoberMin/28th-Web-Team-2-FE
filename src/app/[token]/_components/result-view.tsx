@@ -262,14 +262,11 @@ export function ResultView({
 
         {/* ── 종합 분석 (Figma 414:13655, gap 16) ───────────────────────── */}
         <section className="flex flex-col gap-4">
-          <div className="flex flex-col">
-            <p className="text-body-18-medium text-gray-900">{nickname}님은</p>
-            {data?.overallKeyword && (
-              <p className="font-display1 text-head1-20 text-gray-900">
-                {data.overallKeyword}
-              </p>
-            )}
-          </div>
+          {data?.overallKeyword && (
+            <p className="font-display1 text-head1-20 text-gray-900">
+              {data.overallKeyword} {nickname}님은
+            </p>
+          )}
           {data?.overallAnalysis && (
             <div className="flex flex-col gap-2 rounded-[14px] bg-gray-50 p-3">
               <div className="flex items-center gap-1">
