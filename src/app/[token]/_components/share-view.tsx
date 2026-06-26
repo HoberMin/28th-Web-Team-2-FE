@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { BgCloud } from "@/components/ui/bg-cloud";
@@ -26,6 +27,7 @@ interface ShareViewProps {
 }
 
 export function ShareView({ surveyCode }: ShareViewProps) {
+  const router = useRouter();
   const [toast, setToast] = useState<string | null>(null);
   const timer = useRef<number | null>(null);
 
@@ -35,7 +37,7 @@ export function ShareView({ surveyCode }: ShareViewProps) {
   //
   // 마운트 시 가드 entry 1개 push. back을 누르면 가드가 pop되며(현재=공유 페이지) 모달만 띄운다.
   // ※ 재장전(pushState)은 popstate 핸들러 안에서 하면 일부 브라우저가 무시한다 → 신뢰성 위해
-  //   "머무르기/닫힘"(이벤트 핸들러)에서 다시 쌓는다. "나가기"는 history.back 한 번으로 이탈.
+  //   "머무르기/닫힘"(이벤트 핸들러)에서 다시 쌓는다. "나가기"는 첫 페이지(/)로 명시 이동.
   const [leaveConfirmOpen, setLeaveConfirmOpen] = useState(false);
   const guardPushedRef = useRef(false);
   const leavingRef = useRef(false);
@@ -65,11 +67,11 @@ export function ShareView({ surveyCode }: ShareViewProps) {
     if (!open) window.history.pushState({ lookyShareGuard: true }, "");
   };
 
-  // "나가기": 현재(공유 페이지)에서 한 번 back → 설문 진입 직전(닉네임)으로
+  // "나가기": 히스토리 의존 대신 첫 페이지(랜딩 /)로 명시 이동
   const handleLeave = () => {
     leavingRef.current = true;
     setLeaveConfirmOpen(false);
-    window.history.back();
+    router.replace("/");
   };
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
