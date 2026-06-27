@@ -15,7 +15,7 @@ import { usePreloadImages } from "@/lib/preload-images";
 
 // 완료 일러스트는 설문이 끝나야 마운트되므로, 인트로/설문 동안 미리 받아둬 전환 시 즉시 표시한다.
 const PRELOAD_DONE_ILLUST = [
-  { src: "/assets/img_character_hamster_letter.png", width: 350, height: 280 },
+  { src: "/assets/img_character_hamster_film.png", width: 350, height: 421 },
 ];
 
 // 참여자 플로우 (product-spec #5 · Figma F06 intro node 414:13450) — GUI 1차 전경 정합.
@@ -214,13 +214,13 @@ export function RespondentView({ surveyCode, nickname }: RespondentViewProps) {
           </div>
         </div>
 
-        {/* 완료 일러스트 — Figma 627:9735 img_character_hamster_letter(350×280). 에셋 4x 1400×1120. 장식이라 alt="". */}
+        {/* 완료 일러스트 — img_character_hamster_film(350×421). 에셋 1380×1659. 장식이라 alt="". */}
         <Image
-          src="/assets/img_character_hamster_letter.png"
+          src="/assets/img_character_hamster_film.png"
           alt=""
           aria-hidden
           width={350}
-          height={280}
+          height={421}
           className="h-auto w-full max-w-full select-none"
         />
       </div>
