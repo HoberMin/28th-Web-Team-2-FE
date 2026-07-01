@@ -51,7 +51,7 @@ export function CenteredScreen({
       <div className="flex-1" aria-hidden />
       {/* sticky — fixed 대신 스크롤 컨테이너 기준으로 붙어 iOS 브라우저 UI 변화에 튀지 않음 */}
       {footer && (
-        <div className="sticky bottom-0 w-full px-5 pb-6 pt-3">
+        <div className="sticky bottom-0 w-full pb-6 pt-3">
           {footer}
         </div>
       )}
