@@ -38,17 +38,23 @@ export function CenteredScreen({
   return (
     <main
       className={cn(
-        "relative isolate flex min-h-full flex-col items-center overflow-hidden px-5 pt-5 pb-6 text-center",
+        "relative isolate flex min-h-full flex-col items-center overflow-hidden px-5 pt-5 text-center",
+        footer ? "pb-28" : "pb-6",
         background === "gray" ? "bg-gray-gradient" : "bg-sky-gradient",
         className,
       )}
     >
       <BgCloud />
-      {/* 위 여백 가변 → 콘텐츠 세로 중앙 + footer 바닥 고정 */}
+      {/* 위 여백 가변 → 콘텐츠 세로 중앙 */}
       <div className="flex-1" aria-hidden />
       {children}
       <div className="flex-1" aria-hidden />
-      {footer}
+      {/* 하단 고정 — 인앱 브라우저 툴바에 가려지지 않도록 result-view 공유바와 동일한 fixed 패턴 사용 */}
+      {footer && (
+        <div className="fixed inset-x-0 bottom-0 z-10 mx-auto w-full max-w-[390px] px-5 pb-6 pt-3 md:absolute">
+          {footer}
+        </div>
+      )}
     </main>
   );
 }
