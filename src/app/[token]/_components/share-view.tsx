@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { BgCloud } from "@/components/ui/bg-cloud";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { CtaSmall } from "@/components/ui/cta-small";
+import { LinkIcon } from "@/components/ui/icons/link";
 import { Logo } from "@/components/ui/logo";
 
 // 공유 관리 뷰 (product-spec #4 · Figma F04 node 1212:6382) — GUI 2차 전경 정합.
@@ -128,7 +129,7 @@ export function ShareView({ surveyCode, respondentCount }: ShareViewProps) {
         </h1>
         {/* body/16-medium 16px Medium gray-300 */}
         <p className="text-body-16-medium text-gray-300">
-          친구 3명만 답하면 나만의 네컷이 완성돼요
+          <span className="text-blue-500">친구 3명</span>만 답하면 나만의 네컷이 완성돼요
         </p>
       </div>
 
@@ -136,13 +137,14 @@ export function ShareView({ surveyCode, respondentCount }: ShareViewProps) {
           카운터 칩 175×33px, 아래 36px 간격 후 캐릭터 304×216px. */}
       <div className="mt-8 flex flex-col items-center gap-9">
         {/* 응답자 카운터 칩 — Figma node 1228:3472 */}
-        <div className="rounded-full border border-gray-200 bg-white px-5 py-1.5 text-body-14-medium text-gray-900">
+        {/* Figma 1228:3471: 175×33px, rounded-8px, bg-white, no-border, px-3 py-1, Pretendard Bold 16px blue-500 */}
+        <div className="rounded-lg bg-white px-3 py-1 text-body-16-bold text-blue-500">
           지금까지 {respondentCount}명이 답했어요
         </div>
         {/* 캐릭터 일러스트 — Figma: img_character_hamster_set (304×216px).
             에셋 미존재로 hamster_three 임시 대체. 에셋 확보 후 src 교체 요망. */}
         <Image
-          src="/assets/img_character_hamster_three.png"
+          src="/assets/img_character_hamster_set.png"
           alt=""
           aria-hidden
           width={1072}
@@ -167,15 +169,15 @@ export function ShareView({ surveyCode, respondentCount }: ShareViewProps) {
           </div>
         )}
 
-        {/* 버튼 행: 링크 복사(stroke_icn) + 카카오 공유(fill). 각 flex-1 균등 폭. */}
+        {/* 버튼 행: [링크 아이콘 w-16] gap-2 [카카오톡 공유하기 flex-1] */}
         <div className="flex flex-row items-center gap-2">
-          {/* 링크 복사 — 아이콘+텍스트 (Figma CTA_small stroke_icn 414:13238) */}
+          {/* 링크 복사 — 아이콘 전용 (Figma CTA_small icon 832:11782: 64×56px) */}
           <CtaSmall
-            variant="stroke_icn"
+            variant="icon"
             onClick={handleCopy}
-            className="flex-1"
+            aria-label="링크 복사"
           >
-            링크 복사하기
+            <LinkIcon className="size-7" />
           </CtaSmall>
           {/* 카카오톡 공유 — fill variant (Figma CTA_small fill 414:13237: bg-kakao #fee500) */}
           <CtaSmall
