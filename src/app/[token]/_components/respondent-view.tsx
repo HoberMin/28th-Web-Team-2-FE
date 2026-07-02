@@ -11,7 +11,7 @@ import { CenteredScreen } from "@/components/layout/centered-screen";
 import { SurveyRunner } from "@/components/survey/survey-runner";
 import { Cta } from "@/components/ui/cta";
 import { Logo } from "@/components/ui/logo";
-import { markSurveyDone } from "@/lib/local-session";
+import { markSurveyDone, markSurveyStarted } from "@/lib/local-session";
 import { usePreloadImages } from "@/lib/preload-images";
 
 // 완료 일러스트는 설문이 끝나야 마운트되므로, 인트로/설문 동안 미리 받아둬 전환 시 즉시 표시한다.
@@ -44,6 +44,12 @@ export function RespondentView({ surveyCode, nickname }: RespondentViewProps) {
 
   // 완료 일러스트 선로딩 — 설문 진행 중 미리 받아둬 완료 전환 시 늦게 뜨지 않게
   usePreloadImages(PRELOAD_DONE_ILLUST);
+
+  // 이 세션에서 설문 플로우에 진입했음을 표시 — 이후 상위 폴링이 GENERATING/READY로
+  // 바뀌어도 설문 도중 결과 화면으로 튕기지 않게 하는 가드(page.tsx respondentInProgress).
+  useEffect(() => {
+    markSurveyStarted(surveyCode);
+  }, [surveyCode]);
 
   useEffect(() => {
     if (step !== "intro") return;

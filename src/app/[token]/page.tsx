@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 
 import { useGetSurveyStatusAPI } from "@/apis/survey/queries";
 import { isApiError } from "@/apis/error";
-import { isOwner, isSurveyDone } from "@/lib/local-session";
+import { isOwner, isSurveyDone, isSurveyStarted } from "@/lib/local-session";
 import { Cta } from "@/components/ui/cta";
 
 import { ExpiredView } from "./_components/expired-view";
@@ -25,9 +25,11 @@ export default function TokenPage() {
 
   // ── hooks (early return 앞) ───────────────────────────────────────────────
   const owner = isOwner(token);
-  // 참여자가 이 링크 설문을 아직 제출 전이면, 폴링으로 GENERATING/READY가 떠도
-  // 설문 화면(RespondentView)에서 강제로 빠지지 않게 가드 — 설문 도중 화면 전환 방지
-  const respondentInProgress = !owner && !isSurveyDone(token);
+  // 참여자가 이 세션에서 설문을 "시작한 뒤 아직 제출 전"일 때만, 폴링으로 GENERATING/READY가
+  // 떠도 설문 화면(RespondentView)에서 강제로 빠지지 않게 가드 — 설문 도중 화면 전환 방지.
+  // 시작 전(첫 방문)에는 서버 첫 status를 그대로 따라, 이미 READY면 결과 페이지로 바로 간다.
+  const respondentInProgress =
+    !owner && isSurveyStarted(token) && !isSurveyDone(token);
 
   const {
     data: status,
