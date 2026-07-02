@@ -240,6 +240,7 @@ export function ResultView({
                   layoutId={`f05-card-${key}`}
                   aria-label={`${label} 자세히 보기`}
                   onClick={() => setSelectedKey(key)}
+                  onContextMenu={(e) => e.preventDefault()}
                   style={{ visibility: selectedKey === key ? "hidden" : "visible" }}
                   className="relative aspect-[160/218] overflow-hidden rounded-lg border border-white/15 bg-white"
                 >
@@ -250,7 +251,8 @@ export function ResultView({
                       fill
                       // CDN 호스트 가변/미확정 → 최적화 비활성(remotePatterns 의존 제거)
                       unoptimized
-                      className="object-cover"
+                      draggable={false}
+                      className="pointer-events-none object-cover select-none [-webkit-touch-callout:none]"
                       sizes="(max-width: 768px) 45vw, 165px"
                     />
                   ) : (

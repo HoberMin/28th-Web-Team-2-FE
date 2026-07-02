@@ -83,11 +83,12 @@ export function ResultCardModal({
       <div className="pointer-events-none fixed inset-0 z-30 mx-auto flex w-full max-w-[390px] items-center justify-center md:absolute">
         <motion.div
           layoutId={`f05-card-${quadrantKey}`}
-          transition={{ duration: phase === "opening" ? 1.2 : 0.4 }}
+          transition={{ duration: phase === "opening" ? 0.6 : 0.4 }}
           onLayoutAnimationComplete={() => {
             if (phase === "opening") setPhase("open");
           }}
           onClick={onClose}
+          onContextMenu={(e) => e.preventDefault()}
           role="dialog"
           aria-modal="true"
           aria-label={`${frontLabel} 상세`}
@@ -112,7 +113,8 @@ export function ResultCardModal({
                   alt={`${frontLabel} — AI 생성 이미지`}
                   fill
                   unoptimized
-                  className="object-cover"
+                  draggable={false}
+                  className="pointer-events-none object-cover select-none [-webkit-touch-callout:none]"
                   sizes="324px"
                 />
               ) : (
@@ -141,7 +143,8 @@ export function ResultCardModal({
                       alt={`${frontLabel} — AI 생성 이미지`}
                       fill
                       unoptimized
-                      className="object-cover"
+                      draggable={false}
+                      className="pointer-events-none object-cover select-none [-webkit-touch-callout:none]"
                       sizes="284px"
                     />
                   ) : (
