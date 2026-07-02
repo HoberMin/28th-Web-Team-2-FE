@@ -9,12 +9,13 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { CtaSmall } from "@/components/ui/cta-small";
 import { LinkIcon } from "@/components/ui/icons/link";
 import { Logo } from "@/components/ui/logo";
+import { shareKakao } from "@/lib/share";
 
 // 공유 관리 뷰 (product-spec #4 · Figma F04 node 1212:6382) — GUI 2차 전경 정합.
 // 핵심 루프: 링크를 퍼뜨려 참여자 모으기.
 // 하단 버튼: [링크 아이콘 w-16] gap-2 [카카오톡 공유하기 CtaSmall fill flex-1]
 // TODO(✍️): 24h 만료·전환 책임 위치(클라/서버).
-// TODO(✍️): 카카오 SDK 연동 — 현재 딥링크 fallback(앱 필요, 데스크탑 미지원).
+// 카카오 공유: shareKakao(SDK feed) 사용. 동작 전제 = 운영 앱 JS키 + 콘솔 웹 도메인 등록.
 // TODO(✍️): img_character_hamster_set 에셋 미존재 → hamster_three로 임시 대체. 에셋 확보 후 교체.
 interface ShareViewProps {
   surveyCode: string;
@@ -88,9 +89,18 @@ export function ShareView({ surveyCode, respondentCount }: ShareViewProps) {
     }
   };
 
-  // TODO(✍️): 카카오 SDK 연동 필요. 카카오 앱 키 확보 후 Kakao.Share.sendDefault() 방식으로 교체.
-  const handleKakaoShare = () => {
-    window.location.href = `kakaotalk://send?text=${encodeURIComponent(link)}`;
+  // 카카오 SDK 공유(feed). 인앱브라우저 포함 정식 경로. 키/SDK 실패 시 shareKakao 내부에서 링크 복사 fallback.
+  // ※ 동작 조건: NEXT_PUBLIC_KAKAO_JS_KEY(운영 앱) + 카카오 콘솔에 웹 도메인(looky.my·localhost) 등록.
+  const handleKakaoShare = async () => {
+    const result = await shareKakao({
+      link,
+      title: "친구들이 본 나는 어떤 모습일까?",
+      description: "1분이면 돼! 나에 대한 설문을 풀어줘 — looky",
+      imageUrl: `${origin}/assets/og-image.png`,
+    });
+    showToast(
+      result === "shared" ? "카카오톡 공유를 열었어요" : "링크를 복사했어요",
+    );
   };
 
   return (
