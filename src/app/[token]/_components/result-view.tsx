@@ -87,6 +87,18 @@ export function ResultView({
     return () => window.clearTimeout(hintTimer);
   }, [phase, hintShown]);
 
+  // 다음 화면(ResultLoading) 캐릭터 2컷(팔 내림/올림)을 gate 화면에서 미리 받아 캐시 적재
+  // → loading 진입 후 1초마다 교차될 때 첫 스왑에서 미로드로 깜빡이는 것 방지.
+  useEffect(() => {
+    for (const src of [
+      "/assets/img_character_hamster_down.png",
+      "/assets/img_character_hamster_up.png",
+    ]) {
+      const img = new window.Image();
+      img.src = src;
+    }
+  }, []);
+
   // ── 로딩 — 이미지 생성 대기 (가장 중요 — product-spec #6) ──────────────────
   if (isLoading) {
     return (
