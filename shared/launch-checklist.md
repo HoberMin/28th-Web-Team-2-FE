@@ -29,7 +29,7 @@
   - `respondent-view.tsx:43` intro 카운트다운 GIF ("3,2,1 캐릭터" 삽입 예정)
   - `respondent-view.tsx:99` 친구설문 완료 화면 일러스트 — **`character-insight.png`로 바로 채울 수 있음**(랜딩과 동일 에셋)
   - `expired-view.tsx:12` 만료 뷰 "안개·물음표" 이미지 — **에셋 자체가 아직 public에 없음**
-- [ ] **인스타 스토리 공유 이미지 규격** — `product-spec.md #4` TODO. `/assets/story-share.png` 파일은 있으나 규격 확정 필요.
+- [x] ~~인스타 스토리 공유 이미지 규격~~ — 스토리 공유 이미지 미사용 결정(2026-07-02). `/assets/story-share.png` 삭제됨.
 - [ ] **랜딩 캐릭터 세로 위치** — 현재 `figma-loose`(flex-1 중앙 근사). Figma F01은 절대 top 316px. 픽셀 정합 원하면 조정.
 
 > 디자인 토큰 *값*은 이 문서에 적지 않음 — 진실 소스는 Figma Variables (`design-guide.md §0`).
