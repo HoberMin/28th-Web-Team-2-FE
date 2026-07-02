@@ -11,6 +11,7 @@ import { CtaSmall } from "@/components/ui/cta-small";
 import { DownloadIcon } from "@/components/ui/icons/download";
 import { Logo } from "@/components/ui/logo";
 import { shareKakao } from "@/lib/share";
+import { usePreloadImages } from "@/lib/preload-images";
 import {
   QUADRANTS,
   QUADRANT_FRONT_LABEL,
@@ -39,6 +40,13 @@ interface ResultViewProps {
 }
 
 type ResultPhase = "gate" | "loading" | "body";
+
+// 로딩 연출(ResultLoading)의 캐릭터 2컷(팔 내림/올림)을 gate 화면에서 optimized URL로 미리 받아둔다.
+// ResultLoading은 next/image(optimized)로 요청하므로 raw png가 아니라 최적화 URL을 데워야 캐시 적중.
+const PRELOAD_LOADING_CHARS = [
+  { src: "/assets/img_character_hamster_down.png", width: 272, height: 334 },
+  { src: "/assets/img_character_hamster_up.png", width: 272, height: 334 },
+];
 
 // ISO 문자열 → "YYYY. MM. DD" (Figma 4cuts 캡션 날짜)
 function formatResultDate(iso: string): string {
@@ -89,18 +97,10 @@ export function ResultView({
 
   // 다음 화면(ResultLoading) 캐릭터 2컷(팔 내림/올림)을 gate 화면에서 미리 받아 캐시 적재
   // → loading 진입 후 1초마다 교차될 때 첫 스왑에서 미로드로 깜빡이는 것 방지.
-  useEffect(() => {
-    for (const src of [
-      "/assets/img_character_hamster_down.png",
-      "/assets/img_character_hamster_up.png",
-    ]) {
-      const img = new window.Image();
-      img.src = src;
-    }
-  }, []);
+  usePreloadImages(PRELOAD_LOADING_CHARS);
 
-  // 4칸 카드 이미지를 미리 디코딩해 캐시 적재 — 모달 열림/닫힘(플립 복귀) 시 미로드로 흰 배경이 비쳐
-  // 깜빡이는 것 방지(기존엔 탭 힌트가 1번 칸만 워밍 → 1번만 매끄럽던 것을 전 칸으로 확장).
+  // 4칸 카드 이미지(백엔드 AI 생성, unoptimized)를 미리 디코딩해 캐시 적재 — 모달 열림/닫힘(플립 복귀)
+  // 시 미로드로 흰 배경이 비쳐 깜빡이는 것 방지. imageUrl은 unoptimized라 raw URL 그대로 데우면 적중한다.
   useEffect(() => {
     if (!data?.quadrants) return;
     for (const { key } of QUADRANTS) {

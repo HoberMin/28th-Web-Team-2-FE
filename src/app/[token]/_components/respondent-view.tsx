@@ -15,7 +15,7 @@ import { usePreloadImages } from "@/lib/preload-images";
 
 // 완료 일러스트는 설문이 끝나야 마운트되므로, 인트로/설문 동안 미리 받아둬 전환 시 즉시 표시한다.
 const PRELOAD_DONE_ILLUST = [
-  { src: "/assets/img_character_hamster_film.png", width: 350, height: 421 },
+  { src: "/assets/img_character_hamster_letter.png", width: 350, height: 280 },
 ];
 
 // 참여자 플로우 (product-spec #5 · Figma F06 intro node 414:13450) — GUI 1차 전경 정합.

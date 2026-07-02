@@ -9,8 +9,15 @@ import { isApiError } from "@/apis/error";
 import type { AnswerEntry, SubmissionStartedResponse } from "@/apis/survey/types";
 import { SurveyRunner } from "@/components/survey/survey-runner";
 import { readSession } from "@/lib/local-session";
+import { usePreloadImages } from "@/lib/preload-images";
 import { clearSelfSurveyCache, isSelfSurveyDone, markSelfSurveyDone, readSelfSurveyCache, saveSelfSurveyCache } from "@/lib/self-survey-cache";
 import { Cta } from "@/components/ui/cta";
+
+// 다음 화면(F04 공유) 캐릭터를 설문 푸는 동안 optimized URL로 미리 받아둔다.
+// share-view는 next/image(optimized)로 요청하므로, raw png가 아니라 최적화 URL을 데워야 캐시 적중.
+const PRELOAD_SHARE_ILLUST = [
+  { src: "/assets/img_character_hamster_set.png", width: 1072, height: 615 },
+];
 
 // 자기 설문 (product-spec #3) — 필수 선행. 조하리 "나 vs 친구"의 본인 쪽 데이터.
 // 세션에서 surveyCode 읽기 → useStartSubmissionAPI로 문항 받기 → SurveyRunner → 제출 → /[surveyCode].
@@ -89,12 +96,9 @@ export default function SelfSurveyPage() {
     if (session?.surveyCode) saveSelfSurveyCache(session.surveyCode, apiData);
   }, [recoveredData, submissionData]);
 
-  // 다음 화면(F04 공유 페이지) 캐릭터 이미지(523KB)를 설문 푸는 동안 미리 받아 캐시에 적재
+  // 다음 화면(F04 공유 페이지) 캐릭터 이미지를 설문 푸는 동안 미리 받아 캐시에 적재
   // → 자기설문 완료 후 /[surveyCode](ShareView) 진입 시 즉시 표시(늦은 로드 방지).
-  useEffect(() => {
-    const img = new window.Image();
-    img.src = "/assets/img_character_hamster_set.png";
-  }, []);
+  usePreloadImages(PRELOAD_SHARE_ILLUST);
 
   const effectiveData = cachedData ?? recoveredData ?? submissionData;
 
