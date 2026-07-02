@@ -126,6 +126,8 @@
   --color-yellow-800: #7b7453;
   /* green — F05 로딩 화면 grad/background_green 끝색(node 1268-8343). Figma Variable 동기화. */
   --color-green-200: #bce59d;
+  /* green/300 — F05 AI생성중 로딩 닉네임 강조·체크리스트 아이콘(node 1318-9934/1318-9959). Figma Variable 동기화. */
+  --color-green-300: #4cc520;
 
   /* ── 아이콘 전용 색상표 (서비스 색상표와 분리한 의미 레이어) ──
      Figma node 395:9882 "아이콘" 섹션 기준. 아이콘 컴포넌트 기본색.

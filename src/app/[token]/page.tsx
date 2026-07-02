@@ -8,6 +8,7 @@ import { isOwner } from "@/lib/local-session";
 import { Cta } from "@/components/ui/cta";
 
 import { ExpiredView } from "./_components/expired-view";
+import { GeneratingView } from "./_components/generating-view";
 import { ResultView } from "./_components/result-view";
 import { RespondentView } from "./_components/respondent-view";
 import { RetryView } from "./_components/retry-view";
@@ -90,16 +91,14 @@ export default function TokenPage() {
     );
   }
 
-  // GENERATING: AI 처리 중 — 폴링 계속
+  // GENERATING: AI 처리 중 — 폴링 계속. 세부 단계(generationPhase)별 체크리스트 분기 (F05 로딩A/B)
   if (status.resultStatus === "GENERATING") {
     return (
-      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
-        <div className="size-10 animate-spin rounded-full border-2 border-gray-100 border-t-blue-500" />
-        <p className="text-body-16-medium text-gray-900">결과를 만들고 있어요</p>
-        <p className="text-body-14-regular text-gray-300">
-          잠시 후 자동으로 열려요
-        </p>
-      </div>
+      <GeneratingView
+        nickname={status.userNickname}
+        generationPhase={status.generationPhase}
+        onRestart={() => router.push("/")}
+      />
     );
   }
 

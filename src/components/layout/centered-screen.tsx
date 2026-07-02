@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 /**
  * CenteredScreen — 가운데 정렬 히어로 화면 공통 골격
  *
- * 사용처: F01 온보딩 · F05 결과 게이트 · F06 친구설문(진입/완료) · F05 결과 실패.
+ * 사용처: F01 온보딩 · F05 결과 게이트 · F06 친구설문(진입/완료) · F05 결과 실패 · F05 AI생성중 로딩.
  *
  * 공통(여기서 단일 소스화):
  *   - 좌우 패딩 px-5(20px) · 상하 기본 pt-5(20px)/pb-6(24px)
@@ -20,8 +20,8 @@ import { cn } from "@/lib/utils";
  *    이 골격을 쓰지 않는다(개별 레이아웃). 폼 화면(F02)도 상단 정렬이라 별도.
  */
 type CenteredScreenProps = {
-  /** 배경 그라데이션 — sky(기본, 흰→blue-200) / gray(흰→gray-200, 실패·중립 화면) */
-  background?: "sky" | "gray";
+  /** 배경 그라데이션 — sky(기본, 흰→blue-200) / gray(흰→gray-200, 실패·중립 화면) / green(흰→green-200, AI생성중 로딩) */
+  background?: "sky" | "gray" | "green";
   /** 가운데 정렬 콘텐츠 (로고/타이틀/이미지 블록) */
   children: ReactNode;
   /** 하단 고정 블록 (CTA·안내문 등) */
@@ -39,7 +39,9 @@ export function CenteredScreen({
     <main
       className={cn(
         "relative isolate flex h-full flex-col px-5 text-center",
-        background === "gray" ? "bg-gray-gradient" : "bg-sky-gradient",
+        background === "gray" && "bg-gray-gradient",
+        background === "green" && "bg-green-gradient",
+        background === "sky" && "bg-sky-gradient",
         className,
       )}
     >

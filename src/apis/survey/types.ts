@@ -17,6 +17,13 @@ export type ResultStatus =
   | "FAILED"
   | "EXPIRED";
 
+/** resultStatus === "GENERATING"일 때의 세부 진행 단계 */
+export type GenerationPhase =
+  | "QUEUED"
+  | "NARRATIVE_GENERATING"
+  | "IMAGE_GENERATING"
+  | "RETRYING";
+
 export type SubmitterType = "SELF" | "PEER";
 
 export type SubmissionStatus = "IN_PROGRESS" | "COMPLETED";
@@ -99,6 +106,8 @@ export interface SurveyStatusResponse {
   userNickname: string;
   surveyStatus: SurveyStatus;
   resultStatus: ResultStatus;
+  /** resultStatus === "GENERATING"일 때만 값 존재, 그 외 null */
+  generationPhase: GenerationPhase | null;
   selfSubmitted: boolean;
   peerSubmissionCount: number;
   requiredPeerSubmissionCount: number;

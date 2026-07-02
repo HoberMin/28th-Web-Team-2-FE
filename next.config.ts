@@ -8,7 +8,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   turbopack: {},
   // 같은 네트워크 모바일 기기에서 개발 서버 접근 허용 (192.168.x.x 대역)
-  allowedDevOrigins: ["192.168.45.187"],
+  allowedDevOrigins: ["192.168.0.100"],
   async headers() {
     return [
       {
