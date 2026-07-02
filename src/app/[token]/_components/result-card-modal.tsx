@@ -99,7 +99,9 @@ export function ResultCardModal({
             className="relative size-full"
             style={{ transformStyle: "preserve-3d" }}
             animate={{ rotateY: isFlipped ? 180 : 0 }}
-            exit={{ rotateY: 0 }}
+            // 닫힘 플립 복귀는 layoutId 위치 복귀(0.4s)와 맞춰야 위치 도착 후 홀로 뒤집혀 급하게/툭
+            // 돌아가는 느낌이 안 남 → 열림 플립은 0.6s 유지, 닫힘(exit)만 0.4s로 동기화.
+            exit={{ rotateY: 0, transition: { duration: 0.4 } }}
             transition={{ duration: 0.6 }}
           >
             {/* 앞면 (Figma 1268-7404) */}

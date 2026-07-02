@@ -99,6 +99,18 @@ export function ResultView({
     }
   }, []);
 
+  // 4칸 카드 이미지를 미리 디코딩해 캐시 적재 — 모달 열림/닫힘(플립 복귀) 시 미로드로 흰 배경이 비쳐
+  // 깜빡이는 것 방지(기존엔 탭 힌트가 1번 칸만 워밍 → 1번만 매끄럽던 것을 전 칸으로 확장).
+  useEffect(() => {
+    if (!data?.quadrants) return;
+    for (const { key } of QUADRANTS) {
+      const url = data.quadrants[key]?.imageUrl;
+      if (!url) continue;
+      const img = new window.Image();
+      img.src = url;
+    }
+  }, [data]);
+
   // ── 로딩 — 이미지 생성 대기 (가장 중요 — product-spec #6) ──────────────────
   if (isLoading) {
     return (
