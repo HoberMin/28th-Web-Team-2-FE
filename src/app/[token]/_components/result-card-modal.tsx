@@ -8,7 +8,7 @@ import { CtaSmall } from "@/components/ui/cta-small";
 import type { QuadrantKey } from "@data/quadrants";
 
 // F05 카드 확대 모달 — 앞면(1268-7404) → 뒷면(1268-7422) 플립 (스펙 §0·§4·§5·§7).
-// 시퀀스: opening(카드 위치→중앙, 1.2s, layoutId 공유) → open(1s hold) → flipping(rotateY 0.6s) → back.
+// 시퀀스: opening(카드 위치→중앙, 1.2s, layoutId 공유) → open(0.4s hold) → flipping(rotateY 0.6s) → back.
 // 닫기: 딤/카드 탭 or ESC → onClose (AnimatePresence exit이 layoutId로 원위치까지 역재생).
 type FlipPhase = "opening" | "open" | "flipping" | "back";
 
@@ -48,10 +48,10 @@ export function ResultCardModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  // open(hold 1s) → flipping 전이
+  // open(hold 0.4s) → flipping 전이
   useEffect(() => {
     if (phase !== "open") return;
-    const holdTimer = window.setTimeout(() => setPhase("flipping"), 1000);
+    const holdTimer = window.setTimeout(() => setPhase("flipping"), 400);
     return () => window.clearTimeout(holdTimer);
   }, [phase]);
 
