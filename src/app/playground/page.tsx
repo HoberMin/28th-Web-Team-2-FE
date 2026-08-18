@@ -4,12 +4,12 @@ import { Logo } from "@/components/ui/logo";
 
 import { ButtonSection } from "./_components/button-section";
 import { ColorSection } from "./_components/color-section";
-import { StatesSection } from "./_components/states-section";
-import { FourCutsSection } from "./_components/four-cuts-section";
-import { IconSection } from "./_components/icon-section";
 import { FeedbackSection } from "./_components/feedback-section";
 import { FormSection } from "./_components/form-section";
+import { FourCutsSection } from "./_components/four-cuts-section";
+import { IconSection } from "./_components/icon-section";
 import { RadiusSection } from "./_components/radius-section";
+import { StatesSection } from "./_components/states-section";
 import { TypographySection } from "./_components/typography-section";
 
 export const metadata: Metadata = {
@@ -57,22 +57,20 @@ export default function PlaygroundPage() {
         </div>
       </header>
 
-      {SECTIONS.length > 0 && (
-        <nav aria-label="섹션 목차">
-          <ul className="flex flex-wrap gap-2">
-            {SECTIONS.map(({ id, label }) => (
-              <li key={id}>
-                <a
-                  href={`#${id}`}
-                  className="inline-flex rounded-field border border-gray-100 px-3 py-1.5 text-caption-12-medium text-gray-400 transition-colors active:bg-gray-50"
-                >
-                  {label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
+      <nav aria-label="섹션 목차">
+        <ul className="flex flex-wrap gap-2">
+          {SECTIONS.map(({ id, label }) => (
+            <li key={id}>
+              <a
+                href={`#${id}`}
+                className="inline-flex rounded-field border border-gray-100 px-3 py-1.5 text-caption-12-medium text-gray-400 transition-colors active:bg-gray-50"
+              >
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
       <ColorSection />
       <TypographySection />
@@ -84,9 +82,15 @@ export default function PlaygroundPage() {
       <FourCutsSection />
       <StatesSection />
 
-      <p className="text-body-14-regular text-gray-300">
-        섹션을 순차적으로 옮겨 담고 있습니다.
-      </p>
+      <footer className="flex flex-col gap-2 border-t border-gray-100 pt-6">
+        <p className="text-caption-12-medium text-gray-400">진실 소스</p>
+        <ul className="flex flex-col gap-1 text-caption-12-regular text-gray-300">
+          <li>토큰 값 — Figma Variables → globals.css @theme</li>
+          <li>컴포넌트 사용 규칙 — shared/design-guide.md</li>
+          <li>화면 스펙·상태 — shared/product-spec.md</li>
+          <li>현황·미결 — docs/design-system-audit.md</li>
+        </ul>
+      </footer>
     </main>
   );
 }
