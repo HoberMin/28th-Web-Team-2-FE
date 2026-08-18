@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 
 // playground 공용 프리미티브.
@@ -52,19 +52,25 @@ export function SubGroup({
   );
 }
 
+/** CSS 변수는 런타임에 변하지 않으므로 구독할 것이 없다 */
+const subscribeNoop = () => () => {};
+
 /**
  * CSS 변수의 계산값을 읽어 표시한다.
  * 하드코딩 대신 런타임 조회 → @theme 이 바뀌면 화면도 자동으로 바뀐다.
  */
 export function TokenValue({ varName }: { varName: string }) {
-  const [value, setValue] = useState<string>("");
-
-  useEffect(() => {
-    const raw = getComputedStyle(document.documentElement)
-      .getPropertyValue(varName)
-      .trim();
-    setValue(raw);
-  }, [varName]);
+  // CSS 변수는 React 밖의 외부 시스템 → useSyncExternalStore 로 읽는다.
+  // (effect + setState 는 cascading render 를 만들고, 렌더 중 직접 읽으면 하이드레이션이 어긋난다)
+  // 변수는 런타임에 바뀌지 않으므로 구독은 no-op. 서버 스냅샷은 빈 문자열.
+  const value = useSyncExternalStore(
+    subscribeNoop,
+    () =>
+      getComputedStyle(document.documentElement)
+        .getPropertyValue(varName)
+        .trim(),
+    () => "",
+  );
 
   return (
     <span className="text-caption-12-regular text-gray-300 tabular-nums">
