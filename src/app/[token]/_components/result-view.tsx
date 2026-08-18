@@ -1,7 +1,6 @@
 "use client";
 
-import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 import { useGetSurveyResultAPI } from "@/apis/survey/queries";
@@ -19,6 +18,7 @@ import {
 import type { QuadrantKey } from "@data/quadrants";
 
 import { ResultCardModal } from "./result-card-modal";
+import { ResultFourCuts } from "./result-four-cuts";
 import { ResultGate } from "./result-gate";
 import { ResultLoading } from "./result-loading";
 import { ResultStatusScreen } from "./result-status-screen";
@@ -168,62 +168,20 @@ export function ResultView({
 
       {/* ── 4cuts 합성 카드 + 디스클레이머 (Figma 627:4706, gap 8) ────────── */}
       <section className="flex flex-col gap-2 px-5 pt-4">
-        {/* 다크 카드: 2×2 네컷 + 날짜/캡션 (Figma 414:13632) */}
-        <div className="overflow-hidden rounded-[18px] bg-gray-900 px-[14px] pb-5 pt-[21px]">
-          <div className="grid grid-cols-2 gap-2.5">
-            {QUADRANTS.map(({ key }, index) => {
-              const imageUrl = data?.quadrants?.[key]?.imageUrl ?? null;
-              const label = QUADRANT_LABEL[key];
-              return (
-                <motion.button
-                  key={key}
-                  ref={index === 0 ? firstCardRef : undefined}
-                  type="button"
-                  layoutId={`f05-card-${key}`}
-                  aria-label={`${label} 자세히 보기`}
-                  onClick={() => setSelectedKey(key)}
-                  onContextMenu={(e) => e.preventDefault()}
-                  style={{ visibility: selectedKey === key ? "hidden" : "visible" }}
-                  className="relative aspect-[160/218] overflow-hidden rounded-lg border border-white/15 bg-white"
-                >
-                  {imageUrl ? (
-                    <Image
-                      src={imageUrl}
-                      alt={`${label} — AI 생성 이미지`}
-                      fill
-                      // CDN 호스트 가변/미확정 → 최적화 비활성(remotePatterns 의존 제거)
-                      unoptimized
-                      draggable={false}
-                      className="pointer-events-none object-cover select-none [-webkit-touch-callout:none]"
-                      sizes="(max-width: 768px) 45vw, 165px"
-                    />
-                  ) : (
-                    <div className="flex size-full items-center justify-center bg-gray-50">
-                      <span className="text-body-16-medium text-gray-200" aria-hidden>
-                        🌫️
-                      </span>
-                    </div>
-                  )}
-                  {/* 칸 라벨 오버레이 (Figma Overlay: bg black/50) */}
-                  <span className="absolute bottom-[7px] left-[7px] rounded bg-black/50 px-1.5 py-[3px] text-caption-12-regular text-white">
-                    {label}
-                  </span>
-                </motion.button>
-              );
-            })}
-          </div>
-          {/* 캡션: 날짜 + 종합 키워드 (Figma 414:13633) */}
-          <div className="mt-[14px] flex flex-col items-center text-center">
-            {resultDate && (
-              <p className="text-body-14-regular text-gray-400">{resultDate}</p>
-            )}
-            {data?.overallKeyword && (
-              <p className="font-display1 text-head1-20 text-white">
-                {data.overallKeyword} {nickname}
-              </p>
-            )}
-          </div>
-        </div>
+        <ResultFourCuts
+          imageUrls={{
+            open: data?.quadrants?.open?.imageUrl ?? null,
+            blind: data?.quadrants?.blind?.imageUrl ?? null,
+            hidden: data?.quadrants?.hidden?.imageUrl ?? null,
+            unknown: data?.quadrants?.unknown?.imageUrl ?? null,
+          }}
+          resultDate={resultDate}
+          overallKeyword={data?.overallKeyword}
+          nickname={nickname}
+          selectedKey={selectedKey}
+          onSelect={setSelectedKey}
+          firstCardRef={firstCardRef}
+        />
 
         {/* 디스클레이머 (Figma 1257:8038) */}
         <div className="rounded-lg bg-white px-3 py-2 text-center">
