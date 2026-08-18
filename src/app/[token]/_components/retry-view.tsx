@@ -7,17 +7,11 @@ import { Cta } from "@/components/ui/cta";
 import { Logo } from "@/components/ui/logo";
 
 // 결과물 생성 실패 뷰 (product-spec #7 · Figma F05_결과물 생성 실패 노드 1387:3901) — GUI 전경 정합.
-// FAILED(AI 생성 실패) + 응답 미달(24h 경과·응답 3건 미달) 공통 재시도 화면. 결과 네컷 생성 안 함.
+// 노출 조건: resultStatus === "FAILED" (AI 결과 생성 실패) **만**.
+// 응답 3건 미달로는 이 화면이 뜨지 않는다 — 3건이 찰 때까지 수집(공유) 화면에 머문다
+// (시간 만료 개념 폐기, 2026-07-05 확정 · domain.md "결과 미달 처리"). 결과 네컷 생성 안 함.
 // 룰/Figma에서 느슨하게 처리한 지점은 `figma-loose:` 주석으로 표기(디자이너 합의용).
-export function RetryView({
-  nickname: _nickname,
-  respondentCount: _respondentCount,
-  onRetry,
-}: {
-  nickname: string;
-  respondentCount: number;
-  onRetry: () => void;
-}) {
+export function RetryView({ onRetry }: { onRetry: () => void }) {
   return (
     <CenteredScreen
       background="gray"

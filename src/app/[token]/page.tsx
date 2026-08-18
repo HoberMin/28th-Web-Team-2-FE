@@ -121,11 +121,7 @@ export default function TokenPage() {
   // FAILED: AI 생성 실패
   if (status.resultStatus === "FAILED") {
     return (
-      <RetryView
-        nickname={status.userNickname}
-        respondentCount={status.peerSubmissionCount}
-        onRetry={() => router.push("/")}
-      />
+      <RetryView onRetry={() => router.push("/")} />
     );
   }
 
