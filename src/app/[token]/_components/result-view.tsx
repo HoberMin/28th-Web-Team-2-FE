@@ -22,6 +22,7 @@ import type { QuadrantKey } from "@data/quadrants";
 
 import { ResultCardModal } from "./result-card-modal";
 import { ResultLoading } from "./result-loading";
+import { ResultStatusScreen } from "./result-status-screen";
 import { ResultTapHint } from "./result-tap-hint";
 
 // 결과 뷰 (product-spec #6 · Figma F05 컴팩트 개편 — 인터랙션 3종 스펙 2026-07-02).
@@ -111,39 +112,33 @@ export function ResultView({
   // ── 로딩 — 이미지 생성 대기 (가장 중요 — product-spec #6) ──────────────────
   if (isLoading) {
     return (
-      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
-        <div className="size-10 animate-spin rounded-full border-2 border-gray-100 border-t-blue-500" />
-        <p className="text-body-16-medium text-gray-900">결과를 불러오고 있어요</p>
-        <p className="text-body-14-regular text-gray-300">잠시만 기다려주세요</p>
-      </div>
+      <ResultStatusScreen
+        spinner
+        title="결과를 불러오고 있어요"
+        description="잠시만 기다려주세요"
+      />
     );
   }
 
   // ── 에러 ─────────────────────────────────────────────────────────────────
   if (error) {
     return (
-      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
-        <p className="text-body-16-medium text-gray-900">
-          결과를 불러오지 못했어요
-        </p>
-        <p className="text-body-14-regular text-gray-300">{error.message}</p>
-        <Cta onClick={() => void refetch()}>다시 시도</Cta>
-      </div>
+      <ResultStatusScreen
+        title="결과를 불러오지 못했어요"
+        description={error.message}
+        action={<Cta onClick={() => void refetch()}>다시 시도</Cta>}
+      />
     );
   }
 
   // ── 생성 대기 — 데이터는 받았지만 아직 READY 아님(quadrants=null). 폴링 중 ──
   if (data && !data.quadrants) {
     return (
-      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-6 text-center">
-        <div className="size-10 animate-spin rounded-full border-2 border-gray-100 border-t-blue-500" />
-        <p className="text-body-16-medium text-gray-900">
-          네컷을 만들고 있어요
-        </p>
-        <p className="text-body-14-regular text-gray-300">
-          잠시만 기다리면 결과가 나와요
-        </p>
-      </div>
+      <ResultStatusScreen
+        spinner
+        title="네컷을 만들고 있어요"
+        description="잠시만 기다리면 결과가 나와요"
+      />
     );
   }
 
