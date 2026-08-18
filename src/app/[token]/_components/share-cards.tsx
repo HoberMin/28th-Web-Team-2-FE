@@ -6,6 +6,24 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { usePreloadImages } from "@/lib/preload-images";
 
+import {
+  AUTOPLAY_MS,
+  CARD_W_PCT,
+  GAP_PX,
+  SIDE_OFFSET_PCT,
+  SIDE_SCALE,
+  SLIDE_MS,
+  SWIPE_THRESHOLD,
+} from "./share-cards.constants";
+import {
+  CARDS,
+  FIRST_REAL,
+  LAST_REAL,
+  PRELOAD_CARDS,
+  SLIDES,
+} from "./share-cards.data";
+import type { ShareCard } from "./share-cards.data";
+
 // 공유 안내 카드 캐러셀 (Figma F04 리디자인 · node 832:13771)
 // 레이아웃: 가운데 활성 카드 풀사이즈 + 좌우 인접 카드 scale(0.8) peek.
 //   ⮑ 사이드 카드는 별도 px를 박지 않고 활성 카드 스펙에 transform: scale(0.8)만 적용한다.
@@ -15,67 +33,6 @@ import { usePreloadImages } from "@/lib/preload-images";
 //   2. 무한 루프: 앞뒤로 클론을 1장씩 둬(앞=카드3, 뒤=카드1) 어느 방향이든 끊김 없이 순환
 //   3. 자동/수동(스와이프) 전환 모두 인디케이터 동기화
 // 접근성: prefers-reduced-motion 이면 자동재생·슬라이드 트랜지션을 끈다(수동 스와이프는 유지).
-
-const AUTOPLAY_MS = 2000; // 카드당 노출 2초
-const SLIDE_MS = 300; // 슬라이드 전환 시간
-const SWIPE_THRESHOLD = 50; // 스와이프 인정 거리(px)
-const GAP_PX = 16; // 카드 사이 간격(Figma 830:9452: 카드1↔카드2 16px) — 슬라이드 한 칸 이동량에 함께 반영
-const SIDE_SCALE = 0.8; // 좌우 비활성 카드 축소율 (Figma 832:13771)
-// Figma 830:9452 기준: 풀폭 뷰포트(390)에서 활성 카드 316px(=81%), 좌우 peek ~21px.
-// 캐러셀은 share-view에서 -mx-5로 화면 끝까지 펼쳐진다.
-// 사이드 카드 scale은 "안쪽(활성 카드 쪽) 모서리"를 기준점으로 축소하므로(아래 CardFrame transformOrigin),
-// 카드를 넓게 둬도 peek이 사라지지 않는다.
-const CARD_W_PCT = 81;
-const SIDE_OFFSET_PCT = (100 - CARD_W_PCT) / 2; // 활성 카드를 가운데로 보내는 절반 여백(%)
-
-type ShareCard = {
-  n: number; // 단계 번호(뱃지)
-  src: string;
-  /** 일러스트 원본 크기(next/image 비율 계산용) — 표시 높이는 h-37(148px)로 정규화 */
-  width: number;
-  height: number;
-  text: string;
-};
-
-// 일러스트는 카드 콘텐츠 폭(p-6 제외 ≈ 268px)에 w-full로 꽉 채운다 = Figma 캐릭터 268 width.
-// (높이는 비율대로 자동 — 에셋마다 미세하게 다름. 에셋 높이 통일은 디자이너 재출력 시 확정.)
-const CARDS: ShareCard[] = [
-  {
-    n: 1,
-    src: "/assets/img_character_hamster_under.png",
-    width: 1072,
-    height: 615,
-    text: "아래 버튼으로 내 링크를 꼭 복사해줘!",
-  },
-  {
-    n: 2,
-    src: "/assets/img_character_hamster_three.png",
-    width: 1072,
-    height: 615,
-    text: "친구가 참여할 수 있게 링크를 보내줘!",
-  },
-  {
-    n: 3,
-    // ⚠️ 일러스트가 시계 캐릭터(hamster_clock)인데 24시간 대기가 폐기돼 그림과 문구가
-    //    어긋난다 — 에셋 교체 여부는 디자이너 판단 필요.
-    src: "/assets/img_character_hamster_clock.png",
-    width: 1072,
-    height: 638,
-    text: "3명 이상 모이면 바로 내 링크로 와!",
-  },
-];
-
-// 2·3번 카드는 슬라이드되어 들어올 때 마운트되므로, 진입 즉시 세 장 모두 미리 받아둔다.
-const PRELOAD_CARDS = CARDS.map(({ src, width, height }) => ({
-  src,
-  width,
-  height,
-}));
-
-// 양끝 클론을 더한 슬라이드 배열: [카드3, 카드1, 카드2, 카드3, 카드1]
-const SLIDES: ShareCard[] = [CARDS[CARDS.length - 1], ...CARDS, CARDS[0]];
-const FIRST_REAL = 1; // 카드1의 슬라이드 인덱스
-const LAST_REAL = CARDS.length; // 카드3의 슬라이드 인덱스
 
 export function ShareCards() {
   // index: SLIDES 기준 위치. 카드1(=FIRST_REAL)에서 시작.
