@@ -82,6 +82,13 @@ export default function SelfSurveyPage() {
 
     const cached = session?.surveyCode ? readSelfSurveyCache(session.surveyCode) : null;
     if (cached) {
+      // localStorage 는 SSR 에서 읽을 수 없어 마운트 후 1회 초기화가 불가피하다.
+      // 렌더 중(또는 useState 지연 초기화)에 읽으면 서버는 빈 화면, 클라이언트는 캐시된
+      // 문항을 그려 하이드레이션이 어긋난다. startCalledRef 가드로 1회만 실행되므로
+      // 규칙이 경고하는 cascading render 도 발생하지 않는다.
+      // TODO(✍️): 이 페이지 테스트를 갖춘 뒤 useSyncExternalStore 로 전환 검토
+      //   (getSnapshot 이 매번 새 객체를 반환하지 않도록 캐시 필요 — 무한 루프 위험).
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCachedData(cached);
       return;
     }
