@@ -4,6 +4,7 @@ import { Logo } from "@/components/ui/logo";
 
 import { ButtonSection } from "./_components/button-section";
 import { ColorSection } from "./_components/color-section";
+import { StatesSection } from "./_components/states-section";
 import { FourCutsSection } from "./_components/four-cuts-section";
 import { IconSection } from "./_components/icon-section";
 import { FeedbackSection } from "./_components/feedback-section";
@@ -36,6 +37,7 @@ const SECTIONS: { id: string; label: string }[] = [
   { id: "feedback", label: "진행·안내" },
   { id: "icon", label: "아이콘·로고" },
   { id: "four-cuts", label: "인생네컷" },
+  { id: "states", label: "상태 3종" },
 ];
 
 export default function PlaygroundPage() {
@@ -80,6 +82,7 @@ export default function PlaygroundPage() {
       <FeedbackSection />
       <IconSection />
       <FourCutsSection />
+      <StatesSection />
 
       <p className="text-body-14-regular text-gray-300">
         섹션을 순차적으로 옮겨 담고 있습니다.
