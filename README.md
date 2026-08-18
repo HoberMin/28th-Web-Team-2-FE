@@ -65,7 +65,8 @@ src/
 │  ├─ [token]/            주인공·참여자 공용 링크 — 상태로 뷰 분기
 │  │  └─ _components/     share / respondent / generating / result / retry view
 │  ├─ onboarding/         nickname → survey (주인공 온보딩)
-│  └─ style-guide/        디자인 토큰·컴포넌트 카탈로그
+│  ├─ playground/         디자인 시스템 플레이그라운드 (토큰 + 공용 컴포넌트)
+│  └─ style-guide/        초기 토큰 카탈로그 (playground로 대체됨)
 ├─ apis/survey/           keys · queries · mutations · types
 ├─ components/
 │  ├─ survey/             설문 러너
