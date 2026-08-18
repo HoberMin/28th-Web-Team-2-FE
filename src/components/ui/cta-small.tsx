@@ -46,20 +46,20 @@ const ctaSmallVariants = cva(
       variant: {
         /**
          * stroke — 테두리형 (인스타 스토리 공유 / CTA_insta 통합)
-         * Figma px-[20px] → px-5(20px), border gray-200, bg white, text gray-900
+         * Figma px-5 → px-5(20px), border gray-200, bg white, text gray-900
          */
         stroke: "bg-white border border-gray-200 text-gray-900 px-5",
 
         /**
          * stroke_icn — 아이콘 포함 테두리형
-         * Figma pl-[12px] pr-[16px] → pl-3 pr-4, gap-[2px] → gap-0.5(base)
+         * Figma pl-3 pr-4 → pl-3 pr-4, gap-0.5 → gap-0.5(base)
          * border gray-200, bg white, text gray-900, lucide Link 24px
          */
         stroke_icn: "bg-white border border-gray-200 text-gray-900 pl-3 pr-4",
 
         /**
          * fill — 채움형 (카카오톡 공유)
-         * Figma px-[20px] → px-5(20px), bg-kakao(#fee500), text gray-900
+         * Figma px-5 → px-5(20px), bg-kakao(#fee500), text gray-900
          */
         fill: "bg-kakao text-gray-900 px-5",
 

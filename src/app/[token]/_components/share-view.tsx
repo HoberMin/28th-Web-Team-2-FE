@@ -162,7 +162,7 @@ export function ShareView({ surveyCode, respondentCount }: ShareViewProps) {
           aria-hidden
           width={1072}
           height={615}
-          className="h-auto w-full max-w-[304px] select-none"
+          className="h-auto w-full max-w-76 select-none"
         />
       </div>
 

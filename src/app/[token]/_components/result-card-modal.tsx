@@ -89,7 +89,7 @@ export function ResultCardModal({
           role="dialog"
           aria-modal="true"
           aria-label={`${frontLabel} 상세`}
-          className="pointer-events-auto h-[440px] w-[324px]"
+          className="pointer-events-auto h-110 w-81"
           style={{ perspective: 1200 }}
         >
           <motion.div
@@ -134,8 +134,8 @@ export function ResultCardModal({
               style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
             >
               {/* Figma: 좌 18 / w284 (우 22, 비대칭) */}
-              <div className="ml-[18px] flex w-[284px] flex-col gap-7">
-                <div className="relative h-[180px] w-full overflow-hidden rounded-[14px] border border-gray-100">
+              <div className="ml-[18px] flex w-71 flex-col gap-7">
+                <div className="relative h-45 w-full overflow-hidden rounded-[14px] border border-gray-100">
                   {imageUrl ? (
                     <Image
                       src={imageUrl}

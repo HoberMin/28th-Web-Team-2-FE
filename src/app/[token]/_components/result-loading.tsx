@@ -50,7 +50,7 @@ export function ResultLoading({ onDone }: ResultLoadingProps) {
 
         {/* 두 컷을 겹쳐 쌓고 opacity만 토글 — src 교체 시 첫 스왑에서 발생하던
             디코딩·페인트 깜빡임 제거. 둘 다 마운트 시 디코딩·페인트되므로 이후 전환은 순수 CSS. */}
-        <div className="relative w-[272px] max-w-full select-none">
+        <div className="relative w-68 max-w-full select-none">
           <Image
             src="/assets/img_character_hamster_down.png"
             alt=""

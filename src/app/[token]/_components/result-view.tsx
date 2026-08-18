@@ -159,7 +159,7 @@ export function ResultView({
   const firstImageUrl = data?.quadrants?.[firstQuadrant.key]?.imageUrl ?? null;
 
   return (
-    <main className="relative flex min-h-full flex-col bg-white pb-[116px]">
+    <main className="relative flex min-h-full flex-col bg-white pb-29">
 
       {/* ── 헤더 (Figma top 44, h60) ─────────────────────────────────────── */}
       <div className="flex items-center justify-between px-5 pt-4">

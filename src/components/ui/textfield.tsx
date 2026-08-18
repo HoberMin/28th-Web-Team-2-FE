@@ -27,7 +27,7 @@ const textfieldVariants = cva(
   [
     "block w-full",
     "rounded-field",         // --radius-field: 0.75rem (12px) — 신설 토큰
-    "px-4 py-0 h-15",        // 350×60: h-15(60px), Figma px-[16px] → px-4(16px)
+    "px-4 py-0 h-15",        // 350×60: h-15(60px), Figma px-4 → px-4(16px)
     "bg-white text-gray-900",
     "border border-gray-200",
     "font-sans text-body-16-medium",  // letter-spacing·line-height는 @theme --text-body-16-medium--* 자동 적용

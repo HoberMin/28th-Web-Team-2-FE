@@ -21,7 +21,7 @@ const ctaVariants = cva(
   [
     "inline-flex w-full shrink-0 items-center justify-center",
     "rounded-cta",          // --radius-cta: 1rem (16px) — 신설 토큰
-    "px-2 py-0 h-14",       // 350×56: h-14(56px), Figma p-[8px] → px-2(8px). w-full+center라 수평 패딩 영향 미미
+    "px-2 py-0 h-14",       // 350×56: h-14(56px), Figma p-2 → px-2(8px). w-full+center라 수평 패딩 영향 미미
     "font-display1 text-head1-18",  // letter-spacing·line-height는 @theme --text-head1-18--* 자동 적용
     "transition-colors select-none outline-none whitespace-nowrap",
     "focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2",

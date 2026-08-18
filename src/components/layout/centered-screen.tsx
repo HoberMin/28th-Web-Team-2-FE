@@ -47,12 +47,12 @@ export function CenteredScreen({
     >
       <BgCloud />
       {/* 콘텐츠 영역 — h-full 전체 차지(footer가 absolute라 flow에서 제외).
-          pb-[92px]: footer 오버레이 높이(pt-3 12 + h-14 56 + pb-6 24)만큼 하단 여백 확보.
+          pb-23(92px): footer 오버레이 높이(pt-3 12 + h-14 56 + pb-6 24)만큼 하단 여백 확보.
           콘텐츠가 길면 이 영역 안에서만 스크롤 → footer는 항상 그 위에 고정. */}
       <div
         className={cn(
           "flex flex-1 flex-col items-center overflow-y-auto scrollbar-hide bg-transparent pt-5",
-          footer ? "pb-[92px]" : "pb-6",
+          footer ? "pb-23" : "pb-6",
         )}
       >
         <div className="flex-1" aria-hidden />
