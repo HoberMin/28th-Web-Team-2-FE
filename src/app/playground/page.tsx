@@ -4,6 +4,7 @@ import { Logo } from "@/components/ui/logo";
 
 import { ButtonSection } from "./_components/button-section";
 import { ColorSection } from "./_components/color-section";
+import { FormSection } from "./_components/form-section";
 import { RadiusSection } from "./_components/radius-section";
 import { TypographySection } from "./_components/typography-section";
 
@@ -28,6 +29,7 @@ const SECTIONS: { id: string; label: string }[] = [
   { id: "typography", label: "타이포" },
   { id: "radius", label: "Radius" },
   { id: "button", label: "버튼" },
+  { id: "form", label: "폼" },
 ];
 
 export default function PlaygroundPage() {
@@ -68,6 +70,7 @@ export default function PlaygroundPage() {
       <TypographySection />
       <RadiusSection />
       <ButtonSection />
+      <FormSection />
 
       <p className="text-body-14-regular text-gray-300">
         섹션을 순차적으로 옮겨 담고 있습니다.
