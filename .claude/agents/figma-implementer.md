@@ -3,6 +3,8 @@ name: figma-implementer
 description: Figma 디자인을 코드로 변환할 때 사용. Figma MCP로 노드를 읽어 토큰 화이트리스트대로 구현. 임의 디자인 결정 금지.
 tools: Read, Edit, Write, Grep, Glob, Bash
 model: sonnet
+effort: medium
+color: blue
 mcpServers:
   - figma
 skills:

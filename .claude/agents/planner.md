@@ -3,6 +3,8 @@ name: planner
 description: '"왜 필요해?", "이 라이브러리 어때?", "아키텍처 어떻게?", "구현 계획 짜줘" 등 가치 판단/기술 결정/구현 계획 분석 시 사용. 코드 작성 안 함.'
 tools: Read, Grep, Glob, WebSearch, WebFetch
 model: opus
+effort: high
+color: purple
 maxTurns: 15
 ---
 

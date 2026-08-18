@@ -3,6 +3,8 @@ name: frontend-dev
 description: 페이지·컴포넌트·로직 구현 시 사용. page.tsx와 _components/ 작성. API 훅/타입은 api-developer, Figma 변환은 figma-implementer.
 tools: Read, Edit, Write, Grep, Glob
 model: sonnet
+effort: medium
+color: blue
 skills:
   - api-patterns
   - frontend-design

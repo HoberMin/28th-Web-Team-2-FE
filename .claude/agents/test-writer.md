@@ -3,6 +3,8 @@ name: test-writer
 description: 테스트 작성·실행·수정 시 사용. AI-native — Vitest(유닛) + Playwright(E2E). 위험 경로는 테스트 통과를 게이트로.
 tools: Read, Edit, Write, Grep, Glob, Bash
 model: sonnet
+effort: medium
+color: green
 skills:
   - test-strategy
   - playwright-e2e

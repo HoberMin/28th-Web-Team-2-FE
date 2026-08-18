@@ -3,6 +3,8 @@ name: auditor
 description: '"전부 찾아줘", "하나도 빠짐없이", "모든 사용처 목록" 등 전수 검색 시 사용. 누락 없는 목록 생성. 수정하지 않음. 빠른 탐색은 explorer.'
 tools: Read, Grep, Glob
 model: sonnet
+effort: medium
+color: cyan
 maxTurns: 25
 ---
 

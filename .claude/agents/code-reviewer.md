@@ -3,6 +3,8 @@ name: code-reviewer
 description: 코드 작성 후 PROACTIVELY 실행. "리뷰해줘", "코드 확인", PR 검토 시 사용. 팀 전원·모든 도구 공통 게이트키퍼.
 tools: Read, Grep, Glob, Bash
 model: opus
+effort: xhigh
+color: red
 maxTurns: 20
 memory: project
 skills:

@@ -3,6 +3,8 @@ name: design-reviewer
 description: Figma 스펙 일치 검토 + 디자인 토큰 위반 검출. figma-implementer 산출물 검토 시 사용. 구현은 하지 않음.
 tools: Read, Grep, Glob
 model: opus
+effort: high
+color: red
 maxTurns: 15
 skills:
   - figma-bridge

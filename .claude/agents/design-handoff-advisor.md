@@ -3,6 +3,8 @@ name: design-handoff-advisor
 description: 디자이너가 "이 토큰/스펙을 프론트에 어떻게 넘기나"를 물을 때 사용. figma-bridge/tailwind-v4 기준으로 답하는 read-only 자문역. 코드·파일 수정 안 함.
 tools: Read, Grep, Glob
 model: opus
+effort: high
+color: pink
 maxTurns: 15
 mcpServers:
   - figma

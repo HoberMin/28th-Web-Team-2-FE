@@ -3,6 +3,8 @@ name: diff-organizer
 description: '"커밋 정리해줘", "PR 올려줘" 등 커밋 분류·PR 생성 시 사용. shared/git-flow.md 흐름 그대로 실행.'
 tools: Read, Bash
 model: haiku
+effort: low
+color: yellow
 maxTurns: 20
 ---
 

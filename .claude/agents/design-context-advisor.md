@@ -3,6 +3,8 @@ name: design-context-advisor
 description: 디자이너가 제품·플로우 맥락("왜 이 화면이 이렇게 동작해?")을 묻거나, 자기 디자인이 필수 요건을 덮는지 확인할 때 사용. domain.md·product-spec.md 기준 read-only 자문. 코드·파일 수정 안 함.
 tools: Read, Grep, Glob
 model: opus
+effort: high
+color: pink
 maxTurns: 15
 skills:
   - frontend-design

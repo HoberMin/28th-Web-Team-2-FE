@@ -3,6 +3,8 @@ name: flow-reviewer
 description: 유저 플로우를 전달받으면 **놓친 부분을 검수**할 때 PROACTIVELY 사용. CRUD 누락(생성만 있고 수정/삭제/목록 없음 등)과 서비스 사용자 관점의 누락 플로우(빈/에러/권한/엣지/온보딩)를 점검. 코드가 아니라 제품 플로우 리뷰. 코드 품질은 code-reviewer, 디자인 일치는 design-reviewer.
 tools: Read, Grep, Glob
 model: opus
+effort: high
+color: purple
 maxTurns: 15
 skills:
   - flow-review

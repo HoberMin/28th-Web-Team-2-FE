@@ -3,6 +3,8 @@ name: bug-investigator
 description: '"에러 나", "버그 있어", "왜 안돼?" 등 버그 발생 시 사용. 코드 수정 없이 근본 원인 추적 → 수정 위치(프론트/백) 판단까지. 수정은 구현 agent로 위임.'
 tools: Read, Grep, Glob, Bash
 model: opus
+effort: high
+color: orange
 maxTurns: 15
 memory: project
 skills:

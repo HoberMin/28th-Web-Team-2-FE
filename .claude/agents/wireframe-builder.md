@@ -3,6 +3,8 @@ name: wireframe-builder
 description: 디자인 확정 전 **와이어프레임/초안** 단계에 사용. 유저 플로우를 더미 데이터로 동작하는 저충실도 화면으로 빠르게 만들어 배포 → 기획·디자이너가 플로우에 공감하게 한다. 디자인 가이드(Figma 토큰) 없이 진행. 디자인 확정 후 정식 구현은 figma-implementer/frontend-dev.
 tools: Read, Edit, Write, Grep, Glob, Bash
 model: sonnet
+effort: medium
+color: blue
 skills:
   - wireframe-drafting
   - nextjs-app-router

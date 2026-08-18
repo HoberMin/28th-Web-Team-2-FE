@@ -3,6 +3,8 @@ name: api-developer
 description: '"API 훅 만들어", "쿼리 추가해줘" 등 프론트 API 레이어 작업 시 사용. 외부 Spring 스펙을 읽고 맞춤. 페이지/컴포넌트는 frontend-dev.'
 tools: Read, Edit, Write, Grep, Glob
 model: sonnet
+effort: medium
+color: blue
 skills:
   - api-patterns
   - backend-api-reference
