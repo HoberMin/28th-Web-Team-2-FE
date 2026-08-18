@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { Logo } from "@/components/ui/logo";
 
+import { ButtonSection } from "./_components/button-section";
 import { ColorSection } from "./_components/color-section";
 import { RadiusSection } from "./_components/radius-section";
 import { TypographySection } from "./_components/typography-section";
@@ -26,6 +27,7 @@ const SECTIONS: { id: string; label: string }[] = [
   { id: "color", label: "색" },
   { id: "typography", label: "타이포" },
   { id: "radius", label: "Radius" },
+  { id: "button", label: "버튼" },
 ];
 
 export default function PlaygroundPage() {
@@ -65,6 +67,7 @@ export default function PlaygroundPage() {
       <ColorSection />
       <TypographySection />
       <RadiusSection />
+      <ButtonSection />
 
       <p className="text-body-14-regular text-gray-300">
         섹션을 순차적으로 옮겨 담고 있습니다.
