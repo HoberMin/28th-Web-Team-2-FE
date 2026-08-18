@@ -1,8 +1,8 @@
-# [프로젝트명] — Codex 지침 (AGENTS.md)
+# looky — Codex 지침 (AGENTS.md)
 
 > Codex가 읽는 세션 지침. Claude `CLAUDE.md` 와 **동일한 규격**을 따른다.
 > 상세 규격은 `shared/` 가 진실 소스 — 필요 시 해당 파일을 읽어라.
-> (설치 시 이 파일을 레포 루트로, `.codex/` 를 루트로 옮긴다)
+> 서비스 개요는 루트 `README.md`. 스킬은 `.agents/skills/` (내용은 `.claude/skills/`와 동일).
 
 ## 반드시 지킬 규칙 (shared/conventions.md 요약)
 
