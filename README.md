@@ -64,6 +64,8 @@ src/
 ├─ app/
 │  ├─ [token]/            주인공·참여자 공용 링크 — 상태로 뷰 분기
 │  │  └─ _components/     share / respondent / generating / result / retry view
+│  │                      뷰는 프레젠테이션·상태머신 훅·데이터로 분리
+│  │                      (use-result-share · use-share-carousel · *.data.ts)
 │  ├─ onboarding/         nickname → survey (주인공 온보딩)
 │  ├─ playground/         디자인 시스템 플레이그라운드 (토큰 + 공용 컴포넌트)
 │  └─ style-guide/        초기 토큰 카탈로그 (playground로 대체됨)
