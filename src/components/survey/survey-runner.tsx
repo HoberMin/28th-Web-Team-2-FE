@@ -55,8 +55,6 @@ export function SurveyRunner({
   // ※ 완료 시엔 결과로 replace → 결과에서 back 시 설문 재진입(재제출/409)은
   //    survey/page.tsx의 done-flag(isSelfSurveyDone)가 막는다.
   const completingRef = useRef(false);
-  const indexRef = useRef(index);
-  indexRef.current = index;
 
   useEffect(() => {
     return () => {
@@ -67,11 +65,10 @@ export function SurveyRunner({
   useEffect(() => {
     const onPop = () => {
       if (completingRef.current) return; // 완료 후 결과로 전환 중이면 무시
-      // 문항이 남았으면 앞 문항으로. index 0이면 아무것도 안 함 →
-      // 브라우저가 이미 설문 밖(닉네임)으로 pop한 상태라 그대로 나가게 둔다.
-      if (indexRef.current > 0) {
-        setIndex((i) => Math.max(0, i - 1));
-      }
+      // 문항이 남았으면 앞 문항으로. index 0이면 같은 값을 돌려줘 아무 일도 일어나지 않는다
+      // (React가 bail out) → 브라우저가 이미 설문 밖(닉네임)으로 pop한 상태라 그대로 나가게 둔다.
+      // 최신 index는 함수형 업데이터가 넘겨주므로 ref 미러가 필요 없다.
+      setIndex((i) => (i > 0 ? i - 1 : i));
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
