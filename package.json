@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "sync:skills": "bash scripts/sync-skills.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
