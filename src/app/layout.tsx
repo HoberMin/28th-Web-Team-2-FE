@@ -23,8 +23,10 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/assets/og-image.png",
-        width:  800,
-        height: 800,
+        // 실제 에셋 규격과 일치시킬 것 — 선언값이 다르면 크롤러가 잘못된 비율로 미리보기를 잡는다.
+        // (2026-08-19 확인: 에셋은 1200×1200. 이전엔 800×800으로 잘못 선언돼 있었다)
+        width: 1200,
+        height: 1200,
         alt: "looky — 친구들이 본 나를 인생네컷으로",
       },
     ],
