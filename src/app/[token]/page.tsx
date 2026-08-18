@@ -38,7 +38,7 @@ export default function TokenPage() {
     refetch,
   } = useGetSurveyStatusAPI(token, {
     // 터미널 상태면 폴링 중지. GENERATING(이미지 생성 대기)은 체감이 중요하므로 3초,
-    // 나머지 수집 상태(24h 대기 등)는 빠를 필요 없어 15초.
+    // 나머지 수집 상태(본인/친구 응답 대기)는 빠를 필요 없어 15초.
     refetchInterval: (query) => {
       const result = query.state.data;
       if (!result) return 15000;

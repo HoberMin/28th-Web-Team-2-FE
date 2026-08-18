@@ -15,7 +15,9 @@ import { shareKakao } from "@/lib/share";
 // 공유 관리 뷰 (product-spec #4 · Figma F04 node 1212:6382) — GUI 2차 전경 정합.
 // 핵심 루프: 링크를 퍼뜨려 참여자 모으기.
 // 하단 버튼: [링크 아이콘 w-16] gap-2 [카카오톡 공유하기 CtaSmall fill flex-1]
-// TODO(✍️): 24h 만료·전환 책임 위치(클라/서버).
+// 전환 조건: 응답 3건이 채워지면 결과로 (시간 만료 개념 없음 — 2026-07-05 확정).
+//   전환 판정은 [token]/page.tsx 가 서버 status 폴링으로 수행 → 이 뷰는 수집 중만 담당.
+// TODO(✍️): 존재하지 않는 토큰의 404 규격 vs 안내 화면 분리(domain.md §4).
 // 카카오 공유: shareKakao(SDK feed) 사용. 동작 전제 = 운영 앱 JS키 + 콘솔 웹 도메인 등록.
 // TODO(✍️): img_character_hamster_set 에셋 미존재 → hamster_three로 임시 대체. 에셋 확보 후 교체.
 interface ShareViewProps {
