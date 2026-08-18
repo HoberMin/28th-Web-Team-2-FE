@@ -56,10 +56,12 @@ const CARDS: ShareCard[] = [
   },
   {
     n: 3,
+    // ⚠️ 일러스트가 시계 캐릭터(hamster_clock)인데 24시간 대기가 폐기돼 그림과 문구가
+    //    어긋난다 — 에셋 교체 여부는 디자이너 판단 필요.
     src: "/assets/img_character_hamster_clock.png",
     width: 1072,
     height: 638,
-    text: "3명 이상 모이면 24시간 뒤 내 링크로 와!",
+    text: "3명 이상 모이면 바로 내 링크로 와!",
   },
 ];
 
