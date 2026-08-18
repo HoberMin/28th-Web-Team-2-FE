@@ -1,7 +1,7 @@
-# [프로젝트명] — Claude Code 지침
+# looky — Claude Code 지침
 
 > 공유 규격은 `shared/` 가 진실 소스. 이 파일은 그것을 참조 + Claude 전용 오케스트레이션.
-> (설치 시 이 파일을 레포 루트로, `.claude/` 를 루트로 옮긴다)
+> 서비스 개요는 루트 `README.md`, Codex 쪽 대응 문서는 `AGENTS.md`.
 
 ## 공유 규격 (필독)
 
