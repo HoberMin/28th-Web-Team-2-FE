@@ -5,17 +5,39 @@
 
 ## 판단 밀도 → 도구별 매핑
 
-읽기/쓰기, 모델 티어를 도구 형식으로 변환하는 규칙.
+읽기/쓰기, 판단 밀도를 도구 형식으로 변환하는 규칙.
 
-| 판단 밀도 | Claude `model` | Codex `model_reasoning_effort` | 쓰기 권한 |
-|---|---|---|---|
-| 높음 (설계·리뷰·버그조사) | opus | high | (대부분 읽기) |
-| 중간 (패턴 따라 구현) | sonnet | medium | workspace-write |
-| 낮음 (탐색·정리) | haiku | low | read-only |
+**판단 밀도는 두 축으로 표현한다** — `model`(용량·비용) + `effort`(추론 깊이). Claude Code에 `effort`가 도입되면서 Codex의 `model_reasoning_effort`와 같은 축을 갖게 됐다. model 티어는 비용 프로필 보존을 위해 유지한다.
+
+| 판단 밀도 | Claude `model` | Claude `effort` | Codex `model_reasoning_effort` | 쓰기 권한 |
+|---|---|---|---|---|
+| **최고** (게이트키퍼 리뷰) | opus | `xhigh` | high | (읽기 + 자동수정) |
+| 높음 (설계·리뷰·버그조사) | opus | `high` | high | (대부분 읽기) |
+| 중간 (패턴 따라 구현) | sonnet | `medium` | medium | workspace-write |
+| 낮음 (탐색·정리) | haiku | `low` | low | read-only |
 
 - 읽기 전용 → Claude `tools`에서 Edit/Write 제외 / Codex `sandbox_mode = "read-only"`
 - 쓰기 → Claude 전체 도구 / Codex `sandbox_mode = "workspace-write"`
 - Codex `model` 정확한 ID는 팀이 쓰는 모델로: `TODO(✍️): codex model id`
+
+### `color` 규약 (Claude 전용 · 역할 계열별)
+
+토론스크립트·태스크 목록에서 어느 계열 agent가 도는지 한눈에 보이게 한다.
+
+| 색 | 계열 | agent |
+|---|---|---|
+| `red` | 리뷰·게이트키퍼 | code-reviewer, design-reviewer |
+| `purple` | 기획·판단 | planner, flow-reviewer |
+| `orange` | 버그 추적 | bug-investigator |
+| `pink` | 디자인 자문 | design-handoff-advisor, design-context-advisor |
+| `cyan` | 탐색·검색 | explorer, auditor |
+| `blue` | 구현 | api-developer, frontend-dev, figma-implementer, wireframe-builder |
+| `green` | 테스트 | test-writer |
+| `yellow` | git | diff-organizer |
+
+### 아직 안 쓰는 필드
+
+`disallowedTools`(툴 명시 차단) · `permissionMode` · `isolation: worktree`(격리 워크트리) · `background` · `hooks` · `initialPrompt` 는 지원되지만 도입하지 않았다. 필요해질 때 이 문서부터 갱신한다.
 
 ## 로스터 (15)
 
