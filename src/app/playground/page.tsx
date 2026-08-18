@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 import { Logo } from "@/components/ui/logo";
 
+import { ColorSection } from "./_components/color-section";
+
 export const metadata: Metadata = {
   title: "looky · 디자인 시스템 플레이그라운드",
   description:
@@ -18,7 +20,7 @@ export const metadata: Metadata = {
 //   → style-guide 제거 여부는 팀 확인 후 (docs/design-system-audit.md 참조).
 
 /** 섹션 목차 — 섹션을 추가하면 여기에도 등록한다 */
-const SECTIONS: { id: string; label: string }[] = [];
+const SECTIONS: { id: string; label: string }[] = [{ id: "color", label: "색" }];
 
 export default function PlaygroundPage() {
   return (
@@ -53,6 +55,8 @@ export default function PlaygroundPage() {
           </ul>
         </nav>
       )}
+
+      <ColorSection />
 
       <p className="text-body-14-regular text-gray-300">
         섹션을 순차적으로 옮겨 담고 있습니다.
