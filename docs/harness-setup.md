@@ -32,8 +32,9 @@ BLUEPRINT.md             인터뷰 질문 뱅크 + 설계 원칙 (세팅 가이�
 ## 설치 (새 레포)
 
 이 폴더 내용을 **새 레포 루트**로 옮긴다:
-- `shared/`, `CLAUDE.md`, `.claude/`, `AGENTS.md`, `.codex/`, `.agents/`, `BLUEPRINT.md`, `기획.md`
-- `[프로젝트명]` 자리표시자를 실제 이름으로. (`기획.md` = looky 결과 알고리즘 SSOT — `domain.md`·`johari-bigfive`가 "루트 기획.md"로 참조)
+- `shared/`, `CLAUDE.md`, `.claude/`, `AGENTS.md`, `.codex/`, `.agents/`, `docs/blueprint.md`
+- `[프로젝트명]` 자리표시자를 실제 이름으로.
+- ⚠️ 옛 버전은 루트 `기획.md`(도메인 알고리즘 SSOT)도 함께 옮기도록 안내했으나, **looky 레포에 그 파일은 존재하지 않는다.** 도메인 상세는 `shared/domain.md` + `docs/llm-prompts.md` 조합으로 대체됐다.
 
 ## 단일 진실 소스 원칙
 
