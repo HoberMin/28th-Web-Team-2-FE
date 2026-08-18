@@ -28,10 +28,16 @@
 | 스타일 | Tailwind CSS v4 (CSS-first `@theme`) + shadcn/ui |
 | 서버 상태 | TanStack Query + native fetch 래퍼(`ApiError` throw) |
 | 폼 | react-hook-form + zod |
-| PWA | Serwist (`@serwist/next`) — Web Push 여지 확보용 |
+| PWA | **현재 비활성** — Serwist는 2026-06-24에 걷어냈다(아래 참고) |
 | 테스트 | Vitest (유닛). Playwright(E2E)는 추후 |
 | 분석 | Mixpanel |
 | 패키지 매니저 | pnpm |
+
+### PWA가 꺼져 있는 이유
+
+`@serwist/next`의 `defaultCache`(네비게이션·RSC·`_next/image` 런타임 캐싱)와 `skipWaiting`/`clientsClaim` 조합이 재배포마다 서비스워커 takeover race를 일으켜, `_next/image`·RSC 요청이 `net::ERR_FAILED`로 터졌다가 리로드로 복구되는 문제를 만들었다. 오프라인 캐싱이 당장 필요하지 않아 **2026-06-24에 통째로 비활성화**했다.
+
+`public/sw.js`는 이미 사용자 브라우저에 설치된 옛 SW를 청소하는 **자폭 서비스워커**다. 빌드 생성물이 아니라 손으로 유지하는 정적 파일이므로 git에 커밋되어 있다. Web Push를 실제로 구현할 때 **캐싱 없는 최소 SW**로 다시 도입한다 (`src/app/sw.ts` 참고).
 
 **백엔드는 외부 Spring 레포**다. 이 레포에는 백엔드 구현이 없다. AI 파이프라인(형용사 추출 / 이미지 생성 / 설명문 생성)도 전부 서버 소관이고, 프론트는 상태를 폴링해 결과만 렌더한다.
 
