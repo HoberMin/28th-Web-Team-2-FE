@@ -39,15 +39,17 @@ beforeEach(() => {
 });
 
 describe("useCreateSurveyAPI", () => {
-  it("닉네임을 바디로 실어 surveys 를 만든다", async () => {
+  it("userNickname 을 바디로 실어 surveys 를 만든다", async () => {
     post.mockResolvedValue({ surveyCode: "tok" });
     const { result } = renderHook(() => useCreateSurveyAPI(), { wrapper });
 
     await act(async () => {
-      await result.current.mutateAsync({ nickname: "루키" });
+      await result.current.mutateAsync({ userNickname: "루키" });
     });
 
-    expect(post).toHaveBeenCalledWith("/api/v1/surveys", { nickname: "루키" });
+    expect(post).toHaveBeenCalledWith("/api/v1/surveys", {
+      userNickname: "루키",
+    });
   });
 
   it("ApiError 를 그대로 전파한다 (화면이 message 를 보여줄 수 있게)", async () => {
@@ -55,7 +57,7 @@ describe("useCreateSurveyAPI", () => {
     const { result } = renderHook(() => useCreateSurveyAPI(), { wrapper });
 
     await act(async () => {
-      await result.current.mutateAsync({ nickname: "x" }).catch(() => {});
+      await result.current.mutateAsync({ userNickname: "x" }).catch(() => {});
     });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
