@@ -194,7 +194,7 @@ export function ResultView({
       </section>
 
       {/* ── 하단 고정 공유바 "btm_CTA_area" (Figma bottom0 fixed, 힌트/모달 딤보다 항상 위 z) ── */}
-      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-[390px] gap-1 border-t border-gray-50 bg-white px-5 pb-6 pt-3 md:absolute">
+      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto flex w-full max-w-(--width-app-frame) gap-1 border-t border-gray-50 bg-white px-5 pb-6 pt-3 md:absolute">
         <CtaSmall variant="stroke_icn" onClick={handleCopy} className="flex-1 border-gray-100">
           링크 복사하기
         </CtaSmall>

@@ -77,7 +77,7 @@ export function ResultCardModal({
       />
 
       {/* 카드 컨테이너 — 화면 세로·가로 중앙(Figma 202=844프레임 정중앙, 상태바 없는 앱은 중앙정렬로 정합) */}
-      <div className="pointer-events-none fixed inset-0 z-50 mx-auto flex w-full max-w-[390px] items-center justify-center md:absolute">
+      <div className="pointer-events-none fixed inset-0 z-50 mx-auto flex w-full max-w-(--width-app-frame) items-center justify-center md:absolute">
         <motion.div
           layoutId={`f05-card-${quadrantKey}`}
           transition={{ duration: phase === "opening" ? 0.6 : 0.4 }}

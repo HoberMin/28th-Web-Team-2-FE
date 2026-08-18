@@ -146,6 +146,13 @@
   --width-logo-md: 6.25rem;  /* 100px — Figma logo md 인스턴스 (100×28) */
   --radius-cta: 1rem;        /* 16px — CTA, CTA_small */
 
+  /* ── 앱 프레임 (iPhone 12 Pro 390×844) ──────────────────────────────────
+     데스크탑에서 화면을 감싸는 기기 프레임 폭. 하단 고정바·모달 오버레이가
+     이 폭과 **반드시 일치해야** 어긋나지 않는다 — 세 곳에 흩어진 raw 390px를
+     토큰 하나로 묶었다 (docs/design-system-audit.md §4-3 ①). */
+  --width-app-frame: 24.375rem;   /* 390px */
+  --height-app-frame: 52.75rem;   /* 844px */
+
   /* head-point1 (Y SpotlightOTF · Regular) — font-display1 과 함께 */
   --text-head1-26: 1.625rem;
   --text-head1-26--line-height: 1.4;
