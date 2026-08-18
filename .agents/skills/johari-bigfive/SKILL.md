@@ -1,11 +1,11 @@
 ---
 name: johari-bigfive
-description: looky 결과 모델의 이론 토대 — 조하리의 창(실제 동작 틀)과 Big Five(내재화 잣대). 설문·AI 형용사 추출·결과(인생네컷)·결과 카피를 만들거나 검토하는 agent가 참조. 상세 진실 소스는 루트 기획.md.
+description: looky 결과 모델의 이론 토대 — 조하리의 창(실제 동작 틀)과 Big Five(내재화 잣대). 설문·AI 형용사 추출·결과(인생네컷)·결과 카피를 만들거나 검토하는 agent가 참조. 상세 진실 소스는 docs/llm-prompts.md.
 ---
 
 # 조하리의 창 & Big Five (looky 결과 모델)
 
-> 상세·예시·결정 현황은 루트 `기획.md`. 이 스킬은 agent가 빠르게 잡아야 할 핵심 규율.
+> 상세·예시·결정 현황은 `docs/llm-prompts.md`(프롬프트 원본)·`shared/domain.md`. 이 스킬은 agent가 빠르게 잡아야 할 핵심 규율.
 
 ## 한 문장
 **친구들의 설문으로 "나를 찍은 인생네컷"을 만든다.** Big Five는 문항을 설계하는 **숨은 잣대(내재화)**, 조하리의 창은 결과를 **실제로 굴리는 틀**이다.

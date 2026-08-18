@@ -39,7 +39,7 @@
 
 > **와이어프레임 초안 예외**: wireframe-builder 산출물은 디자인 가이드 확정 전 단계라 **디자인 토큰 검사 면제**(코드 규칙은 적용). design-reviewer는 초안에 적용하지 않는다. 자세한 건 `wireframe-drafting` 스킬.
 
-> **도메인 이론 스킬** `johari-bigfive` (looky 결과 모델 — 조하리의 창·Big Five 내재화·형용사 톤 규칙)는 **설문·결과·AI 형용사 작업**을 하는 planner·frontend-dev·api-developer·design-context-advisor에 연결. 상세 SSOT는 루트 `기획.md`.
+> **도메인 이론 스킬** `johari-bigfive` (looky 결과 모델 — 조하리의 창·Big Five 내재화·형용사 톤 규칙)는 **설문·결과·AI 형용사 작업**을 하는 planner·frontend-dev·api-developer·design-context-advisor에 연결. 상세 SSOT는 `docs/llm-prompts.md`(프롬프트 원본).
 
 > **라이브러리 best-practice 스킬** (공식 문서 기반)은 해당 구현/리뷰 agent에 추가 연결됨:
 > tailwind-v4·typescript-strict·nextjs-app-router(Spring-aware)·playwright-e2e·vitest·web-performance·accessibility·vercel-react-best-practices.

@@ -1,7 +1,7 @@
 # 와이어프레임 규격 (초안 · looky.my)
 
 > **목적**: Figma 디자인(`Design` 파일 `296:2109` GUI 작업실)을 읽고 유저 플로우 단위로 정리한 **저충실도 와이어프레임 규격**. wireframe-builder가 이 문서대로 더미 데이터 화면을 만든다.
-> **진실 소스 계층**: 정책·엔티티 → `domain.md` · 페이지 스펙 → `product-spec.md` · 결과 알고리즘 → 루트 `기획.md`. 이 문서는 그 위에 **Figma 화면 ↔ 라우트 ↔ 상태** 매핑을 더한다.
+> **진실 소스 계층**: 정책·엔티티 → `domain.md` · 페이지 스펙 → `product-spec.md` · 결과 알고리즘 → `docs/llm-prompts.md`. 이 문서는 그 위에 **Figma 화면 ↔ 라우트 ↔ 상태** 매핑을 더한다.
 > **단계 규약**: 와이어프레임 = 디자인 토큰 검사 **면제**(코드 규칙은 적용), 더미 데이터·저충실도 (`wireframe-drafting`). 정식 구현은 디자인 확정 후 figma-implementer/frontend-dev.
 
 ## 0. Figma 출처
