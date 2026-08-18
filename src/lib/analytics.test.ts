@@ -13,11 +13,18 @@ vi.mock("mixpanel-browser", () => ({ default: mixpanel }));
 
 const TOKEN_ENV = "NEXT_PUBLIC_MIXPANEL_TOKEN";
 
-/** 토큰을 세팅한 뒤 새 모듈 인스턴스를 로드한다 */
-async function loadAnalytics(token: string | undefined) {
+/**
+ * 토큰(+환경)을 세팅한 뒤 새 모듈 인스턴스를 로드한다.
+ * NODE_ENV 는 타입상 read-only 라 직접 대입할 수 없어 vi.stubEnv 를 쓴다
+ * (afterEach 의 unstubAllEnvs 로 복원).
+ */
+async function loadAnalytics(
+  token: string | undefined,
+  nodeEnv?: "development" | "production" | "test",
+) {
   vi.resetModules();
-  if (token === undefined) delete process.env[TOKEN_ENV];
-  else process.env[TOKEN_ENV] = token;
+  vi.stubEnv(TOKEN_ENV, token);
+  if (nodeEnv !== undefined) vi.stubEnv("NODE_ENV", nodeEnv);
   return import("./analytics");
 }
 
@@ -27,8 +34,6 @@ function setSearch(search: string) {
 }
 
 describe("analytics", () => {
-  const originalToken = process.env[TOKEN_ENV];
-
   beforeEach(() => {
     vi.clearAllMocks();
     // 로그는 검증 대상이 아니면 조용히 — 테스트 출력이 지저분해지지 않게
@@ -39,8 +44,7 @@ describe("analytics", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
-    if (originalToken === undefined) delete process.env[TOKEN_ENV];
-    else process.env[TOKEN_ENV] = originalToken;
+    vi.unstubAllEnvs();
   });
 
   describe("initAnalytics", () => {
@@ -148,6 +152,41 @@ describe("analytics", () => {
       setSearch("?utm_source=instagram");
       captureUtm();
       expect(mixpanel.register_once).not.toHaveBeenCalled();
+    });
+  });
+
+  // 디버그 로그가 프로덕션 사용자 콘솔에 이벤트명·속성을 흘리지 않아야 한다
+  describe("디버그 로그 환경 게이팅", () => {
+    it("프로덕션에서는 track 로그를 찍지 않는다", async () => {
+      const { initAnalytics, track } = await loadAnalytics("tok-123", "production");
+      initAnalytics();
+      track("result_view", { method: "copy" });
+      expect(console.info).not.toHaveBeenCalled();
+      // 트래킹 자체는 정상 동작해야 한다
+      expect(mixpanel.track).toHaveBeenCalledWith("result_view", { method: "copy" });
+    });
+
+    it("프로덕션에서는 토큰 누락 경고도 찍지 않는다", async () => {
+      const { initAnalytics } = await loadAnalytics(undefined, "production");
+      initAnalytics();
+      expect(console.warn).not.toHaveBeenCalled();
+      expect(mixpanel.init).not.toHaveBeenCalled();
+    });
+
+    it("프로덕션에서는 utm 캡처 로그를 찍지 않는다", async () => {
+      const { initAnalytics, captureUtm } = await loadAnalytics("tok-123", "production");
+      initAnalytics();
+      setSearch("?utm_source=instagram");
+      captureUtm();
+      expect(console.info).not.toHaveBeenCalled();
+      expect(mixpanel.register_once).toHaveBeenCalledWith({ utm_source: "instagram" });
+    });
+
+    it("개발 환경에서는 로그를 찍는다 (로컬 디버깅 유지)", async () => {
+      const { initAnalytics, track } = await loadAnalytics("tok-123", "development");
+      initAnalytics();
+      track("result_view");
+      expect(console.info).toHaveBeenCalled();
     });
   });
 });

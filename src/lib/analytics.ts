@@ -6,11 +6,21 @@ const MIXPANEL_TOKEN = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
 
 let initialized = false;
 
+// 디버그 로그는 개발 환경에서만. 프로덕션에서 매 이벤트마다 콘솔을 찍으면
+// 사용자 콘솔에 이벤트명·속성이 그대로 노출되고 노이즈만 남는다.
+const isDev = process.env.NODE_ENV !== "production";
+
+function debugLog(kind: "info" | "warn", ...args: unknown[]): void {
+  if (!isDev) return;
+  if (kind === "warn") console.warn(...args);
+  else console.info(...args);
+}
+
 /** 앱 최초 마운트 시 1회 호출 (providers.tsx). */
 export function initAnalytics(): void {
   if (initialized) return;
   if (!MIXPANEL_TOKEN) {
-    console.warn("[analytics] NEXT_PUBLIC_MIXPANEL_TOKEN이 없어 믹스패널을 초기화하지 않습니다.");
+    debugLog("warn", "[analytics] NEXT_PUBLIC_MIXPANEL_TOKEN이 없어 믹스패널을 초기화하지 않습니다.");
     return;
   }
   mixpanel.init(MIXPANEL_TOKEN, {
@@ -18,17 +28,17 @@ export function initAnalytics(): void {
     record_sessions_percent: 100,
   });
   initialized = true;
-  console.info("[analytics] 믹스패널 초기화 완료");
+  debugLog("info", "[analytics] 믹스패널 초기화 완료");
 }
 
 /** 커스텀 이벤트 트래킹. 이벤트명 목록은 각 페이지 주석 참조. */
 export function track(event: string, properties?: Record<string, unknown>): void {
   if (!initialized) {
-    console.warn(`[analytics] 초기화 전이라 이벤트를 건너뜁니다: ${event}`);
+    debugLog("warn", `[analytics] 초기화 전이라 이벤트를 건너뜁니다: ${event}`);
     return;
   }
   mixpanel.track(event, properties);
-  console.info(`[analytics] track: ${event}`, properties ?? {});
+  debugLog("info", `[analytics] track: ${event}`, properties ?? {});
 }
 
 /**
@@ -48,5 +58,5 @@ export function captureUtm(): void {
 
   if (Object.keys(utmProps).length === 0) return;
   mixpanel.register_once(utmProps);
-  console.info("[analytics] utm 캡처:", utmProps);
+  debugLog("info", "[analytics] utm 캡처:", utmProps);
 }
