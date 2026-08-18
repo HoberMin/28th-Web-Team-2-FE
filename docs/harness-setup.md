@@ -39,7 +39,7 @@ BLUEPRINT.md             인터뷰 질문 뱅크 + 설계 원칙 (세팅 가이�
 
 - **`shared/` 가 진실 소스.** 컨벤션·역할·리뷰·git·도메인을 여기서 편집한다.
 - `.claude/` 와 `.codex/`/`.agents/` 는 도구별 표현 — 역할을 바꾸면 `shared/agent-roles.md` 부터 고치고 양쪽 agent 파일을 다시 생성한다.
-- 스킬 SKILL.md 포맷은 두 도구 동일 → `.claude/skills` ↔ `.agents/skills` 내용 일치 유지.
+- 스킬 SKILL.md 포맷은 두 도구 동일. **진실 소스는 `.claude/skills/`** 이고 `.agents/skills/`(Codex용)는 복제본이다 — 손으로 맞추지 말고 `pnpm sync:skills` 를 쓴다. 갈라졌는지 검사는 `pnpm sync:skills --check`.
 - **Codex로 짠 코드도 code-reviewer 게이트키퍼가 같은 잣대로 검토** → 도구 섞여도 품질 일원화.
 
 ## 첫 사용
