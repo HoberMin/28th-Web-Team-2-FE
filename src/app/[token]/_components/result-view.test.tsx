@@ -41,11 +41,13 @@ vi.mock("framer-motion", () => ({
   motion: {
     button: ({
       children,
-      layoutId: _layoutId,
+      layoutId,
       ...rest
-    }: React.ComponentProps<"button"> & { layoutId?: string }) => (
-      <button {...rest}>{children}</button>
-    ),
+    }: React.ComponentProps<"button"> & { layoutId?: string }) => {
+      // layoutId는 framer-motion 전용 prop — DOM에 흘리지 않는다
+      void layoutId;
+      return <button {...rest}>{children}</button>;
+    },
   },
 }));
 

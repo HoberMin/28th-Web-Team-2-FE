@@ -11,7 +11,6 @@ import { CtaSmall } from "@/components/ui/cta-small";
 import { Logo } from "@/components/ui/logo";
 import { track } from "@/lib/analytics";
 import { formatResultDate } from "@/lib/format-date";
-import { shareKakao } from "@/lib/share";
 import { usePreloadImages } from "@/lib/preload-images";
 import {
   QUADRANTS,
@@ -24,6 +23,7 @@ import { ResultCardModal } from "./result-card-modal";
 import { ResultLoading } from "./result-loading";
 import { ResultStatusScreen } from "./result-status-screen";
 import { ResultTapHint } from "./result-tap-hint";
+import { useResultShare } from "./use-result-share";
 
 // 결과 뷰 (product-spec #6 · Figma F05 컴팩트 개편 — 인터랙션 3종 스펙 2026-07-02).
 // phase 상태머신: gate(!entered) → loading(5초 고정 연출, 결과는 항상 READY) → body(컴팩트).
@@ -58,25 +58,19 @@ export function ResultView({
   resultAvailableAt,
 }: ResultViewProps) {
   const [phase, setPhase] = useState<ResultPhase>("gate");
-  const [toast, setToast] = useState<string | null>(null);
   const [selectedKey, setSelectedKey] = useState<QuadrantKey | null>(null);
   const [hintVisible, setHintVisible] = useState(false);
   const [hintShown, setHintShown] = useState(false);
-  const timer = useRef<number | null>(null);
   // 힌트 정렬 기준 — 실제 첫 그리드 카드(모두가 아는 나)
   const firstCardRef = useRef<HTMLButtonElement | null>(null);
 
   // ── hooks (early return 앞) ───────────────────────────────────────────────
+  const { toast, handleCopy, handleKakao } = useResultShare({ nickname });
+
   const { data, isLoading, error, refetch } = useGetSurveyResultAPI(surveyCode, {
     // 결과가 아직 READY가 아니면(quadrants=null) 생성 중 — 준비될 때까지 폴링, 준비되면 중단
     refetchInterval: (query) => (query.state.data?.quadrants ? false : 3000),
   });
-
-  useEffect(() => {
-    return () => {
-      if (timer.current !== null) window.clearTimeout(timer.current);
-    };
-  }, []);
 
   // 결과 본문 도달 (KPI: 결과 도달→재공유 분모)
   useEffect(() => {
@@ -141,41 +135,6 @@ export function ResultView({
       />
     );
   }
-
-  const showToast = (msg: string) => {
-    setToast(msg);
-    if (timer.current !== null) window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setToast(null), 2200);
-  };
-
-  const currentUrl = () =>
-    typeof window !== "undefined" ? window.location.href : "";
-
-  const handleCopy = async () => {
-    track("result_reshare_click", { method: "copy" });
-    try {
-      await navigator.clipboard.writeText(currentUrl());
-      showToast("링크 복사 완료!");
-    } catch {
-      showToast("복사에 실패했어요. 링크를 길게 눌러 복사해주세요");
-    }
-  };
-
-  const handleKakao = async () => {
-    track("result_reshare_click", { method: "kakao" });
-    const result = await shareKakao({
-      link: currentUrl(),
-      title: `${nickname}님의 인생네컷이 나왔어요!`,
-      description: "친구들이 본 나를 인생네컷으로. looky",
-      imageUrl:
-        typeof window !== "undefined"
-          ? `${window.location.origin}/assets/og-image.png`
-          : "/assets/og-image.png",
-    });
-    // 카카오 공유 시트가 열린 경우(result === "shared")엔 토스트를 띄우지 않음.
-    // 복사로 fallback된 경우에만 안내.
-    if (result !== "shared") showToast("링크 복사 완료!");
-  };
 
   // ── 게이트 화면 (phase === 'gate') — Figma 노드 414:13565 / 589:4060 ────────
   if (phase === "gate") {
