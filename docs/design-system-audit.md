@@ -12,7 +12,7 @@
 | 토큰 카탈로그 화면 | ✅ `/playground` (전량·런타임 조회) · `/style-guide` (초기·하드코딩) |
 | 공용 UI 컴포넌트 | ✅ 11개 + 아이콘 5개 |
 | raw hex 위반 | ✅ **없음** (23건 전부 정당 — §3) |
-| **arbitrary value** | ⚠️ **54건** (§4) |
+| **arbitrary value** | ⚠️ **54건** (§4 · 분리 후 재측정) |
 | spacing 스케일 토큰 | ⚠️ 없음 — Tailwind 기본 스케일에 의존 |
 
 **한 줄 평**: 디자인 시스템은 "없다"가 아니라 **"있는데 간격·치수 축이 비어 있다"**. 색·타이포는 촘촘히 토큰화됐지만 spacing/size는 토큰이 없어 Figma의 실측값이 arbitrary value로 새어 들어왔다.
@@ -46,17 +46,21 @@
 
 ### 4-1. 파일별
 
+> 아래는 **result-view 분리(2026-08-18) 이후** 재측정한 값이다. 총량은 54건으로 그대로이고 위치만 재배치됐다 (`result-view` 10 → 2 + `result-four-cuts` 7 + `result-gate` 1).
+
 | 건수 | 파일 |
 |---|---|
-| 10 | `app/[token]/_components/result-view.tsx` |
 | 10 | `app/[token]/_components/result-card-modal.tsx` |
+| 7 | `app/[token]/_components/result-four-cuts.tsx` |
 | 5 | `components/ui/tooltip.tsx` |
 | 5 | `components/ui/cta-small.tsx` |
 | 5 | `app/[token]/_components/result-tap-hint.tsx` |
 | 4 | `components/ui/btn-survey.tsx` |
 | 3 | `app/layout.tsx` · `app/[token]/_components/share-cards.tsx` |
-| 2 | `components/layout/centered-screen.tsx` · `result-loading.tsx` · `generating-view.tsx` |
-| 1 | `components/ui/textfield.tsx` · `cta.tsx` · `share-view.tsx` |
+| 2 | `components/layout/centered-screen.tsx` · `result-view.tsx` · `result-loading.tsx` · `generating-view.tsx` |
+| 1 | `components/ui/textfield.tsx` · `cta.tsx` · `share-view.tsx` · `result-gate.tsx` |
+
+⚠️ **탐지 시 오탐 주의**: `grep` 으로 세면 `app/playground/_components/radius-section.tsx` 가 6건 걸리지만 전부 **주석·`<code>` 설명 텍스트**다(이 규칙을 설명하는 문장 자체). Tailwind 클래스가 아니므로 제외해야 총 54건이 나온다.
 
 ### 4-2. 속성별
 
@@ -71,7 +75,7 @@
 | 위치 | 용도 |
 |---|---|
 | `app/layout.tsx:59` | `md:w-[390px] md:h-[844px]` — 데스크탑 폰 프레임 목업 |
-| `result-view.tsx:321` | `max-w-[390px]` — 하단 고정 CTA 바 |
+| `result-view.tsx:197` | `max-w-[390px]` — 하단 고정 CTA 바 |
 | `result-card-modal.tsx:80` | `max-w-[390px]` — 모달 오버레이 |
 
 하나만 바꾸면 **하단 고정바가 프레임과 어긋난다.** 값이 코드에 흩어진 채 "같아야 한다"는 제약이 어디에도 표현되지 않은 상태다. → `--size-app-frame` 류 토큰 1개로 묶어야 한다.
@@ -93,7 +97,7 @@
 3. **radius 실측값 디자이너 확인** — `7px`·`7.75px`·`9px`·`14px`가 의도된 값인지. 의도됐다면 의미 토큰 추가, 아니면 기존 토큰으로 흡수.
 4. **spacing 의미 토큰 도입 검토** — 화면 여백 규칙이 Figma에서 확정된 뒤에.
 
-⚠️ **2·3번은 컴포넌트 파일을 건드린다.** 현재 테스트가 4개뿐이라 시각적 회귀를 잡을 안전망이 없다 — **테스트 보강 이후**에 진행할 것을 권한다.
+⚠️ **2·3번은 컴포넌트 파일을 건드린다.** 2026-08-18 기준 테스트는 **91개**(9개 파일)로 늘었고 `[token]` 상태머신·fetch 래퍼·result-view 는 characterization 테스트가 덮고 있다. 다만 **시각적 회귀를 잡는 테스트는 아직 없다**(Playwright 미도입) — 픽셀이 바뀌는 변경은 여전히 눈으로 확인해야 한다.
 
 ## 5-1. `/playground` (2026-08-18 추가)
 
