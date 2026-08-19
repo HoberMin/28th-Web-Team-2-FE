@@ -2,15 +2,16 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
 
 import { BgCloud } from "@/components/ui/bg-cloud";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { CtaSmall } from "@/components/ui/cta-small";
 import { LinkIcon } from "@/components/ui/icons/link";
 import { Logo } from "@/components/ui/logo";
-import { track } from "@/lib/analytics";
-import { shareKakao } from "@/lib/share";
+
+import { useLeaveGuard } from "./use-leave-guard";
+import { useShareAnalytics } from "./use-share-analytics";
+import { useShareLink } from "./use-share-link";
 
 // 공유 관리 뷰 (product-spec #4 · Figma F04 node 1212:6382) — GUI 2차 전경 정합.
 // 핵심 루프: 링크를 퍼뜨려 참여자 모으기.
@@ -27,101 +28,13 @@ interface ShareViewProps {
 
 export function ShareView({ surveyCode, respondentCount }: ShareViewProps) {
   const router = useRouter();
-  const [toast, setToast] = useState<string | null>(null);
-  const timer = useRef<number | null>(null);
 
-  // ── 이탈 가드 ────────────────────────────────────────────────────────────────
-  // 주인공이 back을 누르면 닉네임(온보딩)으로 돌아가 버린다 → 수집 중인데 실수 이탈 방지.
-  // beforeunload는 SPA back을 못 잡고 커스텀 문구도 불가 → popstate 가로채기 + 확인 모달.
-  //
-  // 마운트 시 가드 entry 1개 push. back을 누르면 가드가 pop되며(현재=공유 페이지) 모달만 띄운다.
-  // ※ 재장전(pushState)은 popstate 핸들러 안에서 하면 일부 브라우저가 무시한다 → 신뢰성 위해
-  //   "머무르기/닫힘"(이벤트 핸들러)에서 다시 쌓는다. "나가기"는 첫 페이지(/)로 명시 이동.
-  const [leaveConfirmOpen, setLeaveConfirmOpen] = useState(false);
-  const guardPushedRef = useRef(false);
-  const leavingRef = useRef(false);
-
-  useEffect(() => {
-    return () => {
-      if (timer.current !== null) window.clearTimeout(timer.current);
-    };
-  }, []);
-
-  // 공유 페이지 진입 — ★ 핵심 퍼널 "링크공유 → 참여자 설문 완료"의 분모.
-  // 이 이벤트가 없으면 전환율 자체를 계산할 수 없다 (product-spec #4).
-  useEffect(() => {
-    track("share_view");
-  }, []);
-
-  // 모인 응답 수 — 사람들이 몇 명에서 멈추는지(0/1/2/3) 분포를 본다.
-  // 폴링으로 같은 값이 반복 유입되므로 한 번 보낸 수는 기록해 중복 발화를 막는다.
-  const sentCountsRef = useRef(new Set<number>());
-  useEffect(() => {
-    if (sentCountsRef.current.has(respondentCount)) return;
-    sentCountsRef.current.add(respondentCount);
-    track(`respondent_count_${respondentCount}`, { count: respondentCount });
-  }, [respondentCount]);
-
-  useEffect(() => {
-    if (!guardPushedRef.current) {
-      window.history.pushState({ lookyShareGuard: true }, "");
-      guardPushedRef.current = true;
-    }
-    const onPop = () => {
-      if (leavingRef.current) return;
-      setLeaveConfirmOpen(true); // 가드 pop됨 → 확인 모달 (재장전은 닫힐 때)
-    };
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, []);
-
-  // 모달 닫힘(머무르기·Esc·바깥 클릭) → 가드를 다시 쌓아 다음 back도 잡는다
-  const handleConfirmOpenChange = (open: boolean) => {
-    setLeaveConfirmOpen(open);
-    if (!open) window.history.pushState({ lookyShareGuard: true }, "");
-  };
-
-  // "나가기": 히스토리 의존 대신 첫 페이지(랜딩 /)로 명시 이동
-  const handleLeave = () => {
-    leavingRef.current = true;
-    setLeaveConfirmOpen(false);
-    router.replace("/");
-  };
-
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
-  const link = `${origin}/${surveyCode}`;
-
-  const showToast = (msg: string) => {
-    setToast(msg);
-    if (timer.current !== null) window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setToast(null), 2200);
-  };
-
-  const handleCopy = async () => {
-    track("link_copy");
-    const isAndroid = /android/i.test(navigator.userAgent);
-    try {
-      await navigator.clipboard.writeText(link);
-      if (!isAndroid) showToast("링크 복사 완료!");
-    } catch {
-      showToast("복사에 실패했어요. 링크를 길게 눌러 복사해주세요");
-    }
-  };
-
-  // 카카오 SDK 공유(feed). 인앱브라우저 포함 정식 경로. 키/SDK 실패 시 shareKakao 내부에서 링크 복사 fallback.
-  // ※ 동작 조건: NEXT_PUBLIC_KAKAO_JS_KEY(운영 앱) + 카카오 콘솔에 웹 도메인(looky.my·localhost) 등록.
-  const handleKakaoShare = async () => {
-    track("share_kakao_click");
-    const result = await shareKakao({
-      link,
-      title: "친구들이 본 나는 어떤 모습일까?",
-      description: "1분이면 돼! 나에 대한 설문을 풀어줘 — looky",
-      imageUrl: `${origin}/assets/og-image.png`,
-    });
-    showToast(
-      result === "shared" ? "카카오톡 공유를 열었어요" : "링크를 복사했어요",
-    );
-  };
+  useShareAnalytics(respondentCount);
+  const { toast, copyLink, shareToKakao } = useShareLink(surveyCode);
+  const { confirmOpen, handleOpenChange, leave } = useLeaveGuard({
+    // 히스토리에 기대지 않고 첫 페이지(랜딩)로 명시 이동
+    onLeave: () => router.replace("/"),
+  });
 
   return (
     // 디자이너 #10: 로고·타이틀·캐릭터를 F01(CenteredScreen)과 동일하게 세로 중앙 정렬.
@@ -132,13 +45,13 @@ export function ShareView({ surveyCode, respondentCount }: ShareViewProps) {
 
       {/* 이탈 확인 모달 — back 가로채기로 노출 */}
       <ConfirmDialog
-        open={leaveConfirmOpen}
-        onOpenChange={handleConfirmOpenChange}
+        open={confirmOpen}
+        onOpenChange={handleOpenChange}
         title="친구들 답변을 모으는 중이에요"
         description="지금 나가도 링크는 그대로 살아있어요. 정말 나갈까요?"
         cancelLabel="머무르기"
         confirmLabel="나가기"
-        onConfirm={handleLeave}
+        onConfirm={leave}
       />
 
       {/* 위 여백 가변 → 콘텐츠 세로 중앙 */}
@@ -204,7 +117,7 @@ export function ShareView({ surveyCode, respondentCount }: ShareViewProps) {
           {/* 링크 복사 — 아이콘 전용 (Figma CTA_small icon 832:11782: 64×56px) */}
           <CtaSmall
             variant="icon"
-            onClick={handleCopy}
+            onClick={copyLink}
             aria-label="링크 복사"
           >
             <LinkIcon className="size-7" />
@@ -212,7 +125,7 @@ export function ShareView({ surveyCode, respondentCount }: ShareViewProps) {
           {/* 카카오톡 공유 — fill variant (Figma CTA_small fill 414:13237: bg-kakao #fee500) */}
           <CtaSmall
             variant="fill"
-            onClick={handleKakaoShare}
+            onClick={shareToKakao}
             className="flex-1"
           >
             카카오톡 공유하기
