@@ -152,6 +152,11 @@
      토큰 하나로 묶었다 (docs/design-system-audit.md §4-3 ①). */
   --width-app-frame: 24.375rem;   /* 390px */
   --height-app-frame: 52.75rem;   /* 844px */
+  --radius-app-frame: 2.5rem;     /* 40px — 기기 프레임 모서리 */
+
+  /* 공유 안내 카드(F04 캐러셀) 모서리. 프로젝트 radius 스케일(6/8/10/14/18/22/26)에
+     20px 단계가 없어 의미 토큰으로 신설 — 값 유지, 화면 변화 없음. */
+  --radius-card: 1.25rem;         /* 20px */
 
   /* head-point1 (Y SpotlightOTF · Regular) — font-display1 과 함께 */
   --text-head1-26: 1.625rem;

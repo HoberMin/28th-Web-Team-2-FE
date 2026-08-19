@@ -87,8 +87,9 @@ export function ResultTapHint({
                 </span>
               </div>
             )}
-            {/* 라벨칩 (Figma bottom7/left7·px6/py3·rounded4·caption-12) */}
-            <span className="absolute bottom-[7px] left-[7px] rounded bg-black/50 px-1.5 py-[3px] text-caption-12-regular text-white">
+            {/* 라벨칩 — Figma 실측 bottom7/left7/py3 은 4px 그리드로 통일(bottom-2/left-2/py-1, 2026-08-19).
+                result-four-cuts 의 같은 칩과 값이 일치해야 한다. */}
+            <span className="absolute bottom-2 left-2 rounded bg-black/50 px-1.5 py-1 text-caption-12-regular text-white">
               {firstCardLabel}
             </span>
           </div>
@@ -100,8 +101,8 @@ export function ResultTapHint({
             style={{ top: rect.top + rect.height + 20, left: rect.left }}
           >
             <div className="relative">
-              <div className="absolute -top-1.5 left-4 size-3 rotate-45 rounded-[2px] bg-gray-50" />
-              <div className="rounded-[21px] bg-gray-50 px-4 py-2">
+              <div className="absolute -top-1.5 left-4 size-3 rotate-45 rounded-xs bg-gray-50" />
+              <div className="rounded-full bg-gray-50 px-4 py-2">
                 <p className="text-body-14-medium text-gray-800">
                   내용이 궁금하다면 눌러봐!
                 </p>

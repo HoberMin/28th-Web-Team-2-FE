@@ -34,7 +34,7 @@ export function ResultLoading({ onDone }: ResultLoadingProps) {
   return (
     <main className="relative isolate flex h-full flex-col items-center justify-center bg-green-gradient px-5 text-center">
       <BgCloud />
-      <div className="flex w-[350px] max-w-full flex-col items-center gap-11">
+      <div className="flex w-87.5 max-w-full flex-col items-center gap-11">
         <div className="flex flex-col items-center gap-5">
           <h1 className="text-head1-26 font-display1 text-gray-900">
             친구들의 답변을

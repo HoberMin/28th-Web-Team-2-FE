@@ -48,7 +48,7 @@ export function ResultGate({
           width={270}
           height={334}
           priority
-          className="w-[270px] max-w-full select-none"
+          className="w-67.5 max-w-full select-none"
         />
       </div>
     </CenteredScreen>

@@ -44,13 +44,14 @@ export function ShareCardFrame({
       }}
       aria-hidden={!announce}
     >
-      {/* 카드 radius 20px·backdrop-blur 10px 는 raw px 유지(디자이너 합의 — 별도 토큰 미등록).
+      {/* 카드 모서리는 --radius-card(20px) 토큰. backdrop-blur 는 실측 10px 였으나
+          Tailwind blur 스케일의 md(12px)로 통일(2026-08-19).
           테두리는 border 대신 inset ring(box-shadow 기반) — 콘텐츠 폭을 안 깎아 캐릭터가 정확히 268px(=316−패딩48).
           Figma 스트로크도 콘텐츠를 줄이지 않으므로 이쪽이 정합. */}
-      <div className="flex flex-col items-center gap-6 rounded-[20px] bg-white/40 p-6 ring-1 ring-inset ring-white backdrop-blur-[10px]">
+      <div className="flex flex-col items-center gap-6 rounded-card bg-white/40 p-6 ring-1 ring-inset ring-white backdrop-blur-md">
         <div className="flex w-full flex-col items-center gap-2">
           {/* 단계 뱃지 = blue/200 정사각 20px(size-5) + YPairingFont Bold 14px(head2-14) 흰 숫자. */}
-          <span className="flex size-5 items-center justify-center rounded-[4px] bg-blue-200 font-display2 text-head2-14 text-white">
+          <span className="flex size-5 items-center justify-center rounded-sm bg-blue-200 font-display2 text-head2-14 text-white">
             {card.n}
           </span>
           {/* pill = 흰 배경 + blue/500 텍스트. Figma body/16-bold(Pretendard Bold 16, lh 1.55) 토큰 사용. */}

@@ -36,7 +36,7 @@ export function ResultFourCuts({
   firstCardRef,
 }: ResultFourCutsProps) {
   return (
-    <div className="overflow-hidden rounded-[18px] bg-gray-900 px-[14px] pb-5 pt-[21px]">
+    <div className="overflow-hidden rounded-2xl bg-gray-900 px-3.5 pb-5 pt-5">
       <div className="grid grid-cols-2 gap-2.5">
         {QUADRANTS.map(({ key }, index) => {
           const imageUrl = imageUrls[key] ?? null;
@@ -72,7 +72,7 @@ export function ResultFourCuts({
                 </div>
               )}
               {/* 칸 라벨 오버레이 (Figma Overlay: bg black/50) */}
-              <span className="absolute bottom-[7px] left-[7px] rounded bg-black/50 px-1.5 py-[3px] text-caption-12-regular text-white">
+              <span className="absolute bottom-2 left-2 rounded bg-black/50 px-1.5 py-1 text-caption-12-regular text-white">
                 {label}
               </span>
             </motion.button>
@@ -81,7 +81,7 @@ export function ResultFourCuts({
       </div>
 
       {/* 캡션: 날짜 + 종합 키워드 (Figma 414:13633) */}
-      <div className="mt-[14px] flex flex-col items-center text-center">
+      <div className="mt-3.5 flex flex-col items-center text-center">
         {resultDate && (
           <p className="text-body-14-regular text-gray-400">{resultDate}</p>
         )}

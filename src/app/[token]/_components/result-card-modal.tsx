@@ -123,19 +123,19 @@ export function ResultCardModal({
                   </span>
                 </div>
               )}
-              <span className="absolute bottom-[14px] left-[14px] rounded-lg bg-black/50 px-3 py-1.5 text-body-16-semibold text-white">
+              <span className="absolute bottom-3.5 left-3.5 rounded-lg bg-black/50 px-3 py-1.5 text-body-16-semibold text-white">
                 {frontLabel}
               </span>
             </div>
 
             {/* 뒷면 (Figma 1268-7422) */}
             <div
-              className="absolute inset-0 flex flex-col overflow-hidden rounded-2xl border-2 border-white bg-white pt-[18px]"
+              className="absolute inset-0 flex flex-col overflow-hidden rounded-2xl border-2 border-white bg-white pt-4.5"
               style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
             >
               {/* Figma: 좌 18 / w284 (우 22, 비대칭) */}
-              <div className="ml-[18px] flex w-71 flex-col gap-7">
-                <div className="relative h-45 w-full overflow-hidden rounded-[14px] border border-gray-100">
+              <div className="ml-4.5 flex w-71 flex-col gap-7">
+                <div className="relative h-45 w-full overflow-hidden rounded-xl border border-gray-100">
                   {imageUrl ? (
                     <Image
                       src={imageUrl}

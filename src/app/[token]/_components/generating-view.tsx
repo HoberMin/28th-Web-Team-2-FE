@@ -49,7 +49,7 @@ export function GeneratingView({
       background="green"
       footer={<Cta onClick={onRestart}>처음으로 돌아가기</Cta>}
     >
-      <div className="flex w-[350px] max-w-full flex-col items-center gap-13">
+      <div className="flex w-87.5 max-w-full flex-col items-center gap-13">
         <div className="flex w-full flex-col items-center gap-12">
           <h1 className="text-head1-26 font-display1 text-gray-900">
             <span className="text-green-300">{nickname}</span>님의 네컷을
@@ -77,7 +77,7 @@ export function GeneratingView({
           </ul>
         </div>
 
-        <div className="relative w-[350px] max-w-full select-none">
+        <div className="relative w-87.5 max-w-full select-none">
           <Image
             src="/assets/img_character_hamster_desk_writing.png"
             alt=""
