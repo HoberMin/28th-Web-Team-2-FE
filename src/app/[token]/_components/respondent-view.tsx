@@ -2,18 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 
-import { useStartSubmissionAPI, useSubmitAnswersAPI } from "@/apis/survey/mutations";
-import { isApiError } from "@/apis/error";
-import type { SurveyQuestion, SubmissionStartedResponse } from "@/apis/survey/types";
 import { CenteredScreen } from "@/components/layout/centered-screen";
 import { SurveyRunner } from "@/components/survey/survey-runner";
 import { Cta } from "@/components/ui/cta";
 import { Logo } from "@/components/ui/logo";
 import { track } from "@/lib/analytics";
-import { markSurveyDone, markSurveyStarted } from "@/lib/local-session";
 import { usePreloadImages } from "@/lib/preload-images";
+
+import { useRespondentSurvey } from "./use-respondent-survey";
 
 // 완료 일러스트는 설문이 끝나야 마운트되므로, 인트로/설문 동안 미리 받아둬 전환 시 즉시 표시한다.
 const PRELOAD_DONE_ILLUST = [
@@ -23,8 +20,6 @@ const PRELOAD_DONE_ILLUST = [
 // 참여자 플로우 (product-spec #5 · Figma F06 intro node 414:13450) — GUI 1차 전경 정합.
 // intro(자동 전환 splash) → 설문(8) → 완료 + "나도 만들기"(바이럴 루프). 신원·로그인 없음.
 // 룰/Figma에서 느슨하게 처리한 지점은 `figma-loose:` 주석으로 표기(디자이너 합의용).
-type Step = "intro" | "loading" | "survey" | "submitting" | "done" | "error";
-
 interface RespondentViewProps {
   surveyCode: string;
   nickname: string;
@@ -32,55 +27,11 @@ interface RespondentViewProps {
 
 export function RespondentView({ surveyCode, nickname }: RespondentViewProps) {
   // ── hooks (early return 앞) ───────────────────────────────────────────────
-  const { mutate: startSubmission } = useStartSubmissionAPI();
-  const { mutate: submitAnswers } = useSubmitAnswersAPI();
-
-  const [step, setStep] = useState<Step>("intro");
-  const [questions, setQuestions] = useState<SurveyQuestion[]>([]);
-  const [submissionId, setSubmissionId] = useState<number | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  // intro 2초 자동 전환
-  const introTimerRef = useRef<number | null>(null);
+  const { step, questions, errorMessage, complete, retry, trackQuestionView } =
+    useRespondentSurvey(surveyCode);
 
   // 완료 일러스트 선로딩 — 설문 진행 중 미리 받아둬 완료 전환 시 늦게 뜨지 않게
   usePreloadImages(PRELOAD_DONE_ILLUST);
-
-  // 이 세션에서 설문 플로우에 진입했음을 표시 — 이후 상위 폴링이 GENERATING/READY로
-  // 바뀌어도 설문 도중 결과 화면으로 튕기지 않게 하는 가드(page.tsx respondentInProgress).
-  useEffect(() => {
-    markSurveyStarted(surveyCode);
-    track("respond_view"); // KPI: 참여자 설문 완료율 분모
-  }, [surveyCode]);
-
-  useEffect(() => {
-    if (step !== "intro") return;
-    introTimerRef.current = window.setTimeout(() => {
-      setStep("loading");
-      startSubmission(
-        { surveyCode },
-        {
-          onSuccess: (data: SubmissionStartedResponse) => {
-            setSubmissionId(data.submissionId);
-            setQuestions(data.questions);
-            setStep("survey");
-          },
-          onError: (error) => {
-            if (isApiError(error)) {
-              setErrorMessage(error.message);
-            } else {
-              setErrorMessage("문항을 불러오지 못했어요. 다시 시도해주세요.");
-            }
-            setStep("error");
-          },
-        },
-      );
-    }, 2000);
-    return () => {
-      if (introTimerRef.current !== null)
-        window.clearTimeout(introTimerRef.current);
-    };
-  }, [step, surveyCode, startSubmission]);
 
   // ── intro 화면 ────────────────────────────────────────────────────────────
   if (step === "intro") {
@@ -137,14 +88,7 @@ export function RespondentView({ surveyCode, nickname }: RespondentViewProps) {
         <p className="text-body-16-medium text-gray-900">
           {errorMessage ?? "오류가 발생했어요."}
         </p>
-        <Cta
-          onClick={() => {
-            setErrorMessage(null);
-            setStep("intro");
-          }}
-        >
-          다시 시도
-        </Cta>
+        <Cta onClick={retry}>다시 시도</Cta>
       </div>
     );
   }
@@ -157,38 +101,12 @@ export function RespondentView({ surveyCode, nickname }: RespondentViewProps) {
 
   // ── 설문 화면 ─────────────────────────────────────────────────────────────
   if (step === "survey") {
-    const handleComplete = (answers: { questionId: number; answerOptionId: number }[]) => {
-      if (submissionId === null) return;
-      setStep("submitting");
-
-      submitAnswers(
-        { submissionId, answers },
-        {
-          onSuccess: () => {
-            track("respond_complete");
-            markSurveyDone(surveyCode);
-            setStep("done");
-          },
-          onError: (error) => {
-            if (isApiError(error)) {
-              setErrorMessage(error.message);
-            } else {
-              setErrorMessage("제출에 실패했어요. 다시 시도해주세요.");
-            }
-            setStep("error");
-          },
-        },
-      );
-    };
-
     return (
       // 참여자 설문: 첫 문항 뒤로(onBack) 없음 — 자동 전환 splash로 되돌아갈 필요 없음
       <SurveyRunner
         questions={questions}
-        onComplete={handleComplete}
-        onQuestionView={(index, total) =>
-          track(`respond_q${index + 1}`, { questionIndex: index + 1, total })
-        }
+        onComplete={complete}
+        onQuestionView={trackQuestionView}
       />
     );
   }
