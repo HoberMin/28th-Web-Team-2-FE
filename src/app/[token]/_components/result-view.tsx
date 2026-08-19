@@ -1,13 +1,12 @@
 "use client";
 
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import { useGetSurveyResultAPI } from "@/apis/survey/queries";
 import { Cta } from "@/components/ui/cta";
 import { CtaSmall } from "@/components/ui/cta-small";
 import { Logo } from "@/components/ui/logo";
-import { track } from "@/lib/analytics";
 import { formatResultDate } from "@/lib/format-date";
 import { usePreloadImages } from "@/lib/preload-images";
 import {
@@ -23,7 +22,10 @@ import { ResultGate } from "./result-gate";
 import { ResultLoading } from "./result-loading";
 import { ResultStatusScreen } from "./result-status-screen";
 import { ResultTapHint } from "./result-tap-hint";
+import { useResultAnalytics } from "./use-result-analytics";
 import { useResultShare } from "./use-result-share";
+import { useTapHint } from "./use-tap-hint";
+import { useWarmQuadrantImages } from "./use-warm-quadrant-images";
 
 // 결과 뷰 (product-spec #6 · Figma F05 컴팩트 개편 — 인터랙션 3종 스펙 2026-07-02).
 // phase 상태머신: gate(!entered) → loading(5초 고정 연출, 결과는 항상 READY) → body(컴팩트).
@@ -50,7 +52,6 @@ const PRELOAD_LOADING_CHARS = [
   { src: "/assets/img_character_hamster_up.png", width: 272, height: 334 },
 ];
 
-
 export function ResultView({
   surveyCode,
   nickname,
@@ -59,8 +60,6 @@ export function ResultView({
 }: ResultViewProps) {
   const [phase, setPhase] = useState<ResultPhase>("gate");
   const [selectedKey, setSelectedKey] = useState<QuadrantKey | null>(null);
-  const [hintVisible, setHintVisible] = useState(false);
-  const [hintShown, setHintShown] = useState(false);
   // 힌트 정렬 기준 — 실제 첫 그리드 카드(모두가 아는 나)
   const firstCardRef = useRef<HTMLButtonElement | null>(null);
 
@@ -72,45 +71,13 @@ export function ResultView({
     refetchInterval: (query) => (query.state.data?.quadrants ? false : 3000),
   });
 
-  // 결과 본문 도달 (KPI: 결과 도달→재공유 분모)
-  useEffect(() => {
-    if (phase === "body") track("result_view");
-  }, [phase]);
-
-  // 이미지가 실제로 준비된 시점 — 생성 대기(폴링)를 얼마나 겪는지 보는 지표.
-  // quadrants 가 처음 채워질 때 1회만. 폴링으로 같은 데이터가 반복 유입돼도 중복 발화하지 않는다.
-  const imageReadySentRef = useRef(false);
-  useEffect(() => {
-    if (imageReadySentRef.current || !data?.quadrants) return;
-    imageReadySentRef.current = true;
-    track("result_image_ready");
-  }, [data]);
-
-  // body 진입 1초 후 힌트 노출(1회성)
-  useEffect(() => {
-    if (phase !== "body" || hintShown) return;
-    const hintTimer = window.setTimeout(() => {
-      setHintVisible(true);
-      setHintShown(true);
-    }, 1000);
-    return () => window.clearTimeout(hintTimer);
-  }, [phase, hintShown]);
+  useResultAnalytics({ reachedBody: phase === "body", data });
+  const hint = useTapHint(phase === "body");
+  useWarmQuadrantImages(data);
 
   // 다음 화면(ResultLoading) 캐릭터 2컷(팔 내림/올림)을 gate 화면에서 미리 받아 캐시 적재
   // → loading 진입 후 1초마다 교차될 때 첫 스왑에서 미로드로 깜빡이는 것 방지.
   usePreloadImages(PRELOAD_LOADING_CHARS);
-
-  // 4칸 카드 이미지(백엔드 AI 생성, unoptimized)를 미리 디코딩해 캐시 적재 — 모달 열림/닫힘(플립 복귀)
-  // 시 미로드로 흰 배경이 비쳐 깜빡이는 것 방지. imageUrl은 unoptimized라 raw URL 그대로 데우면 적중한다.
-  useEffect(() => {
-    if (!data?.quadrants) return;
-    for (const { key } of QUADRANTS) {
-      const url = data.quadrants[key]?.imageUrl;
-      if (!url) continue;
-      const img = new window.Image();
-      img.src = url;
-    }
-  }, [data]);
 
   // ── 로딩 — 이미지 생성 대기 (가장 중요 — product-spec #6) ──────────────────
   if (isLoading) {
@@ -213,12 +180,12 @@ export function ResultView({
       </div>
 
       {/* ── "눌러봐" 힌트 오버레이 (진입 1초 후, 1회성) — Figma 1268-7019 ────── */}
-      {hintVisible && (
+      {hint.visible && (
         <ResultTapHint
           anchorRef={firstCardRef}
           firstCardImageUrl={firstImageUrl}
           firstCardLabel={QUADRANT_LABEL[firstQuadrant.key]}
-          onDismiss={() => setHintVisible(false)}
+          onDismiss={hint.dismiss}
         />
       )}
 
