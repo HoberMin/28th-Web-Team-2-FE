@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/site";
 
 // 이 서비스는 URL이 곧 결과 열쇠다 — 토큰 URL(설문·공유·결과)은 추측 불가능해야 하고
 // 검색 노출 = 개인 결과 유출 (domain.md §3). 그래서 기본은 "랜딩만 색인, 나머지 차단".
 // 공개 마케팅 페이지가 생기면 allow에 명시적으로 추가할 것.
-const SITE_URL = "https://looky.my";
 
 export default function robots(): MetadataRoute.Robots {
   return {

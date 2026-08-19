@@ -2,10 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { pretendard, ySpotlight, yPairing } from "./fonts";
 import { Providers } from "./providers";
 import "./globals.css";
+import { SITE_URL } from "@/lib/site";
 
 // 핵심 유입 = 인스타 스토리·카톡 공유 → 공유 카드(OG)가 곧 전환율 (domain.md §1).
 // 결과 페이지(개인) 동적 OG는 추후 해당 page에서 generateMetadata로 별도 처리 (domain.md §3).
-const SITE_URL = "https://looky.my";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
