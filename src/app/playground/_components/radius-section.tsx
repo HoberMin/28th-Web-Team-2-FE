@@ -3,9 +3,9 @@
 import { Section, SpecNote, SubGroup, TokenValue } from "./spec";
 
 // Radius·치수 토큰.
-// 의미 토큰(radius-field / radius-cta)이 있는데도 화면에서 rounded-[7px]·[9px]·[14px] 같은
-// Figma 실측값이 쓰이고 있다 (docs/design-system-audit.md §4-3 ②).
-// 이 섹션은 "쓸 수 있는 것"을 눈에 보이게 해서 arbitrary value 로 새는 걸 줄이려는 목적.
+// 2026-08-19 에 Figma 실측값(7/9/14/18/20/21/40px 등)을 전부 토큰·스케일로 통일해
+// 실코드의 arbitrary value 는 0건이다. 이 섹션은 "쓸 수 있는 것"을 눈에 보이게 해
+// 다시 실측값이 새어 들어오지 않게 하는 목적.
 
 interface RadiusToken {
   token: string;
@@ -27,6 +27,18 @@ const SEMANTIC: RadiusToken[] = [
     varName: "--radius-cta",
     usage: "Cta · CtaSmall",
   },
+  {
+    token: "rounded-card",
+    cls: "rounded-card",
+    varName: "--radius-card",
+    usage: "공유 안내 카드(F04 캐러셀)",
+  },
+  {
+    token: "rounded-app-frame",
+    cls: "rounded-app-frame",
+    varName: "--radius-app-frame",
+    usage: "데스크탑 기기 프레임",
+  },
 ];
 
 const SCALE: RadiusToken[] = [
@@ -40,6 +52,12 @@ const SCALE: RadiusToken[] = [
 ];
 
 const WIDTHS: RadiusToken[] = [
+  {
+    token: "w-app-frame",
+    cls: "w-app-frame",
+    varName: "--width-app-frame",
+    usage: "데스크탑 기기 프레임 폭 — 하단 고정바·모달이 이 값과 일치해야 한다",
+  },
   {
     token: "w-logo-sm",
     cls: "w-logo-sm",
@@ -105,8 +123,8 @@ export function RadiusSection() {
 
       <SpecNote>
         radius 토큰은 Figma Variables 에 없어 코드에서 신설한 것입니다 — 디자이너
-        확인 필요. 현재 화면 코드에는 <code>rounded-[7px]</code>·
-        <code>[9px]</code>·<code>[14px]</code> 같은 실측값이 54곳 남아 있습니다
+        확인 필요. Figma 실측값은 2026-08-19 에 전부 토큰·4px 그리드로 통일해
+        실코드의 arbitrary value 는 <strong>0건</strong>입니다
         (docs/design-system-audit.md).
       </SpecNote>
     </Section>
