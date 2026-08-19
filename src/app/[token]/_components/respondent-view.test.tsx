@@ -27,6 +27,7 @@ vi.mock("@/lib/local-session", () => ({
 vi.mock("@/lib/preload-images", () => ({ usePreloadImages: () => {} }));
 
 vi.mock("next/image", () => ({
+  // eslint-disable-next-line @next/next/no-img-element
   default: ({ alt }: { alt: string }) => <img alt={alt} />,
 }));
 
