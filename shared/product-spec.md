@@ -46,7 +46,7 @@
 
 **디자인 방향**: 10~20대 여성 감성, 인생네컷 2×2 프리뷰 중심 히어로 (저충실도는 회색 박스).
 
-**분석 이벤트**: `landing_view`, `start_click`, `resume_click`.
+**분석 이벤트**: `landing_view`, `start_click`. ※ `resume_click` 은 이어보기 UI 미구현이라 발화되지 않음.
 
 ---
 
@@ -62,7 +62,8 @@
 
 **디자인 방향**: 폼 1열, 모바일 퍼스트.
 
-**분석 이벤트**: `nickname_view`, `nickname_submit`.
+**분석 이벤트**: `onboarding_view`(진입), `selfsurvey_start_click`(제출 = 자기설문 시작).
+※ 구버전 스펙의 `nickname_view`/`nickname_submit` 을 코드의 실제 이름으로 맞춘 것 — 이미 수집 중인 이벤트라 이름을 바꾸면 데이터 연속성이 끊긴다.
 
 **TODO(✍️)**: 닉네임 길이·금칙어 규칙(중복 검사는 계정이 없어 불필요).
 
@@ -82,7 +83,7 @@
 
 **디자인 방향**: 한 화면 한 문항, 탭하기 쉬운 큰 보기 버튼(모바일).
 
-**분석 이벤트**: `selfsurvey_start`, `selfsurvey_q{n}`, `selfsurvey_complete`. ★ `자기설문 완료→링크공유` 퍼널.
+**분석 이벤트**: `selfsurvey_q{n}`, `selfsurvey_complete`. 시작은 닉네임 화면의 `selfsurvey_start_click`. ★ `자기설문 완료→링크공유` 퍼널.
 
 ---
 
@@ -104,7 +105,9 @@
 
 **디자인 방향**: 공유 CTA 강조, 응답 수 게이지 시각화. 스토리용 이미지 에셋 필요(`design-guide`).
 
-**분석 이벤트**: `share_view`, `share_story_click`, `share_kakao_click`, `link_copy`, `respondent_count_{n}`. ★ `링크공유→참여완료` 핵심 퍼널.
+**분석 이벤트**: `share_view`(★ 핵심 퍼널 분모), `share_kakao_click`, `link_copy`, `respondent_count_{n}`(응답 수별 1회).
+※ `share_story_click` 은 **인스타 스토리 버튼이 F04 재구성으로 제거**되어 발화되지 않음.
+★ `링크공유→참여완료` 핵심 퍼널.
 
 **TODO(✍️)**: 스토리 공유 이미지 규격.
 
@@ -145,7 +148,9 @@
 
 **디자인 방향**: 인생네컷 = 폴라로이드/필름 느낌 4컷, 캡처·공유 좋은 비율. 형용사 톤은 **긍정/중립만**(비하·외모·직설 부정 금지 — `domain.md §1`).
 
-**분석 이벤트**: `result_view`, `result_image_ready`, `result_reshare_click`, `result_save_click`. ★ `결과 도달→재공유` 퍼널.
+**분석 이벤트**: `result_view`, `result_image_ready`(quadrants 준비 시 1회), `result_reshare_click`(`{method: copy|kakao}`).
+※ `result_save_click` 은 **이미지 저장 버튼 미구현**이라 발화되지 않음.
+★ `결과 도달→재공유` 퍼널.
 
 **TODO(✍️)**: AI 이미지/설명문 생성 파이프라인·지연 처리(개발자 논의), 한 칸 후보 복수 시 처리(`domain.md` 미결 항목).
 

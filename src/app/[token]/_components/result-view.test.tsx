@@ -237,6 +237,32 @@ describe("ResultView", () => {
       enterBody();
       expect(track).toHaveBeenCalledWith("result_view");
     });
+
+    // 생성 대기를 얼마나 겪는지 보는 지표 — 폴링으로 같은 데이터가 반복 유입돼도 1회만
+    it("quadrants 가 준비되면 result_image_ready 를 1회만 추적한다", () => {
+      const { rerender } = renderView();
+      expect(
+        track.mock.calls.filter(([e]) => e === "result_image_ready"),
+      ).toHaveLength(1);
+
+      rerender(
+        <ResultView
+          surveyCode="tok"
+          nickname="루키"
+          respondentCount={3}
+          resultAvailableAt="2026-08-18T09:00:00Z"
+        />,
+      );
+      expect(
+        track.mock.calls.filter(([e]) => e === "result_image_ready"),
+      ).toHaveLength(1);
+    });
+
+    it("quadrants 가 아직 없으면 result_image_ready 를 추적하지 않는다", () => {
+      givenResult({ quadrants: null });
+      renderView();
+      expect(track).not.toHaveBeenCalledWith("result_image_ready");
+    });
   });
 
   describe("본문 — 4cuts 그리드", () => {

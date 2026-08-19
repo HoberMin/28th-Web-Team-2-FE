@@ -77,6 +77,15 @@ export function ResultView({
     if (phase === "body") track("result_view");
   }, [phase]);
 
+  // 이미지가 실제로 준비된 시점 — 생성 대기(폴링)를 얼마나 겪는지 보는 지표.
+  // quadrants 가 처음 채워질 때 1회만. 폴링으로 같은 데이터가 반복 유입돼도 중복 발화하지 않는다.
+  const imageReadySentRef = useRef(false);
+  useEffect(() => {
+    if (imageReadySentRef.current || !data?.quadrants) return;
+    imageReadySentRef.current = true;
+    track("result_image_ready");
+  }, [data]);
+
   // body 진입 1초 후 힌트 노출(1회성)
   useEffect(() => {
     if (phase !== "body" || hintShown) return;
