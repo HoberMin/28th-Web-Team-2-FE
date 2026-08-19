@@ -50,7 +50,7 @@ export function ConfirmDialog({
             <button
               type="button"
               onClick={onConfirm}
-              className="h-12 text-body-16-medium text-gray-300 transition-colors active:text-gray-900"
+              className="h-12 rounded-cta text-body-16-medium text-gray-300 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-400 active:text-gray-900"
             >
               {confirmLabel}
             </button>

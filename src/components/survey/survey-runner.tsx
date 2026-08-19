@@ -145,7 +145,7 @@ export function SurveyRunner({
             type="button"
             onClick={handleBack}
             aria-label="이전 문항"
-            className="flex size-12 items-center justify-center"
+            className="flex size-12 items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
           >
             <ArrowLeftIcon className="text-gray-900" />
           </button>

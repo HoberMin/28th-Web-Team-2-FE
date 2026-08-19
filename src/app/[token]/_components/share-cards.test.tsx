@@ -189,6 +189,14 @@ describe("ShareCards", () => {
       expect(viewport()).toHaveAttribute("aria-label", "공유 안내 3/3");
     });
 
+    // WCAG 2.4.7 — 키보드 사용자가 어느 인디케이터에 있는지 보여야 한다
+    it("인디케이터에 포커스 링이 있다", () => {
+      render(<ShareCards />);
+      for (const b of indicators()) {
+        expect(b.className).toMatch(/focus-visible:ring/);
+      }
+    });
+
     it("각 인디케이터에 순번 라벨이 있다", () => {
       render(<ShareCards />);
       expect(

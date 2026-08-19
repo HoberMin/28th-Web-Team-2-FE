@@ -89,7 +89,7 @@ export function ShareCards() {
             onClick={() => goTo(i)}
             aria-label={`${i + 1}번째 안내 카드 보기`}
             aria-current={i === activeReal}
-            className="-m-2 flex p-2"
+            className="-m-2 flex rounded-full p-2 outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
           >
             <span
               className={cn(
