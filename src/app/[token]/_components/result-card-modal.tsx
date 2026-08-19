@@ -2,15 +2,15 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 
 import { CtaSmall } from "@/components/ui/cta-small";
 import type { QuadrantKey } from "@data/quadrants";
 
+import { useCardFlip } from "./use-card-flip";
+
 // F05 카드 확대 모달 — 앞면(1268-7404) → 뒷면(1268-7422) 플립 (스펙 §0·§4·§5·§7).
 // 시퀀스: opening(카드 위치→중앙, 1.2s, layoutId 공유) → open(0.4s hold) → flipping(rotateY 0.6s) → back.
 // 닫기: 딤/카드 탭 or ESC → onClose (AnimatePresence exit이 layoutId로 원위치까지 역재생).
-type FlipPhase = "opening" | "open" | "flipping" | "back";
 
 interface ResultCardModalProps {
   quadrantKey: QuadrantKey;
@@ -35,33 +35,11 @@ export function ResultCardModal({
   onShareCopy,
   onShareKakao,
 }: ResultCardModalProps) {
-  const [phase, setPhase] = useState<FlipPhase>("opening");
-
-  // ESC 닫기
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
-
-  // open(hold 0.4s) → flipping 전이
-  useEffect(() => {
-    if (phase !== "open") return;
-    const holdTimer = window.setTimeout(() => setPhase("flipping"), 400);
-    return () => window.clearTimeout(holdTimer);
-  }, [phase]);
-
-  // flipping(0.6s) → back 전이
-  useEffect(() => {
-    if (phase !== "flipping") return;
-    const flipTimer = window.setTimeout(() => setPhase("back"), 600);
-    return () => window.clearTimeout(flipTimer);
-  }, [phase]);
+  const { isFlipped, handleLayoutComplete, layoutDuration } = useCardFlip({
+    onClose,
+  });
 
   const isEmpty = !imageUrl && !interpretation;
-  const isFlipped = phase === "flipping" || phase === "back";
 
   return (
     <>
@@ -80,10 +58,8 @@ export function ResultCardModal({
       <div className="pointer-events-none fixed inset-0 z-50 mx-auto flex w-full max-w-(--width-app-frame) items-center justify-center md:absolute">
         <motion.div
           layoutId={`f05-card-${quadrantKey}`}
-          transition={{ duration: phase === "opening" ? 0.6 : 0.4 }}
-          onLayoutAnimationComplete={() => {
-            if (phase === "opening") setPhase("open");
-          }}
+          transition={{ duration: layoutDuration }}
+          onLayoutAnimationComplete={handleLayoutComplete}
           onClick={onClose}
           onContextMenu={(e) => e.preventDefault()}
           role="dialog"
